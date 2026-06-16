@@ -36,7 +36,7 @@ export default function Footer() {
         <div className="md:flex md:items-center md:justify-between">
           <div className="flex justify-center md:justify-start mb-4 md:mb-0">
             <img 
-              src="./public/logoprosur.png" 
+              src="./logoprosur.png" 
               alt="Logo Grupo Prosur" 
               width={225}
               height={225}
