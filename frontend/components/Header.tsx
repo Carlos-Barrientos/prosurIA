@@ -23,7 +23,7 @@ export default function Header() {
                 alt="Logo Grupo Prosur" 
                 width={225}
                 height={225}
-                className="h-14 w-auto object-contain" 
+                className="h-24 w-auto object-contain" 
               />
             </a>
           </div>
