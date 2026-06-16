@@ -31,9 +31,9 @@ export default function App() {
           <img 
             src="./logoprosur.png" 
             alt="Logo Prosur Fondo" 
-            width={225}
-            height={225}
-            className="w-[40vw] max-w-md animate-float object-contain" 
+            width={350}
+            height={350}
+            className="w-[60vw] max-w-xl animate-float object-contain" 
             aria-hidden="true" 
           />
         </div>
