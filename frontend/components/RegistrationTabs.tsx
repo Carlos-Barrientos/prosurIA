@@ -1,8 +1,101 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
+import { 
+  CheckCircle2, 
+  AlertCircle, 
+  Loader2, 
+  Search, 
+  Filter, 
+  Eye, 
+  X, 
+  Building2, 
+  Layers, 
+  Lightbulb, 
+  TrendingUp 
+} from 'lucide-react';
+
+// =========================================================================
+// MOCK DATA FOR GRUPO PROSUR INNOVATION PROJECTS
+// =========================================================================
+const INITIAL_MOCK_TEAMS = [
+  {
+    teamName: "Logística Inteligente",
+    employeeId: "10987",
+    company: "Grupo Chesa",
+    department: "Logística",
+    members: "Ana Martínez, Carlos Gómez, Laura Rivas",
+    painPoint: "Retrasos en la consolidación de cargas y asignación de transportistas, requiriendo 3 horas diarias de cálculo manual."
+  },
+  {
+    teamName: "Almacén 5 Estrellas",
+    employeeId: "20541",
+    company: "5 Pinos",
+    department: "Almacén y Compras",
+    members: "David Pérez, Sofía Castro",
+    painPoint: "Exceso de stock en productos perecederos y quiebres de stock en temporada alta debido a predicciones basadas en intuición."
+  },
+  {
+    teamName: "Ventas Pro",
+    employeeId: "30221",
+    company: "Calzamoda",
+    department: "Servicio al Cliente",
+    members: "Javier López, Maria Ortiz, Andrés Salazar",
+    painPoint: "Saturación del canal de soporte por dudas recurrentes de clientes sobre tallas, envíos y devoluciones."
+  },
+  {
+    teamName: "Fintech Prosur",
+    employeeId: "40112",
+    company: "CaFi",
+    department: "Tesorería",
+    members: "Diana Fuentes, Rodrigo Soto",
+    painPoint: "Conciliación manual de cientos de facturas y depósitos diarios, lo que toma la mitad de la jornada laboral de un analista."
+  },
+  {
+    teamName: "Equipo HR-AI",
+    employeeId: "50889",
+    company: "Grupo Prosur",
+    department: "Recursos Humanos",
+    members: "Gabriela Luna, Roberto Díaz",
+    painPoint: "Filtrado manual de cientos de currículums para múltiples vacantes operativas, ralentizando el proceso de contratación."
+  }
+];
+
+const INITIAL_MOCK_PROJECTS = [
+  {
+    teamName: "Logística Inteligente",
+    employeeId: "10987",
+    projectName: "Proyecto ChesaIA",
+    diagnosis: "La asignación manual de rutas y transportes genera ineficiencias de costo y demoras de hasta 3 horas diarias.",
+    solution: "Un modelo de recomendación de IA que analiza rutas históricas, costos y disponibilidad para sugerir la combinación óptima.",
+    metric: "Reducción del 25% en tiempos de asignación y 10% en costos de flete."
+  },
+  {
+    teamName: "Almacén 5 Estrellas",
+    employeeId: "20541",
+    projectName: "Predictor de Demanda",
+    diagnosis: "Merma del 8% en productos perecederos por compras excesivas e inexactas.",
+    solution: "Algoritmo de predicción de series temporales que integra estacionalidad y clima para proponer órdenes de reorden inteligentes.",
+    metric: "Reducción de merma en un 15% y optimización del flujo de caja."
+  },
+  {
+    teamName: "Ventas Pro",
+    employeeId: "30221",
+    projectName: "CalzaChat Client",
+    diagnosis: "Soporte saturado por preguntas repetitivas de clientes finales.",
+    solution: "Un chatbot basado en LLM (Vertex AI) que responde preguntas sobre inventario, tallas y envíos de forma natural y segura.",
+    metric: "Resolución autónoma del 60% de consultas iniciales."
+  },
+  {
+    teamName: "Fintech Prosur",
+    employeeId: "40112",
+    projectName: "Auto-Conciliación CaFi",
+    diagnosis: "Horas perdidas buscando correspondencia entre transferencias bancarias y facturas de clientes.",
+    solution: "Un software con NLP que lee extractos bancarios y asocia automáticamente con el sistema de facturación.",
+    metric: "Ahorro de 18 horas semanales y 99% de precisión."
+  }
+];
 
 export default function RegistrationTabs() {
-  const [activeTab, setActiveTab] = useState<'registro' | 'alcance'>('registro');
+  const [activeTab, setActiveTab] = useState<'registro' | 'alcance' | 'proyectos'>('registro');
   
   // =========================================================================
   // URL DE GOOGLE APPS SCRIPT INTEGRADA
@@ -36,16 +129,46 @@ export default function RegistrationTabs() {
     employeeId: string;
     company: string;
     department: string;
+    members?: string;
+    painPoint?: string;
   }
 
-  // Persistent registration state
+  interface RegisteredProject {
+    teamName: string;
+    employeeId: string;
+    projectName: string;
+    diagnosis: string;
+    solution: string;
+    metric: string;
+  }
+
+  // State for all registered entities
   const [registeredTeams, setRegisteredTeams] = useState<RegisteredTeam[]>([]);
+  const [registeredProjects, setRegisteredProjects] = useState<RegisteredProject[]>([]);
   const [isLoadingTeams, setIsLoadingTeams] = useState(false);
   const [isManualTeam, setIsManualTeam] = useState(false);
 
-  // Load registered teams from Google Sheet (GET)
-  const fetchTeamsFromSheet = async () => {
+  // Search and Filter States for the registered projects dashboard
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCompany, setSelectedCompany] = useState('');
+  const [selectedDepartment, setSelectedDepartment] = useState('');
+  const [selectedReg, setSelectedReg] = useState<any | null>(null);
+
+  // Load registered teams and projects from sheet and localStorage
+  const fetchTeamsAndProjects = async () => {
     setIsLoadingTeams(true);
+    
+    // Load local projects
+    const localProjectsString = localStorage.getItem('prosur_registered_projects');
+    if (localProjectsString) {
+      try {
+        const parsed = JSON.parse(localProjectsString);
+        if (Array.isArray(parsed)) {
+          setRegisteredProjects(parsed);
+        }
+      } catch (err) {}
+    }
+
     try {
       const response = await fetch(GOOGLE_SCRIPT_URL);
       if (!response.ok) throw new Error("HTTP error " + response.status);
@@ -68,18 +191,23 @@ export default function RegistrationTabs() {
         try {
           const parsed = JSON.parse(teams);
           if (Array.isArray(parsed)) {
-            const mapped = parsed.map((name: string) => ({
-              teamName: name,
-              employeeId: '',
-              company: '',
-              department: ''
-            }));
+            const mapped = parsed.map((item: any) => {
+              if (typeof item === 'string') {
+                return {
+                  teamName: item,
+                  employeeId: '',
+                  company: '',
+                  department: ''
+                };
+              }
+              return item;
+            });
             setRegisteredTeams(mapped);
             if (mapped.length > 0 && !isManualTeam) {
               setF2Data(prev => ({
                 ...prev,
                 teamName: mapped[0].teamName,
-                employeeId: ''
+                employeeId: mapped[0].employeeId || ''
               }));
             }
           }
@@ -91,13 +219,13 @@ export default function RegistrationTabs() {
   };
 
   useEffect(() => {
-    fetchTeamsFromSheet();
+    fetchTeamsAndProjects();
   }, []);
 
-  // Fetch teams again whenever the active tab changes to 'alcance'
+  // Fetch teams again whenever the active tab changes
   useEffect(() => {
-    if (activeTab === 'alcance') {
-      fetchTeamsFromSheet();
+    if (activeTab === 'alcance' || activeTab === 'proyectos') {
+      fetchTeamsAndProjects();
     }
   }, [activeTab]);
 
@@ -110,6 +238,97 @@ export default function RegistrationTabs() {
     }
   }, [f1Status, f2Status]);
 
+  // Combine Mock + API + LocalStorage registrations
+  const getUnifiedRegistrations = () => {
+    const teamsMap = new Map<string, RegisteredTeam>();
+
+    // 1. Mock teams
+    INITIAL_MOCK_TEAMS.forEach(team => {
+      teamsMap.set(team.teamName.toLowerCase(), team);
+    });
+
+    // 2. API & local storage teams
+    registeredTeams.forEach(team => {
+      teamsMap.set(team.teamName.toLowerCase(), {
+        ...teamsMap.get(team.teamName.toLowerCase()),
+        ...team
+      });
+    });
+
+    const projectsMap = new Map<string, RegisteredProject>();
+
+    // 1. Mock projects
+    INITIAL_MOCK_PROJECTS.forEach(proj => {
+      projectsMap.set(proj.teamName.toLowerCase(), proj);
+    });
+
+    // 2. Local storage projects
+    registeredProjects.forEach(proj => {
+      projectsMap.set(proj.teamName.toLowerCase(), {
+        ...projectsMap.get(proj.teamName.toLowerCase()),
+        ...proj
+      });
+    });
+
+    const unifiedList: Array<{
+      teamName: string;
+      employeeId: string;
+      company: string;
+      department: string;
+      members?: string;
+      painPoint?: string;
+      projectName?: string;
+      diagnosis?: string;
+      solution?: string;
+      metric?: string;
+      status: 'registered' | 'scope_submitted';
+    }> = [];
+
+    teamsMap.forEach((team, key) => {
+      const project = projectsMap.get(key);
+      if (project) {
+        unifiedList.push({
+          ...team,
+          projectName: project.projectName,
+          diagnosis: project.diagnosis,
+          solution: project.solution,
+          metric: project.metric,
+          status: 'scope_submitted'
+        });
+      } else {
+        unifiedList.push({
+          ...team,
+          status: 'registered'
+        });
+      }
+    });
+
+    return unifiedList.sort((a, b) => {
+      if (a.status === b.status) {
+        return a.teamName.localeCompare(b.teamName);
+      }
+      return a.status === 'scope_submitted' ? -1 : 1;
+    });
+  };
+
+  // Get teams list for selection dropdown
+  const getDropdownTeams = () => {
+    const teamsMap = new Map<string, RegisteredTeam>();
+
+    INITIAL_MOCK_TEAMS.forEach(team => {
+      teamsMap.set(team.teamName.toLowerCase(), team);
+    });
+
+    registeredTeams.forEach(team => {
+      teamsMap.set(team.teamName.toLowerCase(), {
+        ...teamsMap.get(team.teamName.toLowerCase()),
+        ...team
+      });
+    });
+
+    return Array.from(teamsMap.values()).sort((a, b) => a.teamName.localeCompare(b.teamName));
+  };
+
   const handleF1Submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setF1Status('submitting');
@@ -118,7 +337,7 @@ export default function RegistrationTabs() {
       // Envío real a Google Sheets
       await fetch(GOOGLE_SCRIPT_URL, {
         method: 'POST',
-        mode: 'no-cors', // Necesario para evitar problemas de CORS con Google Scripts
+        mode: 'no-cors',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -128,32 +347,38 @@ export default function RegistrationTabs() {
         })
       });
 
-      // Guardar el equipo registrado localmente
+      // Guardar el equipo registrado localmente (completo)
       const newTeamObj: RegisteredTeam = {
         teamName: f1Data.teamName.trim(),
         employeeId: f1Data.employeeId.trim(),
         company: f1Data.company,
-        department: f1Data.department
+        department: f1Data.department,
+        members: f1Data.members,
+        painPoint: f1Data.painPoint
       };
       
       const localTeamsString = localStorage.getItem('prosur_registered_teams');
-      let localTeamsList: string[] = [];
+      let localTeamsList: any[] = [];
       if (localTeamsString) {
         try {
           localTeamsList = JSON.parse(localTeamsString);
         } catch (err) {}
       }
-      if (!localTeamsList.includes(newTeamObj.teamName)) {
-        localTeamsList.push(newTeamObj.teamName);
-        localStorage.setItem('prosur_registered_teams', JSON.stringify(localTeamsList));
-      }
+      
+      // Filter out duplicate
+      localTeamsList = localTeamsList.filter(t => {
+        const name = typeof t === 'string' ? t : t.teamName;
+        return name.toLowerCase() !== newTeamObj.teamName.toLowerCase();
+      });
+      localTeamsList.push(newTeamObj);
+      localStorage.setItem('prosur_registered_teams', JSON.stringify(localTeamsList));
 
       setRegisteredTeams(prev => {
         const exists = prev.some(t => t.teamName.toLowerCase() === newTeamObj.teamName.toLowerCase());
         if (!exists) {
           return [...prev, newTeamObj];
         }
-        return prev;
+        return prev.map(t => t.teamName.toLowerCase() === newTeamObj.teamName.toLowerCase() ? newTeamObj : t);
       });
 
       // Pre-seleccionar en Form 2
@@ -193,8 +418,40 @@ export default function RegistrationTabs() {
         })
       });
 
+      // Guardar el proyecto registrado localmente
+      const newProjectObj: RegisteredProject = {
+        teamName: f2Data.teamName.trim(),
+        employeeId: f2Data.employeeId.trim(),
+        projectName: f2Data.projectName.trim(),
+        diagnosis: f2Data.diagnosis.trim(),
+        solution: f2Data.solution.trim(),
+        metric: f2Data.metric.trim()
+      };
+
+      const localProjectsString = localStorage.getItem('prosur_registered_projects');
+      let localProjectsList: RegisteredProject[] = [];
+      if (localProjectsString) {
+        try {
+          localProjectsList = JSON.parse(localProjectsString);
+        } catch (err) {}
+      }
+      
+      // Filter out duplicate
+      localProjectsList = localProjectsList.filter(p => p.teamName.toLowerCase() !== newProjectObj.teamName.toLowerCase());
+      localProjectsList.push(newProjectObj);
+      localStorage.setItem('prosur_registered_projects', JSON.stringify(localProjectsList));
+
+      setRegisteredProjects(prev => {
+        const exists = prev.some(p => p.teamName.toLowerCase() === newProjectObj.teamName.toLowerCase());
+        if (exists) {
+          return prev.map(p => p.teamName.toLowerCase() === newProjectObj.teamName.toLowerCase() ? newProjectObj : p);
+        } else {
+          return [...prev, newProjectObj];
+        }
+      });
+
       setF2Status('success');
-      // Limpiar datos pero conservar o resetear el equipo según selección
+      // Limpiar datos
       setF2Data({ 
         teamName: registeredTeams.length > 0 && !isManualTeam ? registeredTeams[0].teamName : '', 
         employeeId: registeredTeams.length > 0 && !isManualTeam ? registeredTeams[0].employeeId : '', 
@@ -212,7 +469,7 @@ export default function RegistrationTabs() {
     }
   };
 
-  const handleTabChange = (tab: 'registro' | 'alcance') => {
+  const handleTabChange = (tab: 'registro' | 'alcance' | 'proyectos') => {
     setActiveTab(tab);
     setF1Status('idle');
     setF2Status('idle');
@@ -221,20 +478,46 @@ export default function RegistrationTabs() {
   const inputClasses = "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-prosur-red focus:ring-prosur-red sm:text-sm p-3 border bg-white/90 transition-colors";
   const labelClasses = "block text-sm font-medium text-gray-700 mb-1";
 
+  // Data processing for the dashboard
+  const unifiedRegistrations = getUnifiedRegistrations();
+  
+  // Calculate metrics
+  const totalTeams = unifiedRegistrations.length;
+  const totalScopes = unifiedRegistrations.filter(r => r.status === 'scope_submitted').length;
+  const uniqueCompanies = new Set(unifiedRegistrations.map(r => r.company).filter(Boolean)).size;
+
+  // Filter registrations based on search & filter state
+  const filteredRegistrations = unifiedRegistrations.filter(reg => {
+    const matchesSearch = 
+      reg.teamName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (reg.projectName || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (reg.solution || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      reg.department.toLowerCase().includes(searchTerm.toLowerCase());
+      
+    const matchesCompany = !selectedCompany || reg.company === selectedCompany;
+    const matchesDepartment = !selectedDepartment || reg.department === selectedDepartment;
+    
+    return matchesSearch && matchesCompany && matchesDepartment;
+  });
+
+  // Get unique values for filters
+  const allCompanies = Array.from(new Set(unifiedRegistrations.map(r => r.company).filter(Boolean))).sort();
+  const allDepartments = Array.from(new Set(unifiedRegistrations.map(r => r.department).filter(Boolean))).sort();
+
   return (
     <section id="registro" className="py-20 bg-transparent">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-gray-900 mb-4">Participa en el Reto</h2>
           <p className="text-lg text-prosur-gray">
-            Completa tu registro inicial y posteriormente envía el alcance de tu proyecto.
+            Completa tu registro inicial, envía el alcance de tu proyecto o explora los proyectos participantes.
           </p>
         </div>
 
         <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
           {/* Tabs Header */}
           <div 
-            className="flex border-b border-gray-200 bg-white/50" 
+            className="flex flex-col sm:flex-row border-b border-gray-200 bg-white/50" 
             role="tablist" 
             aria-label="Formularios de participación"
           >
@@ -273,6 +556,25 @@ export default function RegistrationTabs() {
                 Entrega de Alcance
                 <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-600">
                   Límite: 23 de Julio
+                </span>
+              </span>
+            </button>
+            <button
+              role="tab"
+              aria-selected={activeTab === 'proyectos'}
+              aria-controls="panel-proyectos"
+              id="tab-proyectos"
+              onClick={() => handleTabChange('proyectos')}
+              className={`flex-1 py-4 px-6 text-center font-medium text-sm sm:text-base transition-colors focus:outline-none focus:ring-2 focus:ring-inset focus:ring-prosur-red ${
+                activeTab === 'proyectos' 
+                  ? 'border-b-2 border-prosur-red text-prosur-red bg-red-50/50' 
+                  : 'text-prosur-gray hover:text-gray-700 hover:bg-gray-50/50'
+              }`}
+            >
+              <span className="flex items-center justify-center gap-2">
+                Proyectos Registrados
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-prosur-red">
+                  {totalTeams}
                 </span>
               </span>
             </button>
@@ -510,21 +812,22 @@ export default function RegistrationTabs() {
                   <div className="grid grid-cols-1 gap-6">
                     {/* Selector de equipo o ingreso manual */}
                     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                      <div className={registeredTeams.length > 0 && !isManualTeam ? "sm:col-span-2" : ""}>
+                      <div className={getDropdownTeams().length > 0 && !isManualTeam ? "sm:col-span-2" : ""}>
                         <div className="flex justify-between items-center mb-1">
                           <label htmlFor="teamName" className="block text-sm font-medium text-gray-700">
                             Equipo participante <span className="text-prosur-red" aria-hidden="true">*</span>
                           </label>
-                          {registeredTeams.length > 0 && isManualTeam && (
+                          {getDropdownTeams().length > 0 && isManualTeam && (
                             <button
                               type="button"
                               onClick={() => {
                                 setIsManualTeam(false);
-                                if (registeredTeams.length > 0) {
+                                const dropdown = getDropdownTeams();
+                                if (dropdown.length > 0) {
                                   setF2Data(prev => ({ 
                                     ...prev, 
-                                    teamName: registeredTeams[0].teamName,
-                                    employeeId: registeredTeams[0].employeeId
+                                    teamName: dropdown[0].teamName,
+                                    employeeId: dropdown[0].employeeId
                                   }));
                                 }
                               }}
@@ -538,9 +841,9 @@ export default function RegistrationTabs() {
                         {isLoadingTeams ? (
                           <div className="flex items-center gap-2 p-3 bg-gray-50 border border-gray-200 rounded-md text-sm text-gray-500">
                             <Loader2 className="animate-spin h-4 w-4 text-prosur-red" />
-                            Cargando lista de equipos desde Google Sheets...
+                            Cargando lista de equipos...
                           </div>
-                        ) : registeredTeams.length > 0 && !isManualTeam ? (
+                        ) : getDropdownTeams().length > 0 && !isManualTeam ? (
                           <div className="relative">
                             <select
                               id="teamName"
@@ -552,7 +855,8 @@ export default function RegistrationTabs() {
                                   setIsManualTeam(true);
                                   setF2Data(prev => ({ ...prev, teamName: '', employeeId: '' }));
                                 } else {
-                                  const selected = registeredTeams.find(t => t.teamName === e.target.value);
+                                  const dropdown = getDropdownTeams();
+                                  const selected = dropdown.find(t => t.teamName === e.target.value);
                                   setF2Data(prev => ({ 
                                     ...prev, 
                                     teamName: e.target.value,
@@ -565,7 +869,7 @@ export default function RegistrationTabs() {
                               disabled={f2Status === 'submitting'}
                             >
                               <option value="" disabled>Selecciona tu equipo</option>
-                              {registeredTeams.map((team) => (
+                              {getDropdownTeams().map((team) => (
                                 <option key={team.teamName} value={team.teamName}>
                                   {team.teamName} (Colaborador: {team.employeeId || 'N/A'} - {team.department || 'Sin área'})
                                 </option>
@@ -592,7 +896,7 @@ export default function RegistrationTabs() {
                       </div>
 
                       {/* Campo para el número de colaborador */}
-                      {(!isLoadingTeams && (registeredTeams.length === 0 || isManualTeam)) ? (
+                      {(!isLoadingTeams && (getDropdownTeams().length === 0 || isManualTeam)) ? (
                         <div>
                           <label htmlFor="employeeId" className={labelClasses}>
                             Número de colaborador <span className="text-prosur-red" aria-hidden="true">*</span>
@@ -713,6 +1017,280 @@ export default function RegistrationTabs() {
                     </button>
                   </div>
                 </form>
+              )}
+            </div>
+
+            {/* Panel 3: Proyectos Registrados */}
+            <div 
+              role="tabpanel" 
+              id="panel-proyectos" 
+              aria-labelledby="tab-proyectos"
+              hidden={activeTab !== 'proyectos'}
+            >
+              {/* Metrics Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+                <div className="bg-gradient-to-br from-red-50 to-white p-4 rounded-xl border border-red-100/60 flex items-center gap-3.5 shadow-sm hover:shadow-md transition-shadow">
+                  <div className="p-2.5 bg-prosur-red/10 rounded-lg text-prosur-red">
+                    <Building2 className="w-5.5 h-5.5" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-prosur-gray font-semibold uppercase tracking-wider">Equipos Inscritos</p>
+                    <p className="text-xl font-bold text-gray-900">{totalTeams}</p>
+                  </div>
+                </div>
+
+                <div className="bg-gradient-to-br from-blue-50 to-white p-4 rounded-xl border border-blue-100/60 flex items-center gap-3.5 shadow-sm hover:shadow-md transition-shadow">
+                  <div className="p-2.5 bg-blue-500/10 rounded-lg text-blue-600">
+                    <Lightbulb className="w-5.5 h-5.5" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-prosur-gray font-semibold uppercase tracking-wider">Alcances Entregados</p>
+                    <p className="text-xl font-bold text-gray-900">{totalScopes}</p>
+                  </div>
+                </div>
+
+                <div className="bg-gradient-to-br from-green-50 to-white p-4 rounded-xl border border-green-100/60 flex items-center gap-3.5 shadow-sm hover:shadow-md transition-shadow">
+                  <div className="p-2.5 bg-green-500/10 rounded-lg text-green-600">
+                    <TrendingUp className="w-5.5 h-5.5" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-prosur-gray font-semibold uppercase tracking-wider">Empresas Participantes</p>
+                    <p className="text-xl font-bold text-gray-900">{uniqueCompanies}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Search & Filters */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <div className="relative">
+                  <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                    <Search className="h-4.5 w-4.5" />
+                  </span>
+                  <input
+                    type="text"
+                    placeholder="Buscar equipo, proyecto o área..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-9 pr-8 py-2 w-full rounded-lg border border-gray-300 bg-white/80 shadow-sm focus:border-prosur-red focus:ring-prosur-red text-sm"
+                  />
+                  {searchTerm && (
+                    <button
+                      onClick={() => setSearchTerm('')}
+                      className="absolute inset-y-0 right-0 pr-2.5 flex items-center text-gray-400 hover:text-gray-600"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  )}
+                </div>
+
+                <div>
+                  <select
+                    value={selectedCompany}
+                    onChange={(e) => setSelectedCompany(e.target.value)}
+                    className="w-full rounded-lg border border-gray-300 bg-white/80 py-2 px-3 shadow-sm focus:border-prosur-red focus:ring-prosur-red text-sm"
+                  >
+                    <option value="">Todas las Empresas</option>
+                    {allCompanies.map(c => (
+                      <option key={c} value={c}>{c}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <select
+                    value={selectedDepartment}
+                    onChange={(e) => setSelectedDepartment(e.target.value)}
+                    className="w-full rounded-lg border border-gray-300 bg-white/80 py-2 px-3 shadow-sm focus:border-prosur-red focus:ring-prosur-red text-sm"
+                  >
+                    <option value="">Todas las Áreas</option>
+                    {allDepartments.map(d => (
+                      <option key={d} value={d}>{d}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {/* Cards Grid */}
+              {filteredRegistrations.length === 0 ? (
+                <div className="text-center py-12 bg-gray-50 border border-dashed border-gray-300 rounded-2xl">
+                  <AlertCircle className="mx-auto h-12 w-12 text-gray-400 mb-3" />
+                  <p className="text-base text-gray-600 font-semibold">No se encontraron proyectos registrados</p>
+                  <p className="text-sm text-gray-400 mt-1">Prueba a ajustar tus filtros de búsqueda.</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {filteredRegistrations.map((reg, idx) => (
+                    <div 
+                      key={idx}
+                      className="group relative bg-white/70 hover:bg-white rounded-xl border border-gray-200/80 hover:border-prosur-red/20 shadow-sm hover:shadow-md transition-all duration-300 p-5 flex flex-col justify-between overflow-hidden"
+                    >
+                      <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-prosur-red to-red-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+                      
+                      <div>
+                        <div className="flex justify-between items-center gap-2 mb-3">
+                          <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold ${
+                            reg.status === 'scope_submitted' 
+                              ? 'bg-green-50 text-green-700 border border-green-200' 
+                              : 'bg-amber-50 text-amber-800 border border-amber-200'
+                          }`}>
+                            {reg.status === 'scope_submitted' ? 'Alcance Entregado' : 'Solo Registro'}
+                          </span>
+                          <span className="text-xs font-medium text-gray-600 bg-gray-100/90 px-2 py-0.5 rounded-md border border-gray-200/50">
+                            {reg.company}
+                          </span>
+                        </div>
+
+                        <h4 className="text-lg font-bold text-gray-900 mb-1 leading-snug group-hover:text-prosur-red transition-colors">
+                          {reg.projectName || `Equipo: ${reg.teamName}`}
+                        </h4>
+                        
+                        <p className="text-xs text-prosur-gray mb-3.5 font-medium">
+                          Área: <span className="text-gray-700 font-semibold">{reg.department}</span>
+                        </p>
+
+                        <div className="text-sm text-gray-600 line-clamp-3 mb-4">
+                          {reg.status === 'scope_submitted' ? (
+                            <>
+                              <span className="text-xs font-bold text-gray-400 block uppercase tracking-wider mb-0.5">Solución IA</span>
+                              {reg.solution}
+                            </>
+                          ) : (
+                            <>
+                              <span className="text-xs font-bold text-gray-400 block uppercase tracking-wider mb-0.5">Desafío / Problema</span>
+                              {reg.painPoint}
+                            </>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="pt-3 border-t border-gray-100 flex items-center justify-between">
+                        <span className="text-xs text-gray-500 font-medium">
+                          {reg.status === 'scope_submitted' ? 'Fase 2 Completada' : 'Fase 1 Completada'}
+                        </span>
+                        
+                        <button
+                          onClick={() => setSelectedReg(reg)}
+                          className="inline-flex items-center gap-1 text-sm font-semibold text-prosur-red hover:text-red-700 transition-colors"
+                        >
+                          <Eye className="w-4 h-4" />
+                          Ver detalles
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Modal Component */}
+              {selectedReg && (
+                <div 
+                  className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs transition-opacity"
+                  role="dialog"
+                  aria-modal="true"
+                  onClick={() => setSelectedReg(null)}
+                >
+                  <div 
+                    className="relative bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-gray-100 p-6 sm:p-8 animate-in fade-in zoom-in-95 duration-200"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <button
+                      onClick={() => setSelectedReg(null)}
+                      className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 p-1.5 rounded-full hover:bg-gray-100 transition-colors"
+                      aria-label="Cerrar detalles"
+                    >
+                      <X className="w-5.5 h-5.5" />
+                    </button>
+
+                    <div className="mb-6">
+                      <div className="flex flex-wrap items-center gap-2 mb-2">
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${
+                          selectedReg.status === 'scope_submitted' 
+                            ? 'bg-green-50 text-green-700 border border-green-200' 
+                            : 'bg-amber-50 text-amber-800 border border-amber-200'
+                        }`}>
+                          {selectedReg.status === 'scope_submitted' ? 'Alcance Entregado' : 'Solo Registro'}
+                        </span>
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-800 border border-gray-200">
+                          {selectedReg.company}
+                        </span>
+                      </div>
+                      <h3 className="text-xl sm:text-2xl font-extrabold text-gray-900 leading-tight">
+                        {selectedReg.projectName || 'Registro de Equipo'}
+                      </h3>
+                      <p className="text-sm text-prosur-gray mt-1 font-medium">
+                        Presentado por el equipo <strong className="text-gray-800 font-semibold">{selectedReg.teamName}</strong> (Colaborador ID: {selectedReg.employeeId || 'N/A'})
+                      </p>
+                    </div>
+
+                    <div className="space-y-6">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-gray-50 p-4 rounded-xl border border-gray-200/50">
+                        <div>
+                          <p className="text-xs text-gray-400 font-bold uppercase tracking-wider">Área o Departamento</p>
+                          <p className="text-sm text-gray-800 font-semibold mt-0.5">{selectedReg.department}</p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-gray-400 font-bold uppercase tracking-wider">Integrantes del Equipo</p>
+                          <p className="text-sm text-gray-850 font-semibold mt-0.5 whitespace-pre-line">{selectedReg.members || 'No especificados'}</p>
+                        </div>
+                      </div>
+
+                      <div>
+                        <h4 className="text-sm font-bold text-gray-800 uppercase tracking-wider mb-2.5 flex items-center gap-1.5 border-b pb-1 border-gray-100">
+                          <AlertCircle className="w-4 h-4 text-prosur-red" />
+                          Situación Actual / El Problema
+                        </h4>
+                        <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-line bg-red-50/10 p-3 rounded-lg border border-red-500/5">
+                          {selectedReg.diagnosis || selectedReg.painPoint || 'Sin descripción detallada del problema.'}
+                        </p>
+                      </div>
+
+                      {selectedReg.status === 'scope_submitted' && (
+                        <>
+                          <div>
+                            <h4 className="text-sm font-bold text-gray-800 uppercase tracking-wider mb-2.5 flex items-center gap-1.5 border-b pb-1 border-gray-100">
+                              <Lightbulb className="w-4 h-4 text-blue-500" />
+                              La Solución Propuesta (Inteligencia Artificial)
+                            </h4>
+                            <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-line bg-blue-50/10 p-3 rounded-lg border border-blue-500/5">
+                              {selectedReg.solution}
+                            </p>
+                          </div>
+
+                          <div>
+                            <h4 className="text-sm font-bold text-gray-800 uppercase tracking-wider mb-2.5 flex items-center gap-1.5 border-b pb-1 border-gray-100">
+                              <TrendingUp className="w-4 h-4 text-green-500" />
+                              Métrica de Éxito
+                            </h4>
+                            <p className="text-sm text-gray-600 leading-relaxed bg-green-50/10 p-3 rounded-lg border border-green-500/5">
+                              {selectedReg.metric}
+                            </p>
+                          </div>
+                        </>
+                      )}
+
+                      {selectedReg.status !== 'scope_submitted' && (
+                        <div className="bg-amber-50 rounded-xl p-4 border border-amber-200/70 flex items-start gap-3">
+                          <AlertCircle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                          <div>
+                            <p className="text-sm font-bold text-amber-800">¡Alcance del Proyecto Pendiente!</p>
+                            <p className="text-xs text-amber-700 mt-1 leading-relaxed">
+                              Este equipo completó el Registro Rápido con éxito, pero aún no ha entregado los detalles técnicos de su solución de IA. Si formas parte de este equipo, dirígete a la pestaña **Entrega de Alcance** para completar el envío.
+                            </p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="mt-8 pt-4 border-t border-gray-200 flex justify-end">
+                      <button
+                        onClick={() => setSelectedReg(null)}
+                        className="px-5 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 text-sm font-semibold rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300"
+                      >
+                        Cerrar
+                      </button>
+                    </div>
+                  </div>
+                </div>
               )}
             </div>
 
