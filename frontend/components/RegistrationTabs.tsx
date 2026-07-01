@@ -14,83 +14,158 @@ import {
 } from 'lucide-react';
 
 // =========================================================================
-// MOCK DATA FOR GRUPO PROSUR INNOVATION PROJECTS
+// SIMPLE ROBUST CSV PARSER FOR GOOGLE SHEETS EXPORTS
+// =========================================================================
+function parseCSV(text: string): string[][] {
+  const result: string[][] = [];
+  let row: string[] = [];
+  let currentVal = '';
+  let inQuotes = false;
+  
+  for (let i = 0; i < text.length; i++) {
+    const char = text[i];
+    const nextChar = text[i + 1];
+    
+    if (inQuotes) {
+      if (char === '"') {
+        if (nextChar === '"') {
+          currentVal += '"';
+          i++; // skip next quote
+        } else {
+          inQuotes = false;
+        }
+      } else {
+        currentVal += char;
+      }
+    } else {
+      if (char === '"') {
+        inQuotes = true;
+      } else if (char === ',') {
+        row.push(currentVal);
+        currentVal = '';
+      } else if (char === '\r') {
+        // ignore
+      } else if (char === '\n') {
+        row.push(currentVal);
+        result.push(row);
+        row = [];
+        currentVal = '';
+      } else {
+        currentVal += char;
+      }
+    }
+  }
+  
+  if (row.length > 0 || currentVal) {
+    row.push(currentVal);
+    result.push(row);
+  }
+  
+  return result;
+}
+
+// =========================================================================
+// REAL DATA FALLBACK (FROM THE REGISTERED SHEET)
 // =========================================================================
 const INITIAL_MOCK_TEAMS = [
   {
-    teamName: "Logística Inteligente",
-    employeeId: "10987",
-    company: "Grupo Chesa",
-    department: "Logística",
-    members: "Ana Martínez, Carlos Gómez, Laura Rivas",
-    painPoint: "Retrasos en la consolidación de cargas y asignación de transportistas, requiriendo 3 horas diarias de cálculo manual."
-  },
-  {
-    teamName: "Almacén 5 Estrellas",
-    employeeId: "20541",
-    company: "5 Pinos",
-    department: "Almacén y Compras",
-    members: "David Pérez, Sofía Castro",
-    painPoint: "Exceso de stock en productos perecederos y quiebres de stock en temporada alta debido a predicciones basadas en intuición."
-  },
-  {
-    teamName: "Ventas Pro",
-    employeeId: "30221",
+    teamName: "Procesos",
+    employeeId: "180109",
     company: "Calzamoda",
-    department: "Servicio al Cliente",
-    members: "Javier López, Maria Ortiz, Andrés Salazar",
-    painPoint: "Saturación del canal de soporte por dudas recurrentes de clientes sobre tallas, envíos y devoluciones."
+    department: "Auditoria y Procesos",
+    members: "Diego López Guzmán",
+    painPoint: "La planeación de compras en la empresa RIO VINYL DE MEXICO se realiza mediante procesos manuales que consolidan información de diversas fuentes extraídas del sistema ERP (Microsip) y requieren validaciones fuera del sistema."
   },
   {
-    teamName: "Fintech Prosur",
-    employeeId: "40112",
+    teamName: "T-800",
+    employeeId: "230788",
     company: "CaFi",
-    department: "Tesorería",
-    members: "Diana Fuentes, Rodrigo Soto",
-    painPoint: "Conciliación manual de cientos de facturas y depósitos diarios, lo que toma la mitad de la jornada laboral de un analista."
+    department: "Marketing",
+    members: "Oswaldo Rafael Hernández Rodríguez",
+    painPoint: "Actualmente, el proceso de asignación de leads se realiza de manera manual. Para ello, es necesario extraer la información de los prospectos y copiarla a una hoja de cálculo de Excel."
   },
   {
-    teamName: "Equipo HR-AI",
-    employeeId: "50889",
-    company: "Grupo Prosur",
-    department: "Recursos Humanos",
-    members: "Gabriela Luna, Roberto Díaz",
-    painPoint: "Filtrado manual de cientos de currículums para múltiples vacantes operativas, ralentizando el proceso de contratación."
+    teamName: "Impulso Inteligente",
+    employeeId: "110941",
+    company: "Grupo Chesa",
+    department: "BDC",
+    members: "Angel Francisco Lievano Trejo",
+    painPoint: "En el BDC manejamos información de varias fuentes (DMS, CRM, PROSUR, SIMA) de cada agencia y de las tres marcas. Cada sistema entrega un formato distinto."
+  },
+  {
+    teamName: "TEAM AMOS",
+    employeeId: "180081",
+    company: "CaFi",
+    department: "OPERATIVA - COMERCIAL",
+    members: "ANGELINA ASUNSUNCION DIAZ HERNANDEZ, MONTSERRAT SANDOVAL ZEPEDA, OSWALDO RAFAEL HERNANDEZ RODRIGUEZ, MAYRA BERENICE MONTOYA GARCIA",
+    painPoint: "El proceso de contacto al cliente de renovación de seguros es tardado."
+  },
+  {
+    teamName: "AI",
+    employeeId: "1",
+    company: "Grupo Chesa",
+    department: "MANTENIMIENTO",
+    members: "RICARDO CASTILLEJA DELGADO",
+    painPoint: "1.-Reloj checador desactualizado. Actividades de Bitácora repetitivas, horarios apretados y fuera de realidades. Mejora en la revision de unidades en horario nocturno."
+  },
+  {
+    teamName: "IA conec",
+    employeeId: "280257",
+    company: "Grupo Chesa",
+    department: "Ventas",
+    members: "Erick jhovanny zebadua cerda, Ibis Velez Morales",
+    painPoint: "Tareas repetitivas que consumen tiempo: Redactar desde cero mensajes de WhatsApp para cada prospecto y clasificar manualmente quién está frío, tibio o caliente."
   }
 ];
 
 const INITIAL_MOCK_PROJECTS = [
   {
-    teamName: "Logística Inteligente",
-    employeeId: "10987",
-    projectName: "Proyecto ChesaIA",
-    diagnosis: "La asignación manual de rutas y transportes genera ineficiencias de costo y demoras de hasta 3 horas diarias.",
-    solution: "Un modelo de recomendación de IA que analiza rutas históricas, costos y disponibilidad para sugerir la combinación óptima.",
-    metric: "Reducción del 25% en tiempos de asignación y 10% en costos de flete."
+    teamName: "Procesos",
+    employeeId: "180109",
+    projectName: "Resurtido_compras_rv",
+    diagnosis: "La planeación de compras en la empresa RIO VINYL DE MEXICO requiere la extracción, validación y consolidación manual de información desde el ERP (Microsip) hacia herramientas externas como hojas de cálculo.",
+    solution: "Se creará un sistema que ejecutará automáticamente todo el proceso de planeación al inicio de cada mes. Adicionalmente, la persona encargada podrá solicitarlo enviando un correo.",
+    metric: "Tiempo por ciclo: de 4 horas a menos de 10 minutos. Errores de cálculo: de variable a cero."
   },
   {
-    teamName: "Almacén 5 Estrellas",
-    employeeId: "20541",
-    projectName: "Predictor de Demanda",
-    diagnosis: "Merma del 8% en productos perecederos por compras excesivas e inexactas.",
-    solution: "Algoritmo de predicción de series temporales que integra estacionalidad y clima para proponer órdenes de reorden inteligentes.",
-    metric: "Reducción de merma en un 15% y optimización del flujo de caja."
+    teamName: "T-800",
+    employeeId: "230788",
+    projectName: "Automatización de captura, asignación de leads y atención de prospectos",
+    diagnosis: "Actualmente, el proceso de asignación de leads se realiza de manera manual. Este procedimiento depende completamente de la intervención humana, lo que genera una carga operativa considerable.",
+    solution: "Se propone implementar una automatización integrada entre Kommo, Google Sheet y agentes de IA de Eleven Labs mediante herramientas de automatización de procesos (n8n o make).",
+    metric: "Automatizar el 100% de la asignación de leads y ahorrar al menos 20 horas de trabajo semanales."
   },
   {
-    teamName: "Ventas Pro",
-    employeeId: "30221",
-    projectName: "CalzaChat Client",
-    diagnosis: "Soporte saturado por preguntas repetitivas de clientes finales.",
-    solution: "Un chatbot basado en LLM (Vertex AI) que responde preguntas sobre inventario, tallas y envíos de forma natural y segura.",
-    metric: "Resolución autónoma del 60% de consultas iniciales."
+    teamName: "Impulso Inteligente",
+    employeeId: "110941",
+    projectName: "PULSO BDC Servicio",
+    diagnosis: "En el BDC utilizamos información de varias fuentes (DMS, CRM, PROSUR, SIMA). Hoy esto nos consume alrededor de 12 horas-persona por semana, genera errores de captura y cuando el tablero está listo, la información ya envejeció.",
+    solution: "Un tablero que reciba uno o varios Excel de cualquier sucursal o fuente, detecte automáticamente el tipo de reporte, estandarice los encabezados y deduzca la marca a partir del VIN.",
+    metric: "Horas-persona ahorradas por semana en consolidación y clasificación (de 12 horas a 1 hora por corte)."
   },
   {
-    teamName: "Fintech Prosur",
-    employeeId: "40112",
-    projectName: "Auto-Conciliación CaFi",
-    diagnosis: "Horas perdidas buscando correspondencia entre transferencias bancarias y facturas de clientes.",
-    solution: "Un software con NLP que lee extractos bancarios y asocia automáticamente con el sistema de facturación.",
-    metric: "Ahorro de 18 horas semanales y 99% de precisión."
+    teamName: "TEAM AMOS",
+    employeeId: "180081",
+    projectName: "automatización de adquisición de seguros",
+    diagnosis: "Proceso tardado para contactar al cliente para el otorgamiento para la renovación de pólizas de seguro.",
+    solution: "Con ayuda de la IA se pretende disminuir considerablemente los tiempos de respuesta y contacto a cliente para la renovación de las pólizas de seguro.",
+    metric: "Ahorro en procesos de autorización de la pólizas de seguro y contacto al cliente."
+  },
+  {
+    teamName: "AI",
+    employeeId: "1",
+    projectName: "Implementacion de calidad (tiempo, procesos y revision)",
+    diagnosis: "El reloj checador tiene asincronia con la hora actual. Los procesos de bitacora, evaluacion y calidad no tienen distribucion logica. La revision de unidades nocturnas tiene areas de oportunidad.",
+    solution: "Sincronización NTP (Network Time Protocol) automática de biométricos con servidores oficiales. Asistente IA para auditorías cruzadas. Escáner fotográfico de daños nocturno con visión por computadora.",
+    metric: "Resultados inmediatos, prácticos, 100% verificables y reducción drástica de tiempos muertos."
+  },
+  {
+    teamName: "IA conec",
+    employeeId: "280257",
+    projectName: "IA conec",
+    diagnosis: "El asesor divide gran parte de su tiempo redactando mensajes de seguimiento desde cero para ~200 contactos.",
+    solution: "Un asistente de IA que clasifica automáticamente a cada prospecto según respuestas de WhatsApp y genera mensajes de seguimiento personalizados por modelo.",
+    metric: "Tiempo de redacción: de 5-8 min a < 1 min. Prospectos atendidos: de 15-20 a la cartera completa priorizada. Ahorro de 1 a 2 horas diarias."
   }
 ];
 
@@ -154,10 +229,7 @@ export default function RegistrationTabs() {
   const [selectedDepartment, setSelectedDepartment] = useState('');
   const [selectedReg, setSelectedReg] = useState<any | null>(null);
 
-  // Load registered teams and projects from sheet and localStorage
-  const fetchTeamsAndProjects = async () => {
-    setIsLoadingTeams(true);
-    
+  const loadFromLocalStorage = () => {
     // Load local projects
     const localProjectsString = localStorage.getItem('prosur_registered_projects');
     if (localProjectsString) {
@@ -169,50 +241,117 @@ export default function RegistrationTabs() {
       } catch (err) {}
     }
 
+    // Load local teams
+    const teams = localStorage.getItem('prosur_registered_teams');
+    if (teams) {
+      try {
+        const parsed = JSON.parse(teams);
+        if (Array.isArray(parsed)) {
+          const mapped = parsed.map((item: any) => {
+            if (typeof item === 'string') {
+              return {
+                teamName: item,
+                employeeId: '',
+                company: '',
+                department: ''
+              };
+            }
+            return item;
+          });
+          setRegisteredTeams(mapped);
+        }
+      } catch (err) {}
+    }
+  };
+
+  // Load registered teams and projects from Google Sheet CSV or fallback local proxy
+  const fetchTeamsAndProjects = async () => {
+    setIsLoadingTeams(true);
+    
+    // Load local storage first
+    loadFromLocalStorage();
+
     try {
-      const response = await fetch(GOOGLE_SCRIPT_URL);
-      if (!response.ok) throw new Error("HTTP error " + response.status);
-      const data = await response.json();
-      if (Array.isArray(data)) {
-        setRegisteredTeams(data);
-        if (data.length > 0 && !isManualTeam) {
-          setF2Data(prev => ({
-            ...prev,
-            teamName: data[0].teamName,
-            employeeId: data[0].employeeId
-          }));
+      let csvText = '';
+      
+      try {
+        // Try direct fetch first
+        const response = await fetch("https://docs.google.com/spreadsheets/d/1EtwmDT0nwUhMTXTPTQsHRdWWi-ehLgib3dBwpXUp0Nc/export?format=csv&gid=362040753");
+        if (response.ok) {
+          csvText = await response.text();
+        } else {
+          throw new Error("Direct fetch returned not OK");
+        }
+      } catch (e) {
+        console.log("Direct spreadsheet fetch failed or CORS blocked. Trying local sheet proxy...");
+        const response = await fetch("/sheet-proxy");
+        if (!response.ok) throw new Error("Proxy fetch returned not OK");
+        csvText = await response.text();
+      }
+
+      if (csvText) {
+        const parsedRows = parseCSV(csvText);
+        
+        // Find header row by searching for "nombre del equipo"
+        const headerIndex = parsedRows.findIndex(row => row[0] && row[0].toLowerCase().includes("nombre del equipo"));
+        
+        if (headerIndex !== -1) {
+          const dataRows = parsedRows.slice(headerIndex + 1);
+          
+          const teams: RegisteredTeam[] = [];
+          const projects: RegisteredProject[] = [];
+          
+          dataRows.forEach(row => {
+            if (!row[0] || !row[0].trim()) return; // skip empty rows
+            
+            const teamName = row[0].trim();
+            const employeeId = (row[1] || '').trim();
+            const company = (row[2] || '').trim();
+            const department = (row[3] || '').trim();
+            const members = (row[4] || '').trim();
+            const painPoint = (row[5] || '').trim();
+            
+            teams.push({
+              teamName,
+              employeeId,
+              company,
+              department,
+              members,
+              painPoint
+            });
+            
+            const projectName = (row[6] || '').trim();
+            const diagnosis = (row[7] || '').trim();
+            const solution = (row[8] || '').trim();
+            const metric = (row[9] || '').trim();
+            
+            if (projectName) {
+              projects.push({
+                teamName,
+                employeeId,
+                projectName,
+                diagnosis,
+                solution,
+                metric
+              });
+            }
+          });
+          
+          setRegisteredTeams(teams);
+          setRegisteredProjects(projects);
+          
+          // Pre-select in Form 2
+          if (teams.length > 0 && !isManualTeam) {
+            setF2Data(prev => ({
+              ...prev,
+              teamName: prev.teamName || teams[0].teamName,
+              employeeId: prev.employeeId || teams[0].employeeId
+            }));
+          }
         }
       }
     } catch (e) {
-      console.error("Error al obtener equipos de Google Sheet:", e);
-      // Fallback a localStorage
-      const teams = localStorage.getItem('prosur_registered_teams');
-      if (teams) {
-        try {
-          const parsed = JSON.parse(teams);
-          if (Array.isArray(parsed)) {
-            const mapped = parsed.map((item: any) => {
-              if (typeof item === 'string') {
-                return {
-                  teamName: item,
-                  employeeId: '',
-                  company: '',
-                  department: ''
-                };
-              }
-              return item;
-            });
-            setRegisteredTeams(mapped);
-            if (mapped.length > 0 && !isManualTeam) {
-              setF2Data(prev => ({
-                ...prev,
-                teamName: mapped[0].teamName,
-                employeeId: mapped[0].employeeId || ''
-              }));
-            }
-          }
-        } catch (err) {}
-      }
+      console.error("Error al obtener datos reales de Google Sheet:", e);
     } finally {
       setIsLoadingTeams(false);
     }
@@ -242,7 +381,7 @@ export default function RegistrationTabs() {
   const getUnifiedRegistrations = () => {
     const teamsMap = new Map<string, RegisteredTeam>();
 
-    // 1. Mock teams
+    // 1. Mock teams (Real data fallback)
     INITIAL_MOCK_TEAMS.forEach(team => {
       teamsMap.set(team.teamName.toLowerCase(), team);
     });
@@ -257,7 +396,7 @@ export default function RegistrationTabs() {
 
     const projectsMap = new Map<string, RegisteredProject>();
 
-    // 1. Mock projects
+    // 1. Mock projects (Real data fallback)
     INITIAL_MOCK_PROJECTS.forEach(proj => {
       projectsMap.set(proj.teamName.toLowerCase(), proj);
     });
@@ -1045,7 +1184,7 @@ export default function RegistrationTabs() {
                   </div>
                   <div>
                     <p className="text-xs text-prosur-gray font-semibold uppercase tracking-wider">Alcances Entregados</p>
-                    <p className="text-xl font-bold text-gray-900">{totalScopes}</p>
+                    <p className="text-xl font-bold text-gray-950">{totalScopes}</p>
                   </div>
                 </div>
 

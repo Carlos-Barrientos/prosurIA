@@ -323,6 +323,26 @@ app.post('/api-proxy', async (req, res) => {
   }
 });
 
+// --- Google Sheet Proxy Endpoint ---
+app.get('/sheet-proxy', async (req, res) => {
+  try {
+    const csvUrl = "https://docs.google.com/spreadsheets/d/1EtwmDT0nwUhMTXTPTQsHRdWWi-ehLgib3dBwpXUp0Nc/export?format=csv&gid=362040753";
+    console.log(`[Node Proxy] Fetching Google Sheet CSV from: ${csvUrl}`);
+    const response = await fetch(csvUrl);
+    if (!response.ok) throw new Error("HTTP error " + response.status);
+    const csvText = await response.text();
+    
+    // Enable CORS
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.send(csvText);
+  } catch (error) {
+    console.error("[Node Proxy] Error proxying Google Sheet:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+
 const server = app.listen(PORT, API_BACKEND_HOST, () => {
   console.log(`Vertex AI Backend listening at http://localhost:${PORT}`);
 });
