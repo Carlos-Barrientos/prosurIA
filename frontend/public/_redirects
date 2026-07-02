@@ -1,0 +1,6 @@
+# Redirecciones para conectar el frontend de Netlify con el backend de Render
+# Reemplaza "https://TU-URL-DEL-BACKEND.onrender.com" por la URL real que te de Render.
+
+/sheet-proxy*  https://TU-URL-DEL-BACKEND.onrender.com/sheet-proxy/:splat  200
+/api-proxy*    https://TU-URL-DEL-BACKEND.onrender.com/api-proxy/:splat    200
+/ws-proxy*     wss://TU-URL-DEL-BACKEND.onrender.com/ws-proxy/:splat       200
