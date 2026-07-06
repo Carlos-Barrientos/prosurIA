@@ -172,23 +172,14 @@ const INITIAL_MOCK_PROJECTS = [
 ];
 
 export default function RegistrationTabs() {
-  const [activeTab, setActiveTab] = useState<'registro' | 'alcance' | 'proyectos'>('registro');
+  const [activeTab, setActiveTab] = useState<'alcance' | 'proyectos'>('alcance');
   
   // =========================================================================
   // URL DE GOOGLE APPS SCRIPT INTEGRADA
   // =========================================================================
   const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw2AEEjvF-fUKop_Ai1pVshkpjcvGXE--YkmX_qHxYwqyG7dVkCq3v-thEwWSWsVp8r/exec";
   
-  // Form 1 State
-  const [f1Data, setF1Data] = useState({
-    teamName: '',
-    employeeId: '',
-    company: '',
-    department: '',
-    members: '',
-    painPoint: ''
-  });
-  const [f1Status, setF1Status] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
+
 
   // Form 2 State
   const [f2Data, setF2Data] = useState({
@@ -431,19 +422,17 @@ export default function RegistrationTabs() {
 
   // Fetch teams again whenever the active tab changes
   useEffect(() => {
-    if (activeTab === 'alcance' || activeTab === 'proyectos') {
-      fetchTeamsAndProjects();
-    }
+    fetchTeamsAndProjects();
   }, [activeTab]);
 
   const successRef = useRef<HTMLDivElement>(null);
 
   // Focus management for accessibility on success
   useEffect(() => {
-    if ((f1Status === 'success' || f2Status === 'success') && successRef.current) {
+    if (f2Status === 'success' && successRef.current) {
       successRef.current.focus();
     }
-  }, [f1Status, f2Status]);
+  }, [f2Status]);
 
   // Combine Mock + API + LocalStorage registrations
   const getUnifiedRegistrations = () => {
@@ -536,77 +525,6 @@ export default function RegistrationTabs() {
     return Array.from(teamsMap.values()).sort((a, b) => a.teamName.localeCompare(b.teamName));
   };
 
-  const handleF1Submit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setF1Status('submitting');
-
-    try {
-      // Envío real a Google Sheets
-      await fetch(GOOGLE_SCRIPT_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          formType: 'registro',
-          ...f1Data
-        })
-      });
-
-      // Guardar el equipo registrado localmente (completo)
-      const newTeamObj: RegisteredTeam = {
-        teamName: f1Data.teamName.trim(),
-        employeeId: f1Data.employeeId.trim(),
-        company: f1Data.company,
-        department: f1Data.department,
-        members: f1Data.members,
-        painPoint: f1Data.painPoint
-      };
-      
-      const localTeamsString = localStorage.getItem('prosur_registered_teams');
-      let localTeamsList: any[] = [];
-      if (localTeamsString) {
-        try {
-          localTeamsList = JSON.parse(localTeamsString);
-        } catch (err) {}
-      }
-      
-      // Filter out duplicate
-      localTeamsList = localTeamsList.filter(t => {
-        const name = typeof t === 'string' ? t : t.teamName;
-        return name.toLowerCase() !== newTeamObj.teamName.toLowerCase();
-      });
-      localTeamsList.push(newTeamObj);
-      localStorage.setItem('prosur_registered_teams', JSON.stringify(localTeamsList));
-
-      setRegisteredTeams(prev => {
-        const exists = prev.some(t => t.teamName.toLowerCase() === newTeamObj.teamName.toLowerCase());
-        if (!exists) {
-          return [...prev, newTeamObj];
-        }
-        return prev.map(t => t.teamName.toLowerCase() === newTeamObj.teamName.toLowerCase() ? newTeamObj : t);
-      });
-
-      // Pre-seleccionar en Form 2
-      setF2Data(prev => ({ 
-        ...prev, 
-        teamName: newTeamObj.teamName,
-        employeeId: newTeamObj.employeeId
-      }));
-      setIsManualTeam(false);
-
-      setF1Status('success');
-      setF1Data({ teamName: '', employeeId: '', company: '', department: '', members: '', painPoint: '' });
-      setTimeout(() => setF1Status('idle'), 8000);
-
-    } catch (error) {
-      console.error("Error al enviar:", error);
-      setF1Status('error');
-      setTimeout(() => setF1Status('idle'), 5000);
-    }
-  };
-
   const handleF2Submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setF2Status('submitting');
@@ -676,9 +594,8 @@ export default function RegistrationTabs() {
     }
   };
 
-  const handleTabChange = (tab: 'registro' | 'alcance' | 'proyectos') => {
+  const handleTabChange = (tab: 'alcance' | 'proyectos') => {
     setActiveTab(tab);
-    setF1Status('idle');
     setF2Status('idle');
   };
 
@@ -748,7 +665,7 @@ export default function RegistrationTabs() {
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-gray-900 mb-4">Participa en el Reto</h2>
           <p className="text-lg text-prosur-gray">
-            Completa tu registro inicial, envía el alcance de tu proyecto o explora los proyectos participantes.
+            Envía el alcance de tu proyecto o explora los proyectos participantes.
           </p>
         </div>
 
@@ -759,25 +676,6 @@ export default function RegistrationTabs() {
             role="tablist" 
             aria-label="Formularios de participación"
           >
-            <button
-              role="tab"
-              aria-selected={activeTab === 'registro'}
-              aria-controls="panel-registro"
-              id="tab-registro"
-              onClick={() => handleTabChange('registro')}
-              className={`flex-1 py-4 px-6 text-center font-medium text-sm sm:text-base transition-colors focus:outline-none focus:ring-2 focus:ring-inset focus:ring-prosur-red ${
-                activeTab === 'registro' 
-                  ? 'border-b-2 border-prosur-red text-prosur-red bg-red-50/50' 
-                  : 'text-prosur-gray hover:text-gray-700 hover:bg-gray-50/50'
-              }`}
-            >
-              <span className="flex items-center justify-center gap-2">
-                Registro Rápido
-                <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
-                  Activo ahora
-                </span>
-              </span>
-            </button>
             <button
               role="tab"
               aria-selected={activeTab === 'alcance'}
@@ -821,185 +719,7 @@ export default function RegistrationTabs() {
           {/* Tab Panels */}
           <div className="p-6 sm:p-10">
             
-            {/* Panel 1: Registro Rápido */}
-            <div 
-              role="tabpanel" 
-              id="panel-registro" 
-              aria-labelledby="tab-registro"
-              hidden={activeTab !== 'registro'}
-            >
-              {f1Status === 'success' ? (
-                <div 
-                  ref={successRef}
-                  tabIndex={-1}
-                  className="rounded-lg bg-green-50 p-6 border border-green-200 text-center focus:outline-none"
-                  aria-live="polite"
-                >
-                  <CheckCircle2 className="mx-auto h-12 w-12 text-green-500 mb-4" aria-hidden="true" />
-                  <h3 className="text-lg font-medium text-green-800 mb-2">¡Registro exitoso!</h3>
-                  <p className="text-green-700">Tu equipo ha sido inscrito correctamente. Prepárense para innovar.</p>
-                  <div className="mt-6 flex flex-wrap justify-center gap-4">
-                    <button 
-                      onClick={() => setF1Status('idle')}
-                      className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-green-700 bg-green-100 hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors"
-                    >
-                      Registrar otro equipo
-                    </button>
-                    <button 
-                      onClick={() => {
-                        setF1Status('idle');
-                        setActiveTab('alcance');
-                      }}
-                      className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-prosur-red hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-prosur-red transition-all hover:scale-[1.02]"
-                    >
-                      Completar entrega de alcance
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <form onSubmit={handleF1Submit} className="space-y-6" noValidate={false}>
-                  {f1Status === 'error' && (
-                    <div className="rounded-md bg-red-50 p-4 border border-red-200">
-                      <p className="text-sm text-red-700">Hubo un error al enviar el formulario. Por favor, intenta de nuevo.</p>
-                    </div>
-                  )}
-                  
-                  <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                    <div>
-                      <label htmlFor="teamName" className={labelClasses}>Nombre del equipo <span className="text-prosur-red" aria-hidden="true">*</span></label>
-                      <input
-                        type="text"
-                        id="teamName"
-                        name="teamName"
-                        required
-                        value={f1Data.teamName}
-                        onChange={(e) => setF1Data({...f1Data, teamName: e.target.value})}
-                        className={inputClasses}
-                        placeholder="Ej. Los Innovadores"
-                        aria-required="true"
-                        disabled={f1Status === 'submitting'}
-                      />
-                    </div>
 
-                    <div>
-                      <label htmlFor="employeeId" className={labelClasses}>Número de colaborador <span className="text-prosur-red" aria-hidden="true">*</span></label>
-                      <input
-                        type="text"
-                        id="employeeId"
-                        name="employeeId"
-                        required
-                        value={f1Data.employeeId}
-                        onChange={(e) => setF1Data({...f1Data, employeeId: e.target.value})}
-                        className={inputClasses}
-                        placeholder="Ej. 12345"
-                        aria-required="true"
-                        disabled={f1Status === 'submitting'}
-                      />
-                    </div>
-
-                    <div>
-                      <label htmlFor="company" className={labelClasses}>Empresa a la que pertenecen <span className="text-prosur-red" aria-hidden="true">*</span></label>
-                      <select
-                        id="company"
-                        name="company"
-                        required
-                        value={f1Data.company}
-                        onChange={(e) => setF1Data({...f1Data, company: e.target.value})}
-                        className={inputClasses}
-                        aria-required="true"
-                        disabled={f1Status === 'submitting'}
-                      >
-                        <option value="" disabled>Selecciona una empresa</option>
-                        <option value="Grupo Chesa">Grupo Chesa</option>
-                        <option value="5 Pinos">5 Pinos</option>
-                        <option value="Calzamoda">Calzamoda</option>
-                        <option value="CaFi">CaFi</option>
-                        <option value="Grupo Prosur">Grupo Prosur</option>
-                        <option value="Otra">Otra</option>
-                      </select>
-                    </div>
-
-                    <div>
-                      <label htmlFor="department" className={labelClasses}>Área o Departamento <span className="text-prosur-red" aria-hidden="true">*</span></label>
-                      <input
-                        type="text"
-                        id="department"
-                        name="department"
-                        required
-                        value={f1Data.department}
-                        onChange={(e) => setF1Data({...f1Data, department: e.target.value})}
-                        className={inputClasses}
-                        placeholder="Ej. Recursos Humanos"
-                        aria-required="true"
-                        disabled={f1Status === 'submitting'}
-                      />
-                    </div>
-
-                    <div className="sm:col-span-2">
-                      <label htmlFor="members" className={labelClasses}>Nombres de Integrantes <span className="text-prosur-red" aria-hidden="true">*</span></label>
-                      <textarea
-                        id="members"
-                        name="members"
-                        rows={3}
-                        required
-                        value={f1Data.members}
-                        onChange={(e) => setF1Data({...f1Data, members: e.target.value})}
-                        className={inputClasses}
-                        aria-describedby="members-help"
-                        aria-required="true"
-                        disabled={f1Status === 'submitting'}
-                      />
-                      <p id="members-help" className="mt-2 text-sm text-prosur-gray">
-                        Escribe un integrante por línea o separa los nombres con comas.
-                      </p>
-                    </div>
-
-                    <div className="sm:col-span-2">
-                      <label htmlFor="painPoint" className={labelClasses}>¿Qué problema o tarea repetitiva tienen hoy en su área? <span className="text-prosur-red" aria-hidden="true">*</span></label>
-                      <textarea
-                        id="painPoint"
-                        name="painPoint"
-                        rows={4}
-                        required
-                        maxLength={500}
-                        value={f1Data.painPoint}
-                        onChange={(e) => setF1Data({...f1Data, painPoint: e.target.value})}
-                        className={inputClasses}
-                        placeholder="Describe brevemente el problema actual..."
-                        aria-describedby="painPoint-help"
-                        aria-required="true"
-                        disabled={f1Status === 'submitting'}
-                      />
-                      <div className="flex justify-between mt-2">
-                        <p id="painPoint-help" className="text-sm text-prosur-gray">
-                          Describe el problema que intentarán resolver.
-                        </p>
-                        <p className="text-sm text-prosur-gray" aria-live="polite">
-                          {f1Data.painPoint.length}/500
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="pt-4">
-                    <button
-                      type="submit"
-                      disabled={f1Status === 'submitting'}
-                      className="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-md shadow-md text-base font-medium text-white bg-prosur-red hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-prosur-red transition-all hover:scale-[1.02] disabled:opacity-70 disabled:hover:scale-100 disabled:cursor-not-allowed"
-                    >
-                      {f1Status === 'submitting' ? (
-                        <>
-                          <Loader2 className="animate-spin -ml-1 mr-2 h-5 w-5 text-white" />
-                          Enviando registro...
-                        </>
-                      ) : (
-                        'Inscribir a mi equipo'
-                      )}
-                    </button>
-                  </div>
-                </form>
-              )}
-            </div>
 
             {/* Panel 2: Entrega de Alcance */}
             <div 

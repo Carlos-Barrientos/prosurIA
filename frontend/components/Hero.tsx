@@ -25,7 +25,7 @@ export default function Hero() {
               href="#registro" 
               className="w-full sm:w-auto inline-flex justify-center items-center px-8 py-3.5 border border-transparent text-base font-medium rounded-lg text-white bg-prosur-red hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-prosur-red shadow-md transition-all hover:scale-105"
             >
-              Registrar a mi equipo
+              Registrar mi proyecto
               <ArrowRight className="ml-2 -mr-1 w-5 h-5" aria-hidden="true" />
             </a>
             <a 
