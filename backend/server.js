@@ -445,7 +445,7 @@ app.get('/sheet-proxy', async (req, res) => {
 
 
 // Serve index.html for any other route if it exists (Single Page Application fallback)
-app.get('*', (req, res, next) => {
+app.get(/.*/, (req, res, next) => {
   if (req.path.startsWith('/api-proxy') || req.path.startsWith('/sheet-proxy') || req.path.startsWith('/ws-proxy')) {
     return next();
   }
