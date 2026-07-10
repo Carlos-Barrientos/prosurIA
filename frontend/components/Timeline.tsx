@@ -52,6 +52,24 @@ export default function Timeline() {
             ))}
           </div>
         </div>
+
+        {/* Agenda tu sesión banner */}
+        <div className="mt-16 bg-white/80 backdrop-blur-md rounded-2xl p-8 border border-gray-200/60 shadow-lg max-w-3xl mx-auto text-center hover:shadow-xl transition-all">
+          <h3 className="text-2xl font-bold text-gray-900 mb-3 flex items-center justify-center gap-2">
+            <span className="text-prosur-red">📅</span> Agenda tu sesión de Demo
+          </h3>
+          <p className="text-gray-600 mb-6 max-w-xl mx-auto text-sm md:text-base">
+            Las sesiones de demostración (Demo Day) comenzarán a partir del <strong>30 de Julio</strong>. Organízate con tu equipo y agenda tu espacio de 30 minutos para presentar tus avances y la eficiencia operativa lograda.
+          </p>
+          <a
+            href="https://calendly.com/gerencia-mejoracontinua-prosur/30min"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center px-8 py-3.5 border border-transparent text-base font-semibold rounded-lg text-white bg-prosur-red hover:bg-red-700 shadow-md hover:shadow-lg transition-all hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-prosur-red"
+          >
+            Agendar demo en Calendly
+          </a>
+        </div>
       </div>
     </section>
   );
