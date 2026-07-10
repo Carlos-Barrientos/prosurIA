@@ -10,9 +10,16 @@ import { GoogleAuth } from 'google-auth-library';
 import fetch from 'node-fetch';
 import rateLimit from 'express-rate-limit';
 import { WebSocketServer, WebSocket } from 'ws';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import fs from 'fs';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 app.use(express.json({limit: process?.env?.API_PAYLOAD_MAX_SIZE || "7mb"}));
+app.use(express.static(path.join(__dirname, 'public')));
 
 const PORT = process?.env?.PORT || process?.env?.API_BACKEND_PORT || 5000;
 const API_BACKEND_HOST = process?.env?.API_BACKEND_HOST || "0.0.0.0";
@@ -433,6 +440,20 @@ app.get('/sheet-proxy', async (req, res) => {
   } catch (error) {
     console.error("[Node Proxy] Error proxying Google Sheet:", error);
     res.status(500).json({ error: error.message });
+  }
+});
+
+
+// Serve index.html for any other route if it exists (Single Page Application fallback)
+app.get('*', (req, res, next) => {
+  if (req.path.startsWith('/api-proxy') || req.path.startsWith('/sheet-proxy') || req.path.startsWith('/ws-proxy')) {
+    return next();
+  }
+  const indexPath = path.join(__dirname, 'public', 'index.html');
+  if (fs.existsSync(indexPath)) {
+    res.sendFile(indexPath);
+  } else {
+    res.status(404).send('Not Found');
   }
 });
 
