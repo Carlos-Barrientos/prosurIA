@@ -228,6 +228,7 @@ export default function RegistrationTabs() {
   const [selectedCompany, setSelectedCompany] = useState('');
   const [selectedDepartment, setSelectedDepartment] = useState('');
   const [selectedReg, setSelectedReg] = useState<any | null>(null);
+  const [scopeSelectedCompany, setScopeSelectedCompany] = useState<string>('');
 
   const loadFromLocalStorage = () => {
     // Load local projects
@@ -507,8 +508,8 @@ export default function RegistrationTabs() {
     });
   };
 
-  // Get teams list for selection dropdown
-  const getDropdownTeams = () => {
+  // Get all teams that haven't registered their scope yet (raw)
+  const getDropdownTeamsRaw = () => {
     const teamsMap = new Map<string, RegisteredTeam>();
 
     INITIAL_MOCK_TEAMS.forEach(team => {
@@ -522,7 +523,30 @@ export default function RegistrationTabs() {
       });
     });
 
-    return Array.from(teamsMap.values()).sort((a, b) => a.teamName.localeCompare(b.teamName));
+    // Exclude teams that already submitted their scope
+    const projectsMap = new Map<string, any>();
+    INITIAL_MOCK_PROJECTS.forEach(proj => projectsMap.set(proj.teamName.toLowerCase(), proj));
+    registeredProjects.forEach(proj => projectsMap.set(proj.teamName.toLowerCase(), proj));
+
+    return Array.from(teamsMap.values()).filter(t => !projectsMap.has(t.teamName.toLowerCase()));
+  };
+
+  // Get unique companies from teams that haven't registered their scope yet
+  const getScopeCompanies = () => {
+    const unregistered = getDropdownTeamsRaw();
+    return Array.from(new Set(unregistered.map(t => t.company).filter(Boolean))).sort();
+  };
+
+  // Get filtered teams list for selection dropdown
+  const getDropdownTeams = () => {
+    let list = getDropdownTeamsRaw();
+
+    // Filter by company if selected
+    if (scopeSelectedCompany) {
+      list = list.filter(t => t.company === scopeSelectedCompany);
+    }
+
+    return list.sort((a, b) => a.teamName.localeCompare(b.teamName));
   };
 
   const handleF2Submit = async (e: React.FormEvent) => {
@@ -770,17 +794,42 @@ export default function RegistrationTabs() {
                   <div className="grid grid-cols-1 gap-6">
                     {/* Selector de equipo o ingreso manual */}
                     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                      <div className={getDropdownTeams().length > 0 && !isManualTeam ? "sm:col-span-2" : ""}>
+                      {/* Filtrar por empresa */}
+                      {getDropdownTeamsRaw().length > 0 && !isManualTeam && (
+                        <div>
+                          <label htmlFor="scopeCompanyFilter" className={labelClasses}>
+                            Filtrar por Empresa
+                          </label>
+                          <select
+                            id="scopeCompanyFilter"
+                            value={scopeSelectedCompany}
+                            onChange={(e) => {
+                              setScopeSelectedCompany(e.target.value);
+                              // Reset team selection when company filter changes
+                              setF2Data(prev => ({ ...prev, teamName: '', employeeId: '' }));
+                            }}
+                            className={inputClasses}
+                          >
+                            <option value="">Todas las Empresas</option>
+                            {getScopeCompanies().map(c => (
+                              <option key={c} value={c}>{c}</option>
+                            ))}
+                          </select>
+                        </div>
+                      )}
+
+                      <div className={getDropdownTeamsRaw().length > 0 && !isManualTeam ? "" : "sm:col-span-2"}>
                         <div className="flex justify-between items-center mb-1">
                           <label htmlFor="teamName" className="block text-sm font-medium text-gray-700">
                             Equipo participante <span className="text-prosur-red" aria-hidden="true">*</span>
                           </label>
-                          {getDropdownTeams().length > 0 && isManualTeam && (
+                          {getDropdownTeamsRaw().length > 0 && isManualTeam && (
                             <button
                               type="button"
                               onClick={() => {
                                 setIsManualTeam(false);
-                                const dropdown = getDropdownTeams();
+                                setScopeSelectedCompany('');
+                                const dropdown = getDropdownTeamsRaw();
                                 if (dropdown.length > 0) {
                                   setF2Data(prev => ({ 
                                     ...prev, 
@@ -801,7 +850,7 @@ export default function RegistrationTabs() {
                             <Loader2 className="animate-spin h-4 w-4 text-prosur-red" />
                             Cargando lista de equipos...
                           </div>
-                        ) : getDropdownTeams().length > 0 && !isManualTeam ? (
+                        ) : getDropdownTeamsRaw().length > 0 && !isManualTeam ? (
                           <div className="relative">
                             <select
                               id="teamName"
@@ -827,11 +876,14 @@ export default function RegistrationTabs() {
                               disabled={f2Status === 'submitting'}
                             >
                               <option value="" disabled>Selecciona tu equipo</option>
-                              {getDropdownTeams().map((team) => (
-                                <option key={team.teamName} value={team.teamName}>
-                                  {team.teamName} (Colaborador: {team.employeeId || 'N/A'} - {team.department || 'Sin área'})
-                                </option>
-                              ))}
+                              {getDropdownTeams().map((team) => {
+                                const mainMember = team.members ? team.members.split(',')[0].trim() : 'N/A';
+                                return (
+                                  <option key={team.teamName} value={team.teamName}>
+                                    {team.teamName} - {team.department || 'Sin área'} - {mainMember}
+                                  </option>
+                                );
+                              })}
                               <option value="__manual__">✏️ Escribir otro nombre de equipo...</option>
                             </select>
                           </div>
@@ -1278,6 +1330,24 @@ export default function RegistrationTabs() {
                           </div>
                         </div>
                       )}
+
+                      {/* Calendly Booking Button */}
+                      <div className="bg-gradient-to-br from-red-50 to-white rounded-xl p-5 border border-red-100/80 text-center mt-6">
+                        <h4 className="text-base font-bold text-gray-900 mb-1 flex items-center justify-center gap-1.5">
+                          <span className="text-prosur-red">📅</span> Agenda la sesión de demo para {selectedReg.teamName}
+                        </h4>
+                        <p className="text-xs text-gray-600 mb-4">
+                          Las sesiones se llevarán a cabo a partir del 30 de Julio. Reserva tu espacio de 30 minutos para tu equipo.
+                        </p>
+                        <a
+                          href={`https://calendly.com/gerencia-mejoracontinua-prosur/30min?utm_campaign=${encodeURIComponent(selectedReg.teamName)}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center justify-center px-6 py-2.5 border border-transparent text-sm font-semibold rounded-lg text-white bg-prosur-red hover:bg-red-700 shadow-sm transition-all hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-prosur-red"
+                        >
+                          Agendar en Calendly
+                        </a>
+                      </div>
                     </div>
 
                     <div className="mt-8 pt-4 border-t border-gray-200 flex justify-end">
