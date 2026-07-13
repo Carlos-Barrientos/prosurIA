@@ -1235,199 +1235,201 @@ export default function RegistrationTabs() {
                 </div>
               )}
 
-              {/* Modal Component */}
-              {selectedReg && (
-                <div 
-                  className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs transition-opacity"
-                  role="dialog"
-                  aria-modal="true"
-                  onClick={() => setSelectedReg(null)}
-                >
-                  <div 
-                    className="relative bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-gray-100 p-6 sm:p-8 animate-in fade-in zoom-in-95 duration-200"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <button
-                      onClick={() => setSelectedReg(null)}
-                      className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 p-1.5 rounded-full hover:bg-gray-100 transition-colors"
-                      aria-label="Cerrar detalles"
-                    >
-                      <X className="w-5.5 h-5.5" />
-                    </button>
-
-                    <div className="mb-6">
-                      <div className="flex flex-wrap items-center gap-2 mb-2">
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${
-                          selectedReg.status === 'scope_submitted' 
-                            ? 'bg-green-50 text-green-700 border border-green-200' 
-                            : 'bg-amber-50 text-amber-800 border border-amber-200'
-                        }`}>
-                          {selectedReg.status === 'scope_submitted' ? 'Alcance Entregado' : 'Solo Registro'}
-                        </span>
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-800 border border-gray-200">
-                          {selectedReg.company}
-                        </span>
-                      </div>
-                      <h3 className="text-xl sm:text-2xl font-extrabold text-gray-900 leading-tight">
-                        {selectedReg.projectName || 'Registro de Equipo'}
-                      </h3>
-                      <p className="text-sm text-prosur-gray mt-1 font-medium">
-                        Presentado por el equipo <strong className="text-gray-800 font-semibold">{selectedReg.teamName}</strong>
-                        {selectedReg.employeeId && selectedReg.employeeId !== '[Protegido]' && (
-                          <> (Colaborador ID: {selectedReg.employeeId})</>
-                        )}
-                      </p>
-                    </div>
-
-                    <div className="space-y-6">
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-gray-50 p-4 rounded-xl border border-gray-200/50">
-                        <div>
-                          <p className="text-xs text-gray-400 font-bold uppercase tracking-wider">Área o Departamento</p>
-                          <p className="text-sm text-gray-800 font-semibold mt-0.5">{selectedReg.department}</p>
-                        </div>
-                        <div>
-                          <p className="text-xs text-gray-400 font-bold uppercase tracking-wider">Integrantes del Equipo</p>
-                          {selectedReg.members === '[Protegido]' ? (
-                            <span className="inline-flex items-center gap-1.5 mt-1 text-xs font-semibold text-gray-500 bg-white px-2.5 py-1 rounded-lg border border-gray-200/80 shadow-xs animate-pulse">
-                              <Lock className="w-3 h-3 text-gray-400" /> Protegido
-                            </span>
-                          ) : (
-                            <p className="text-sm text-gray-855 font-semibold mt-0.5 whitespace-pre-line">{selectedReg.members || 'No especificados'}</p>
-                          )}
-                        </div>
-                      </div>
-
-                      {renderConfidentialField(
-                        "Situación Actual / El Problema",
-                        selectedReg.diagnosis || selectedReg.painPoint || 'Sin descripción detallada del problema.',
-                        <AlertCircle className="w-4 h-4 text-prosur-red" />
-                      )}
-
-                      {selectedReg.status === 'scope_submitted' && (
-                        <>
-                          {renderConfidentialField(
-                            "La Solución Propuesta (Inteligencia Artificial)",
-                            selectedReg.solution,
-                            <Lightbulb className="w-4 h-4 text-blue-500" />
-                          )}
-
-                          {renderConfidentialField(
-                            "Métrica de Éxito",
-                            selectedReg.metric,
-                            <TrendingUp className="w-4 h-4 text-green-500" />
-                          )}
-                        </>
-                      )}
-
-                      {selectedReg.status !== 'scope_submitted' && (
-                        <div className="bg-amber-50 rounded-xl p-4 border border-amber-200/70 flex items-start gap-3">
-                          <AlertCircle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
-                          <div>
-                            <p className="text-sm font-bold text-amber-800">¡Alcance del Proyecto Pendiente!</p>
-                            <p className="text-xs text-amber-700 mt-1 leading-relaxed">
-                              Este equipo completó el Registro Rápido con éxito, pero aún no ha entregado los detalles técnicos de su solución de IA. Si formas parte de este equipo, dirígete a la pestaña **Entrega de Alcance** para completar el envío.
-                            </p>
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Calendly Booking Button */}
-                      <div className="bg-gradient-to-br from-red-50 to-white rounded-xl p-5 border border-red-100/80 text-center mt-6">
-                        <h4 className="text-base font-bold text-gray-900 mb-1 flex items-center justify-center gap-1.5">
-                          <span className="text-prosur-red">📅</span> Agenda la sesión de demo para {selectedReg.teamName}
-                        </h4>
-                        <p className="text-xs text-gray-600 mb-4">
-                          Las sesiones se llevarán a cabo a partir del 30 de Julio. Reserva tu espacio de 30 minutos para tu equipo.
-                        </p>
-                        <a
-                          href={`https://calendly.com/gerencia-mejoracontinua-prosur/30min?utm_campaign=${encodeURIComponent(selectedReg.teamName)}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center justify-center px-6 py-2.5 border border-transparent text-sm font-semibold rounded-lg text-white bg-prosur-red hover:bg-red-700 shadow-sm transition-all hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-prosur-red"
-                        >
-                          Agendar en Calendly
-                        </a>
-                      </div>
-                    </div>
-
-                    <div className="mt-8 pt-4 border-t border-gray-200 flex justify-end">
-                      <button
-                        onClick={() => setSelectedReg(null)}
-                        className="px-5 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 text-sm font-semibold rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300"
-                      >
-                        Cerrar
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Admin Login Modal */}
-              {showAdminModal && (
-                <div 
-                  className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs transition-opacity"
-                  role="dialog"
-                  aria-modal="true"
-                  onClick={() => setShowAdminModal(false)}
-                >
-                  <div 
-                    className="relative bg-white rounded-2xl max-w-md w-full shadow-2xl border border-gray-100 p-6 sm:p-8 animate-in fade-in zoom-in-95 duration-200"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <button
-                      onClick={() => setShowAdminModal(false)}
-                      className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 p-1.5 rounded-full hover:bg-gray-100 transition-colors"
-                      aria-label="Cerrar modal"
-                    >
-                      <X className="w-5.5 h-5.5" />
-                    </button>
-
-                    <div className="mb-6 text-center">
-                      <div className="mx-auto w-12 h-12 bg-red-50 rounded-full flex items-center justify-center text-prosur-red mb-3">
-                        <Lock className="w-6 h-6" />
-                      </div>
-                      <h3 className="text-xl font-bold text-gray-900 leading-tight">
-                        Acceso Organizador
-                      </h3>
-                      <p className="text-sm text-prosur-gray mt-1 font-medium">
-                        Ingresa el código de administrador para revelar las ideas completas de todos los equipos.
-                      </p>
-                    </div>
-
-                    <form onSubmit={handleAdminLogin} className="space-y-4">
-                      {adminError && (
-                        <div className="p-3 bg-red-50 text-xs font-semibold text-red-600 border border-red-200 rounded-lg">
-                          {adminError}
-                        </div>
-                      )}
-                      <div>
-                        <label htmlFor="adminCode" className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Código de Acceso</label>
-                        <input
-                          type="password"
-                          id="adminCode"
-                          required
-                          value={inputCode}
-                          onChange={(e) => setInputCode(e.target.value)}
-                          placeholder="••••••••"
-                          className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-prosur-red text-center text-lg font-bold tracking-widest"
-                        />
-                      </div>
-                      <button
-                        type="submit"
-                        disabled={isLoadingTeams}
-                        className="w-full py-2.5 px-4 bg-prosur-red hover:bg-red-700 text-white font-semibold rounded-lg shadow-sm transition-all focus:outline-none hover:scale-[1.01] active:scale-[0.99] disabled:opacity-70 disabled:hover:scale-100"
-                      >
-                        {isLoadingTeams ? 'Verificando...' : 'Desbloquear Datos'}
-                      </button>
-                    </form>
-                  </div>
-                </div>
-              )}
+              {/* Modal Component placeholder (moved out of card container) */}
             </div>
 
           </div>
         </div>
       </div>
+
+      {/* Modal Component */}
+      {selectedReg && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs transition-opacity"
+          role="dialog"
+          aria-modal="true"
+          onClick={() => setSelectedReg(null)}
+        >
+          <div 
+            className="relative bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-gray-100 p-6 sm:p-8 animate-in fade-in zoom-in-95 duration-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={() => setSelectedReg(null)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 p-1.5 rounded-full hover:bg-gray-100 transition-colors"
+              aria-label="Cerrar detalles"
+            >
+              <X className="w-5.5 h-5.5" />
+            </button>
+
+            <div className="mb-6">
+              <div className="flex flex-wrap items-center gap-2 mb-2">
+                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${
+                  selectedReg.status === 'scope_submitted' 
+                    ? 'bg-green-50 text-green-700 border border-green-200' 
+                    : 'bg-amber-50 text-amber-800 border border-amber-200'
+                }`}>
+                  {selectedReg.status === 'scope_submitted' ? 'Alcance Entregado' : 'Solo Registro'}
+                </span>
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-800 border border-gray-200">
+                  {selectedReg.company}
+                </span>
+              </div>
+              <h3 className="text-xl sm:text-2xl font-extrabold text-gray-900 leading-tight">
+                {selectedReg.projectName || 'Registro de Equipo'}
+              </h3>
+              <p className="text-sm text-prosur-gray mt-1 font-medium">
+                Presentado por el equipo <strong className="text-gray-800 font-semibold">{selectedReg.teamName}</strong>
+                {selectedReg.employeeId && selectedReg.employeeId !== '[Protegido]' && (
+                  <> (Colaborador ID: {selectedReg.employeeId})</>
+                )}
+              </p>
+            </div>
+
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-gray-50 p-4 rounded-xl border border-gray-200/50">
+                <div>
+                  <p className="text-xs text-gray-400 font-bold uppercase tracking-wider">Área o Departamento</p>
+                  <p className="text-sm text-gray-800 font-semibold mt-0.5">{selectedReg.department}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-400 font-bold uppercase tracking-wider">Integrantes del Equipo</p>
+                  {selectedReg.members === '[Protegido]' ? (
+                    <span className="inline-flex items-center gap-1.5 mt-1 text-xs font-semibold text-gray-500 bg-white px-2.5 py-1 rounded-lg border border-gray-200/80 shadow-xs animate-pulse">
+                      <Lock className="w-3 h-3 text-gray-400" /> Protegido
+                    </span>
+                  ) : (
+                    <p className="text-sm text-gray-855 font-semibold mt-0.5 whitespace-pre-line">{selectedReg.members || 'No especificados'}</p>
+                  )}
+                </div>
+              </div>
+
+              {renderConfidentialField(
+                "Situación Actual / El Problema",
+                selectedReg.diagnosis || selectedReg.painPoint || 'Sin descripción detallada del problema.',
+                <AlertCircle className="w-4 h-4 text-prosur-red" />
+              )}
+
+              {selectedReg.status === 'scope_submitted' && (
+                <>
+                  {renderConfidentialField(
+                    "La Solución Propuesta (Inteligencia Artificial)",
+                    selectedReg.solution,
+                    <Lightbulb className="w-4 h-4 text-blue-500" />
+                  )}
+
+                  {renderConfidentialField(
+                    "Métrica de Éxito",
+                    selectedReg.metric,
+                    <TrendingUp className="w-4 h-4 text-green-500" />
+                  )}
+                </>
+              )}
+
+              {selectedReg.status !== 'scope_submitted' && (
+                <div className="bg-amber-50 rounded-xl p-4 border border-amber-200/70 flex items-start gap-3">
+                  <AlertCircle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <p className="text-sm font-bold text-amber-800">¡Alcance del Proyecto Pendiente!</p>
+                    <p className="text-xs text-amber-700 mt-1 leading-relaxed">
+                      Este equipo completó el Registro Rápido con éxito, pero aún no ha entregado los detalles técnicos de su solución de IA. Si formas parte de este equipo, dirígete a la pestaña **Entrega de Alcance** para completar el envío.
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* Calendly Booking Button */}
+              <div className="bg-gradient-to-br from-red-50 to-white rounded-xl p-5 border border-red-100/80 text-center mt-6">
+                <h4 className="text-base font-bold text-gray-900 mb-1 flex items-center justify-center gap-1.5">
+                  <span className="text-prosur-red">📅</span> Agenda la sesión de demo para {selectedReg.teamName}
+                </h4>
+                <p className="text-xs text-gray-600 mb-4">
+                  Las sesiones se llevarán a cabo a partir del 30 de Julio. Reserva tu espacio de 30 minutos para tu equipo.
+                </p>
+                <a
+                  href={`https://calendly.com/gerencia-mejoracontinua-prosur/30min?utm_campaign=${encodeURIComponent(selectedReg.teamName)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center px-6 py-2.5 border border-transparent text-sm font-semibold rounded-lg text-white bg-prosur-red hover:bg-red-700 shadow-sm transition-all hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-prosur-red"
+                >
+                  Agendar en Calendly
+                </a>
+              </div>
+            </div>
+
+            <div className="mt-8 pt-4 border-t border-gray-200 flex justify-end">
+              <button
+                onClick={() => setSelectedReg(null)}
+                className="px-5 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 text-sm font-semibold rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300"
+              >
+                Cerrar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Admin Login Modal */}
+      {showAdminModal && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs transition-opacity"
+          role="dialog"
+          aria-modal="true"
+          onClick={() => setShowAdminModal(false)}
+        >
+          <div 
+            className="relative bg-white rounded-2xl max-w-md w-full shadow-2xl border border-gray-100 p-6 sm:p-8 animate-in fade-in zoom-in-95 duration-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={() => setShowAdminModal(false)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 p-1.5 rounded-full hover:bg-gray-100 transition-colors"
+              aria-label="Cerrar modal"
+            >
+              <X className="w-5.5 h-5.5" />
+            </button>
+
+            <div className="mb-6 text-center">
+              <div className="mx-auto w-12 h-12 bg-red-50 rounded-full flex items-center justify-center text-prosur-red mb-3">
+                <Lock className="w-6 h-6" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 leading-tight">
+                Acceso Organizador
+              </h3>
+              <p className="text-sm text-prosur-gray mt-1 font-medium">
+                Ingresa el código de administrador para revelar las ideas completas de todos los equipos.
+              </p>
+            </div>
+
+            <form onSubmit={handleAdminLogin} className="space-y-4">
+              {adminError && (
+                <div className="p-3 bg-red-50 text-xs font-semibold text-red-600 border border-red-200 rounded-lg">
+                  {adminError}
+                </div>
+              )}
+              <div>
+                <label htmlFor="adminCode" className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Código de Acceso</label>
+                <input
+                  type="password"
+                  id="adminCode"
+                  required
+                  value={inputCode}
+                  onChange={(e) => setInputCode(e.target.value)}
+                  placeholder="••••••••"
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-prosur-red text-center text-lg font-bold tracking-widest"
+                />
+              </div>
+              <button
+                type="submit"
+                disabled={isLoadingTeams}
+                className="w-full py-2.5 px-4 bg-prosur-red hover:bg-red-700 text-white font-semibold rounded-lg shadow-sm transition-all focus:outline-none hover:scale-[1.01] active:scale-[0.99] disabled:opacity-70 disabled:hover:scale-100"
+              >
+                {isLoadingTeams ? 'Verificando...' : 'Desbloquear Datos'}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
     </section>
   );
 }

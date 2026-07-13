@@ -49,9 +49,9 @@ export default function App() {
           <Hero />
           <Prizes />
           <Rules />
-          <RegistrationTabs />
           <Tips />
           <Timeline />
+          <RegistrationTabs />
         </main>
         <Footer />
       </div>
