@@ -684,66 +684,60 @@ export default function RegistrationTabs() {
   const allDepartments = Array.from(new Set(unifiedRegistrations.map(r => r.department).filter(Boolean))).sort();
 
   return (
-    <section id="registro" className="py-24 bg-transparent relative">
+    <section id="registro" className="py-20 bg-transparent">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-950 mb-4 tracking-tight">Participa en el Reto</h2>
-          <p className="text-base sm:text-lg text-prosur-gray font-medium max-w-xl mx-auto">
-            Envía el alcance técnico de tu proyecto o explora las soluciones innovadoras de otros equipos.
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">Participa en el Reto</h2>
+          <p className="text-lg text-prosur-gray">
+            Envía el alcance de tu proyecto o explora los proyectos participantes.
           </p>
         </div>
 
-        <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-xl border border-gray-200/80 overflow-hidden">
-          {/* Segmented Control Tabs Header */}
-          <div className="p-3 bg-gray-50/65 border-b border-gray-200/70">
-            <div 
-              className="flex bg-gray-100 p-1.5 rounded-xl border border-gray-200/30 max-w-2xl mx-auto" 
-              role="tablist" 
-              aria-label="Formularios de participación"
+        <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
+          {/* Tabs Header */}
+          <div 
+            className="flex flex-col sm:flex-row border-b border-gray-200 bg-white/50" 
+            role="tablist" 
+            aria-label="Formularios de participación"
+          >
+            <button
+              role="tab"
+              aria-selected={activeTab === 'alcance'}
+              aria-controls="panel-alcance"
+              id="tab-alcance"
+              onClick={() => handleTabChange('alcance')}
+              className={`flex-1 py-4 px-6 text-center font-medium text-sm sm:text-base transition-colors focus:outline-none focus:ring-2 focus:ring-inset focus:ring-prosur-red ${
+                activeTab === 'alcance' 
+                  ? 'border-b-2 border-prosur-red text-prosur-red bg-red-50/50' 
+                  : 'text-prosur-gray hover:text-gray-700 hover:bg-gray-50/50'
+              }`}
             >
-              <button
-                role="tab"
-                aria-selected={activeTab === 'alcance'}
-                aria-controls="panel-alcance"
-                id="tab-alcance"
-                onClick={() => handleTabChange('alcance')}
-                className={`flex-1 py-3 px-4 text-center font-bold text-sm sm:text-base rounded-lg transition-all duration-300 focus:outline-none ${
-                  activeTab === 'alcance' 
-                    ? 'bg-white text-prosur-red shadow-sm' 
-                    : 'text-prosur-gray hover:text-gray-900'
-                }`}
-              >
-                <span className="flex items-center justify-center gap-2">
-                  Entrega de Alcance
-                  <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] sm:text-xs font-semibold transition-colors ${
-                    activeTab === 'alcance' ? 'bg-red-50 text-prosur-red' : 'bg-gray-200/80 text-gray-500'
-                  }`}>
-                    Límite: 23 de Julio
-                  </span>
+              <span className="flex items-center justify-center gap-2">
+                Entrega de Alcance
+                <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-600">
+                  Límite: 23 de Julio
                 </span>
-              </button>
-              <button
-                role="tab"
-                aria-selected={activeTab === 'proyectos'}
-                aria-controls="panel-proyectos"
-                id="tab-proyectos"
-                onClick={() => handleTabChange('proyectos')}
-                className={`flex-1 py-3 px-4 text-center font-bold text-sm sm:text-base rounded-lg transition-all duration-300 focus:outline-none ${
-                  activeTab === 'proyectos' 
-                    ? 'bg-white text-prosur-red shadow-sm' 
-                    : 'text-prosur-gray hover:text-gray-900'
-                }`}
-              >
-                <span className="flex items-center justify-center gap-2">
-                  Proyectos Registrados
-                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs font-bold transition-colors ${
-                    activeTab === 'proyectos' ? 'bg-prosur-red text-white' : 'bg-red-50 text-prosur-red'
-                  }`}>
-                    {totalTeams}
-                  </span>
+              </span>
+            </button>
+            <button
+              role="tab"
+              aria-selected={activeTab === 'proyectos'}
+              aria-controls="panel-proyectos"
+              id="tab-proyectos"
+              onClick={() => handleTabChange('proyectos')}
+              className={`flex-1 py-4 px-6 text-center font-medium text-sm sm:text-base transition-colors focus:outline-none focus:ring-2 focus:ring-inset focus:ring-prosur-red ${
+                activeTab === 'proyectos' 
+                  ? 'border-b-2 border-prosur-red text-prosur-red bg-red-50/50' 
+                  : 'text-prosur-gray hover:text-gray-700 hover:bg-gray-50/50'
+              }`}
+            >
+              <span className="flex items-center justify-center gap-2">
+                Proyectos Registrados
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-prosur-red">
+                  {totalTeams}
                 </span>
-              </button>
-            </div>
+              </span>
+            </button>
           </div>
 
           {/* Tab Panels */}
