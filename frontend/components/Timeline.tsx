@@ -1,13 +1,19 @@
 import React from 'react';
-import { Calendar, Flag, Presentation } from 'lucide-react';
+import { Calendar, Flag, Presentation, BookOpen } from 'lucide-react';
 
 export default function Timeline() {
   const events = [
     {
-      date: "Hoy",
-      title: "Apertura de registros",
+      date: "Registro Cerrado",
+      title: "La inscripción de nuevos equipos ha finalizado",
       icon: <Calendar className="w-6 h-6 text-white" aria-hidden="true" />,
-      color: "bg-gray-800"
+      color: "bg-gray-400"
+    },
+    {
+      date: "17 de Julio",
+      title: "Curso / Taller de IA (Capacitación general)",
+      icon: <BookOpen className="w-6 h-6 text-white" aria-hidden="true" />,
+      color: "bg-blue-600"
     },
     {
       date: "23 de Julio",

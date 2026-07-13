@@ -778,6 +778,16 @@ export default function RegistrationTabs() {
                     </div>
                   )}
 
+                   <div className="rounded-md bg-amber-50 p-4 mb-4 border border-amber-250/70 flex items-start gap-3">
+                    <AlertCircle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" aria-hidden="true" />
+                    <div>
+                      <p className="text-sm font-bold text-amber-800">Inscripción de nuevos equipos cerrada</p>
+                      <p className="text-xs text-amber-700 mt-1 leading-relaxed">
+                        La fase para dar de alta nuevos equipos ha concluido. Si tu equipo ya se encuentra registrado, selecciona su nombre de la lista de abajo para entregar el alcance del proyecto (Fase 2).
+                      </p>
+                    </div>
+                  </div>
+
                   <div className="rounded-md bg-blue-50/80 p-4 mb-6 border border-blue-100">
                     <div className="flex">
                       <div className="flex-shrink-0">
@@ -858,18 +868,13 @@ export default function RegistrationTabs() {
                               required
                               value={f2Data.teamName}
                               onChange={(e) => {
-                                if (e.target.value === '__manual__') {
-                                  setIsManualTeam(true);
-                                  setF2Data(prev => ({ ...prev, teamName: '', employeeId: '' }));
-                                } else {
-                                  const dropdown = getDropdownTeams();
-                                  const selected = dropdown.find(t => t.teamName === e.target.value);
-                                  setF2Data(prev => ({ 
-                                    ...prev, 
-                                    teamName: e.target.value,
-                                    employeeId: selected ? selected.employeeId : ''
-                                  }));
-                                }
+                                const dropdown = getDropdownTeams();
+                                const selected = dropdown.find(t => t.teamName === e.target.value);
+                                setF2Data(prev => ({ 
+                                  ...prev, 
+                                  teamName: e.target.value,
+                                  employeeId: selected ? selected.employeeId : ''
+                                }));
                               }}
                               className={inputClasses}
                               aria-required="true"
@@ -884,7 +889,6 @@ export default function RegistrationTabs() {
                                   </option>
                                 );
                               })}
-                              <option value="__manual__">✏️ Escribir otro nombre de equipo...</option>
                             </select>
                           </div>
                         ) : (
