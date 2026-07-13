@@ -95,7 +95,7 @@ const INITIAL_MOCK_TEAMS = [
     painPoint: "En el BDC manejamos información de varias fuentes (DMS, CRM, PROSUR, SIMA) de cada agencia y de las tres marcas. Cada sistema entrega un formato distinto."
   },
   {
-    teamName: "TEAM AMOS",
+    teamName: "TEAM AMOS (Asunción · Montoya · Oswaldo · Sandoval)",
     employeeId: "180081",
     company: "CaFi",
     department: "OPERATIVA - COMERCIAL",
@@ -146,7 +146,7 @@ const INITIAL_MOCK_PROJECTS = [
     metric: "Horas-persona ahorradas por semana en consolidación y clasificación (de 12 horas a 1 hora por corte)."
   },
   {
-    teamName: "TEAM AMOS",
+    teamName: "TEAM AMOS (Asunción · Montoya · Oswaldo · Sandoval)",
     employeeId: "180081",
     projectName: "automatización de adquisición de seguros",
     diagnosis: "Proceso tardado para contactar al cliente para el otorgamiento para la renovación de pólizas de seguro.",
