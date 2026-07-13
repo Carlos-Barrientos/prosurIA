@@ -2,6 +2,7 @@ import './vertex-ai-proxy-interceptor.js';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
+import Capacitacion from './components/Capacitacion';
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {
@@ -9,8 +10,9 @@ if (!rootElement) {
 }
 
 const root = ReactDOM.createRoot(rootElement);
+const Page = window.location.pathname === '/capacitacion' ? Capacitacion : App;
 root.render(
   <React.StrictMode>
-    <App />
+    <Page />
   </React.StrictMode>
 );
