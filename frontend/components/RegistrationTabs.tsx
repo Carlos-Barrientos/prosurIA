@@ -1114,6 +1114,38 @@ export default function RegistrationTabs() {
                 </div>
               </div>
 
+              {/* Calendly General Instructions Banner */}
+              <div className="bg-gradient-to-r from-red-500/10 via-red-500/5 to-transparent rounded-2xl p-6 border border-prosur-red/20 mb-8 shadow-sm">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                  <div className="flex-1">
+                    <h3 className="text-lg font-bold text-gray-900 mb-2 flex items-center gap-2">
+                      <span className="text-prosur-red">📅</span> ¡Ya puedes agendar tu sesión de Demo!
+                    </h3>
+                    <p className="text-sm text-gray-600 mb-3 font-medium">
+                      Las demostraciones (Demo Day) se realizarán a partir del <strong>30 de Julio</strong>. Tienes dos formas de agendar:
+                    </p>
+                    <ul className="text-xs text-gray-500 space-y-1.5 list-disc list-inside">
+                      <li>
+                        <strong className="text-gray-700">Opción recomendada:</strong> Busca tu proyecto abajo, haz clic en <strong className="text-prosur-red">"Ver detalles"</strong> y usa el botón de Calendly personalizado de tu equipo.
+                      </li>
+                      <li>
+                        <strong className="text-gray-700">Opción directa:</strong> Haz clic en el botón de la derecha para agendar directamente (recuerda escribir el nombre exacto de tu equipo en Calendly).
+                      </li>
+                    </ul>
+                  </div>
+                  <div className="flex-shrink-0 w-full md:w-auto">
+                    <a
+                      href="https://calendly.com/gerencia-mejoracontinua-prosur/30min"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full md:w-auto inline-flex items-center justify-center px-6 py-3 border border-transparent text-sm font-semibold rounded-lg text-white bg-prosur-red hover:bg-red-700 shadow-md hover:shadow-lg transition-all hover:scale-105"
+                    >
+                      Agendar Demo Directamente
+                    </a>
+                  </div>
+                </div>
+              </div>
+
               {/* Search & Filters */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                 <div className="relative">
