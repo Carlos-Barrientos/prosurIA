@@ -10,6 +10,7 @@ import Timeline from './components/Timeline';
 import Footer from './components/Footer';
 import Blog from './components/Blog';
 import SocialNetwork from './components/SocialNetwork';
+import LiveChat from './components/LiveChat';
 
 export default function App() {
   const [view, setView] = useState<'landing' | 'blog' | 'social'>('landing');
@@ -66,6 +67,7 @@ export default function App() {
           )}
         </main>
         <Footer />
+        <LiveChat />
       </div>
     </div>
   );

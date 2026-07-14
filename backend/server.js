@@ -450,6 +450,7 @@ app.get('/sheet-proxy', async (req, res) => {
 
 const trendsFilePath = path.join(__dirname, 'data', 'trends.json');
 const postsFilePath = path.join(__dirname, 'data', 'posts.json');
+const chatHistoryFilePath = path.join(__dirname, 'data', 'chat_history.json');
 
 const FALLBACK_TRENDS = [
   {
@@ -552,6 +553,19 @@ function initDataStorage() {
     ];
     fs.writeFileSync(postsFilePath, JSON.stringify(initialPosts, null, 2), 'utf-8');
     console.log(`[Data Storage] Seeded social network file: ${postsFilePath}`);
+  }
+
+  if (!fs.existsSync(chatHistoryFilePath)) {
+    const seedMessages = [
+      {
+        id: "m1",
+        author: "Moderador Prosur",
+        text: "¡Hola a todos! Bienvenidos al canal de chat en vivo de la comunidad de IA Prosur. Compartan cualquier duda o idea aquí en tiempo real.",
+        createdAt: new Date(Date.now() - 3600000).toISOString()
+      }
+    ];
+    fs.writeFileSync(chatHistoryFilePath, JSON.stringify(seedMessages, null, 2), 'utf-8');
+    console.log(`[Data Storage] Seeded chat history file: ${chatHistoryFilePath}`);
   }
 }
 
@@ -811,7 +825,61 @@ const server = app.listen(PORT, API_BACKEND_HOST, () => {
 });
 
 
+const chatWss = new WebSocketServer({ noServer: true });
 const wss = new WebSocketServer({ noServer: true });
+
+// --- WebSocket Live Chat Server ---
+const chatClients = new Set();
+
+chatWss.on('connection', (ws) => {
+  chatClients.add(ws);
+  console.log(`[Chat WS] Client connected. Total clients: ${chatClients.size}`);
+  
+  try {
+    const history = JSON.parse(fs.readFileSync(chatHistoryFilePath, 'utf-8') || '[]');
+    ws.send(JSON.stringify({ type: 'history', messages: history.slice(-50) }));
+  } catch (err) {
+    console.error("[Chat WS] Error sending history:", err);
+  }
+
+  ws.on('message', (messageData) => {
+    try {
+      const data = JSON.parse(messageData.toString());
+      if (data.type === 'message' && data.author && data.text) {
+        const newMessage = {
+          id: Date.now().toString() + '-' + Math.random().toString(36).substr(2, 4),
+          author: data.author,
+          text: data.text,
+          createdAt: new Date().toISOString()
+        };
+
+        const history = JSON.parse(fs.readFileSync(chatHistoryFilePath, 'utf-8') || '[]');
+        history.push(newMessage);
+        if (history.length > 100) history.shift();
+        fs.writeFileSync(chatHistoryFilePath, JSON.stringify(history, null, 2), 'utf-8');
+
+        const broadcastData = JSON.stringify({ type: 'message', message: newMessage });
+        for (const client of chatClients) {
+          if (client.readyState === WebSocket.OPEN) {
+            client.send(broadcastData);
+          }
+        }
+      }
+    } catch (err) {
+      console.error("[Chat WS] Error broadcasting message:", err);
+    }
+  });
+
+  ws.on('close', () => {
+    chatClients.delete(ws);
+    console.log(`[Chat WS] Client disconnected. Total clients: ${chatClients.size}`);
+  });
+
+  ws.on('error', (err) => {
+    console.error("[Chat WS] Client error:", err);
+    chatClients.delete(ws);
+  });
+});
 
 server.on('upgrade', async (request, socket, head) => {
   const url = new URL(request.url, `http://${request.headers.host}`);
@@ -942,6 +1010,10 @@ server.on('upgrade', async (request, socket, head) => {
 
     upstreamWs.once('open', onUpstreamOpen);
 
+  } else if (url.pathname === '/ws-chat') {
+    chatWss.handleUpgrade(request, socket, head, (ws) => {
+      chatWss.emit('connection', ws, request);
+    });
   } else {
     // Path did not match
     socket.destroy();
