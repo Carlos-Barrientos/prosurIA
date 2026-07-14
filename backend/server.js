@@ -444,6 +444,351 @@ app.get('/sheet-proxy', async (req, res) => {
 });
 
 
+// ==========================================
+// BLOG DE TENDENCIAS DE IA Y RED SOCIAL INTERNA
+// ==========================================
+
+const trendsFilePath = path.join(__dirname, 'data', 'trends.json');
+const postsFilePath = path.join(__dirname, 'data', 'posts.json');
+
+const FALLBACK_TRENDS = [
+  {
+    id: 1,
+    title: "Agentes Autónomos en Procesos de Manufactura",
+    category: "Agentes de Software",
+    summary: "Los agentes basados en LLMs están automatizando flujos de trabajo complejos de compras y control de calidad corporativos, integrándose con ERPs locales.",
+    content: "La adopción de agentes autónomos inteligentes está marcando el inicio de una nueva era industrial. A diferencia de las automatizaciones rígidas del pasado, estos agentes interpretan correos de clientes, verifican stock en tiempo real y toman decisiones adaptativas sobre compras de repuestos.\n\nEn operaciones logísticas complejas, los agentes coordinan dinámicamente con transportistas ante demoras climáticas, negociando alternativas basadas en costo e historial de entregas. Su capacidad de interactuar mediante APIs con ERPs existentes reduce procesos administrativos que tomaban días a solo minutos, eliminando el error humano de transcripción.",
+    keyPoints: [
+      "Interoperabilidad fluida con ERPs y bases de datos heredadas mediante APIs.",
+      "Toma de decisiones lógicas basadas en variables dinámicas de precio y stock.",
+      "Reducción demostrada de un 35% en tiempos de gestión operativa inicial."
+    ],
+    impact: "Se prevé que el 65% de las grandes manufactureras desplieguen agentes autónomos integrados en compras y planeamiento de insumos para el cierre de 2027.",
+    author: "Comité de Innovación Prosur",
+    readTime: "5 min de lectura",
+    date: new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })
+  },
+  {
+    id: 2,
+    title: "Modelos Locales Eficientes (Edge AI) para Privacidad Absoluta",
+    category: "Modelos de Lenguaje",
+    summary: "Los nuevos Small Language Models (SLMs) ejecutables localmente abren la puerta a la adopción de IA corporativa sin exponer propiedad intelectual.",
+    content: "La seguridad de los datos es el reto principal al incorporar IA en procesos clave. Los modelos de lenguaje pequeños (SLMs) ofrecen una solución a esta problemática, pues pueden ejecutarse en servidores locales corporativos o incluso computadoras de escritorio modernas con NPUs integradas.\n\nEste esquema evita el envío de información confidencial de clientes o finanzas a servidores en la nube de terceros. Su precisión en tareas enfocadas, como auditoría de contratos, análisis de nóminas y resúmenes de minutas internas, ya rivaliza con modelos comerciales gigantescos a una fracción del costo operativo.",
+    keyPoints: [
+      "Cumplimiento garantizado al procesar información confidencial in-house.",
+      "Costos de infraestructura fijos y predecibles, eliminando tarifas por token.",
+      "Optimización específica del modelo para terminología técnica de la empresa."
+    ],
+    impact: "Aumento drástico en la demanda de hardware de cómputo local con aceleración de IA dedicada y despliegues aislados en redes internas seguras.",
+    author: "Área de Ciberseguridad Prosur",
+    readTime: "4 min de lectura",
+    date: new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })
+  },
+  {
+    id: 3,
+    title: "Generadores de Código e Interfaces de Usuario Express",
+    category: "Productividad",
+    summary: "Plataformas de programación generativa permiten a equipos de negocio crear herramientas internas personalizadas en horas en lugar de meses.",
+    content: "El desarrollo de herramientas departamentales está viviendo un cambio fundamental. Gracias a generadores de UI impulsados por IA, analistas de negocio y coordinadores pueden estructurar dashboards, formularios de registro y gestores de solicitudes escribiendo simplemente lo que necesitan en español.\n\nEstas aplicaciones se configuran visualmente siguiendo paletas de colores corporativas y esquemas estándar. Esto reduce drásticamente el tiempo de desarrollo (backlog) de los equipos de tecnología, permitiendo un prototipado veloz y adaptativo a los requerimientos de la operación diaria.",
+    keyPoints: [
+      "Desarrollo ágil de soluciones departamentales a partir de lenguaje natural.",
+      "Reducción del 50% en solicitudes menores de soporte y desarrollo a TI.",
+      "Creación de interfaces web responsive y funcionales listas para uso interno."
+    ],
+    impact: "El empoderamiento de usuarios no técnicos (citizen developers) liderará la optimización de procesos pequeños pero críticos en las unidades de negocio.",
+    author: "División de TI Prosur",
+    readTime: "3 min de lectura",
+    date: new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })
+  }
+];
+
+function initDataStorage() {
+  const dataDir = path.join(__dirname, 'data');
+  if (!fs.existsSync(dataDir)) {
+    fs.mkdirSync(dataDir, { recursive: true });
+    console.log(`[Data Storage] Created directory: ${dataDir}`);
+  }
+  
+  if (!fs.existsSync(trendsFilePath)) {
+    fs.writeFileSync(trendsFilePath, JSON.stringify([], null, 2), 'utf-8');
+    console.log(`[Data Storage] Created empty file: ${trendsFilePath}`);
+  }
+  
+  if (!fs.existsSync(postsFilePath)) {
+    const initialPosts = [
+      {
+        id: "1",
+        title: "Claude 3.5 Sonnet",
+        url: "https://www.anthropic.com/claude",
+        category: "Programación",
+        description: "Modelo de lenguaje avanzado líder en codificación y razonamiento lógico.",
+        utility: "Nos ayuda a generar scripts de automatización de datos de ventas de manera mucho más rápida e interactiva.",
+        author: "María Pérez",
+        likes: 12,
+        likedBy: [],
+        createdAt: new Date(Date.now() - 3600000 * 24 * 3).toISOString(),
+        comments: [
+          {
+            id: "c1",
+            author: "Juan Gómez",
+            text: "Totalmente de acuerdo, la velocidad de desarrollo ha mejorado significativamente.",
+            createdAt: new Date(Date.now() - 3600000 * 24 * 2).toISOString()
+          }
+        ]
+      },
+      {
+        id: "2",
+        title: "v0 by Vercel",
+        url: "https://v0.dev",
+        category: "Diseño y Creatividad",
+        description: "Generador de interfaces de usuario React/HTML interactivo mediante lenguaje natural.",
+        utility: "Permite a analistas armar prototipos visuales de pantallas internas en minutos sin escribir CSS desde cero.",
+        author: "Carlos Barrientos",
+        likes: 8,
+        likedBy: [],
+        createdAt: new Date(Date.now() - 3600000 * 24 * 1).toISOString(),
+        comments: []
+      }
+    ];
+    fs.writeFileSync(postsFilePath, JSON.stringify(initialPosts, null, 2), 'utf-8');
+    console.log(`[Data Storage] Seeded social network file: ${postsFilePath}`);
+  }
+}
+
+async function generateTrendsFromVertex() {
+  const token = await getAccessToken();
+  if (!token) {
+    throw new Error("No Google Application Default Credentials available.");
+  }
+  const location = GOOGLE_CLOUD_LOCATION === 'global' ? 'us-central1' : GOOGLE_CLOUD_LOCATION;
+  const apiUrl = `https://${location}-aiplatform.clients6.google.com/v1/projects/${GOOGLE_CLOUD_PROJECT}/locations/${location}/publishers/google/models/gemini-1.5-flash:generateContent`;
+
+  const prompt = `Actúa como un analista experto en tecnología e Inteligencia Artificial corporativa.
+Genera un array JSON de exactamente 3 artículos con tendencias actuales de IA para hoy (${new Date().toLocaleDateString('es-ES')}).
+Cada objeto del artículo debe tener exactamente estas claves:
+- "id": número único (1, 2, 3)
+- "title": título corto y sumamente atractivo
+- "category": categoría (ej. "Modelos de Lenguaje", "Agentes de Software", "Diseño y Creatividad", "Productividad", "IA en Negocios")
+- "summary": resumen ejecutivo de 1 o 2 frases
+- "content": artículo detallado con formato markdown básico (mínimo 2 párrafos de análisis tecnológico)
+- "keyPoints": array con exactamente 3 puntos clave (strings)
+- "impact": proyección del impacto de esta tendencia a 12 meses para empresas como Grupo Prosur
+- "author": un nombre realista de analista (ej. "Comité de Innovación Prosur", "Analista de TI")
+- "readTime": tiempo de lectura estimado (ej. "4 min de lectura")
+- "date": fecha formateada en español (ej. "14 de Julio, 2026")
+
+Importante: Devuelve ÚNICAMENTE el array de objetos JSON limpio, sin bloques de código markdown, sin \`\`\`json y sin texto introductorio o de cierre. Debe ser directamente parseable por JSON.parse.`;
+
+  const requestBody = {
+    contents: [
+      {
+        role: "user",
+        parts: [
+          { text: prompt }
+        ]
+      }
+    ],
+    generationConfig: {
+      responseMimeType: "application/json",
+      temperature: 0.7
+    }
+  };
+
+  const response = await fetch(apiUrl, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'X-Goog-User-Project': GOOGLE_CLOUD_PROJECT,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(requestBody)
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Vertex AI error status ${response.status}: ${errorText}`);
+  }
+
+  const result = await response.json();
+  const responseText = result.candidates?.[0]?.content?.parts?.[0]?.text;
+  if (!responseText) {
+    throw new Error("Empty response from Vertex AI");
+  }
+
+  const parsed = JSON.parse(responseText.trim());
+  if (!Array.isArray(parsed)) {
+    throw new Error("Response is not an array");
+  }
+  return parsed;
+}
+
+async function getOrUpdateTrends(force = false) {
+  try {
+    let shouldUpdate = force;
+    if (!shouldUpdate) {
+      if (!fs.existsSync(trendsFilePath)) {
+        shouldUpdate = true;
+      } else {
+        const stats = fs.statSync(trendsFilePath);
+        const fileAgeHours = (Date.now() - stats.mtimeMs) / (1000 * 60 * 60);
+        const currentData = fs.readFileSync(trendsFilePath, 'utf-8');
+        if (fileAgeHours >= 24 || currentData.trim() === '[]' || currentData.trim() === '') {
+          shouldUpdate = true;
+        }
+      }
+    }
+
+    if (shouldUpdate) {
+      console.log("[Trends Service] Trends are stale or missing, generating new trends...");
+      try {
+        const freshTrends = await generateTrendsFromVertex();
+        fs.writeFileSync(trendsFilePath, JSON.stringify(freshTrends, null, 2), 'utf-8');
+        console.log("[Trends Service] Successfully generated trends from Vertex AI.");
+      } catch (err) {
+        console.error("[Trends Service] Failed to call Vertex AI, using high-quality fallback trends:", err.message);
+        // Write fallbacks only if current file is empty or missing
+        const currentData = fs.existsSync(trendsFilePath) ? fs.readFileSync(trendsFilePath, 'utf-8') : '';
+        if (currentData.trim() === '[]' || currentData.trim() === '') {
+          fs.writeFileSync(trendsFilePath, JSON.stringify(FALLBACK_TRENDS, null, 2), 'utf-8');
+        }
+      }
+    }
+  } catch (error) {
+    console.error("[Trends Service] Critical error updating trends:", error);
+  }
+}
+
+// --- Endpoints del API de Tendencias (Blog) ---
+app.get('/api/trends', async (req, res) => {
+  try {
+    await getOrUpdateTrends();
+    const data = fs.readFileSync(trendsFilePath, 'utf-8');
+    res.setHeader('Content-Type', 'application/json');
+    res.send(data);
+  } catch (error) {
+    console.error("Error in GET /api/trends:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post('/api/trends/refresh', async (req, res) => {
+  try {
+    await getOrUpdateTrends(true);
+    const data = fs.readFileSync(trendsFilePath, 'utf-8');
+    res.setHeader('Content-Type', 'application/json');
+    res.send(data);
+  } catch (error) {
+    console.error("Error in POST /api/trends/refresh:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// --- Endpoints del API de la Red Social ---
+app.get('/api/posts', (req, res) => {
+  try {
+    const data = fs.readFileSync(postsFilePath, 'utf-8');
+    res.setHeader('Content-Type', 'application/json');
+    res.send(data);
+  } catch (error) {
+    console.error("Error in GET /api/posts:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post('/api/posts', (req, res) => {
+  try {
+    const { title, url, category, description, utility, author } = req.body;
+    if (!title || !category || !description || !utility || !author) {
+      return res.status(400).json({ error: "Missing required fields." });
+    }
+
+    const posts = JSON.parse(fs.readFileSync(postsFilePath, 'utf-8'));
+    const newPost = {
+      id: Date.now().toString(),
+      title,
+      url: url || "",
+      category,
+      description,
+      utility,
+      author,
+      likes: 0,
+      likedBy: [],
+      createdAt: new Date().toISOString(),
+      comments: []
+    };
+
+    posts.unshift(newPost); // Most recent first
+    fs.writeFileSync(postsFilePath, JSON.stringify(posts, null, 2), 'utf-8');
+    res.status(201).json(newPost);
+  } catch (error) {
+    console.error("Error in POST /api/posts:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post('/api/posts/:id/like', (req, res) => {
+  try {
+    const { id } = req.params;
+    const clientIp = req.ip || req.headers['x-forwarded-for'] || "127.0.0.1";
+    const posts = JSON.parse(fs.readFileSync(postsFilePath, 'utf-8'));
+    
+    const postIndex = posts.findIndex(p => p.id === id);
+    if (postIndex === -1) {
+      return res.status(404).json({ error: "Post not found." });
+    }
+
+    const post = posts[postIndex];
+    if (!post.likedBy) post.likedBy = [];
+
+    if (post.likedBy.includes(clientIp)) {
+      // Toggle off
+      post.likes = Math.max(0, post.likes - 1);
+      post.likedBy = post.likedBy.filter(ip => ip !== clientIp);
+    } else {
+      // Toggle on
+      post.likes += 1;
+      post.likedBy.push(clientIp);
+    }
+
+    fs.writeFileSync(postsFilePath, JSON.stringify(posts, null, 2), 'utf-8');
+    res.json(post);
+  } catch (error) {
+    console.error("Error in POST /api/posts/:id/like:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post('/api/posts/:id/comment', (req, res) => {
+  try {
+    const { id } = req.params;
+    const { author, text } = req.body;
+    if (!author || !text) {
+      return res.status(400).json({ error: "Missing comment fields." });
+    }
+
+    const posts = JSON.parse(fs.readFileSync(postsFilePath, 'utf-8'));
+    const postIndex = posts.findIndex(p => p.id === id);
+    if (postIndex === -1) {
+      return res.status(404).json({ error: "Post not found." });
+    }
+
+    const newComment = {
+      id: Date.now().toString(),
+      author,
+      text,
+      createdAt: new Date().toISOString()
+    };
+
+    posts[postIndex].comments.push(newComment);
+    fs.writeFileSync(postsFilePath, JSON.stringify(posts, null, 2), 'utf-8');
+    res.status(201).json(newComment);
+  } catch (error) {
+    console.error("Error in POST /api/posts/:id/comment:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+
 // Serve index.html for any other route if it exists (Single Page Application fallback)
 app.get(/.*/, (req, res, next) => {
   if (req.path.startsWith('/api-proxy') || req.path.startsWith('/sheet-proxy') || req.path.startsWith('/ws-proxy')) {
@@ -460,6 +805,9 @@ app.get(/.*/, (req, res, next) => {
 
 const server = app.listen(PORT, API_BACKEND_HOST, () => {
   console.log(`Vertex AI Backend listening at http://localhost:${PORT}`);
+  initDataStorage();
+  // Inicialización de tendencias diaria de forma asíncrona
+  getOrUpdateTrends();
 });
 
 

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Network, Cpu, BrainCircuit, Sparkles, Bot } from 'lucide-react';
 import Header from './components/Header';
 import Hero from './components/Hero';
@@ -8,8 +8,12 @@ import RegistrationTabs from './components/RegistrationTabs';
 import Tips from './components/Tips';
 import Timeline from './components/Timeline';
 import Footer from './components/Footer';
+import Blog from './components/Blog';
+import SocialNetwork from './components/SocialNetwork';
 
 export default function App() {
+  const [view, setView] = useState<'landing' | 'blog' | 'social'>('landing');
+
   return (
     <div className="min-h-screen flex flex-col relative bg-prosur-bg">
       
@@ -44,14 +48,22 @@ export default function App() {
 
       {/* Main Content Wrapper */}
       <div className="relative z-10 flex flex-col min-h-screen">
-        <Header />
-        <main className="flex-grow">
-          <Hero />
-          <Prizes />
-          <Rules />
-          <Tips />
-          <Timeline />
-          <RegistrationTabs />
+        <Header currentView={view} onViewChange={setView} />
+        <main className="flex-grow flex flex-col">
+          {view === 'landing' ? (
+            <>
+              <Hero />
+              <Prizes />
+              <Rules />
+              <Tips />
+              <Timeline />
+              <RegistrationTabs />
+            </>
+          ) : view === 'blog' ? (
+            <Blog />
+          ) : (
+            <SocialNetwork />
+          )}
         </main>
         <Footer />
       </div>

@@ -1,15 +1,54 @@
 import React, { useState } from 'react';
 import { Menu, X } from 'lucide-react';
 
-export default function Header() {
+interface HeaderProps {
+  currentView: 'landing' | 'blog' | 'social';
+  onViewChange: (view: 'landing' | 'blog' | 'social') => void;
+}
+
+export default function Header({ currentView, onViewChange }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const navLinks = [
-    { href: '#premios', label: 'Premios' },
-    { href: '#reglas', label: 'Reglas' },
-    { href: '#registro', label: 'Registro' },
-    { href: '#cronograma', label: 'Cronograma' },
+    { id: 'landing', label: 'Inicio', isView: true },
+    { id: 'premios', href: '#premios', label: 'Premios' },
+    { id: 'reglas', href: '#reglas', label: 'Reglas' },
+    { id: 'registro', href: '#registro', label: 'Registro' },
+    { id: 'cronograma', href: '#cronograma', label: 'Cronograma' },
+    { id: 'blog', label: 'Tendencias de IA', isView: true },
+    { id: 'social', label: 'Red de Herramientas', isView: true },
   ];
+
+  const handleLinkClick = (e: React.MouseEvent, link: any) => {
+    e.preventDefault();
+    if (link.isView) {
+      onViewChange(link.id);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      if (currentView !== 'landing') {
+        onViewChange('landing');
+        setTimeout(() => {
+          const element = document.querySelector(link.href);
+          if (element) {
+            element.scrollIntoView({ behavior: 'smooth' });
+          }
+        }, 150);
+      } else {
+        const element = document.querySelector(link.href);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }
+      }
+    }
+    setIsMenuOpen(false);
+  };
+
+  const isLinkActive = (link: any) => {
+    if (link.isView) {
+      return currentView === link.id;
+    }
+    return false;
+  };
 
   return (
     <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-200 shadow-sm">
@@ -17,7 +56,15 @@ export default function Header() {
         <div className="flex justify-between items-center h-20">
           {/* Logo / Brand */}
           <div className="flex-shrink-0 flex items-center">
-            <a href="#" className="flex items-center focus:outline-none focus:ring-2 focus:ring-prosur-red rounded">
+            <a 
+              href="#" 
+              onClick={(e) => {
+                e.preventDefault();
+                onViewChange('landing');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              className="flex items-center focus:outline-none focus:ring-2 focus:ring-prosur-red rounded"
+            >
               <img 
                 src="./logoprosur.png" 
                 alt="Logo Grupo Prosur" 
@@ -29,12 +76,17 @@ export default function Header() {
           </div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex space-x-8" aria-label="Navegación principal">
+          <nav className="hidden lg:flex space-x-6" aria-label="Navegación principal">
             {navLinks.map((link) => (
               <a
-                key={link.href}
-                href={link.href}
-                className="text-prosur-gray hover:text-prosur-red font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-prosur-red rounded px-2 py-1"
+                key={link.id}
+                href={link.href || '#'}
+                onClick={(e) => handleLinkClick(e, link)}
+                className={`font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-prosur-red rounded px-2.5 py-1.5 text-sm ${
+                  isLinkActive(link)
+                    ? 'text-prosur-red bg-prosur-red/5'
+                    : 'text-prosur-gray hover:text-prosur-red'
+                }`}
               >
                 {link.label}
               </a>
@@ -42,7 +94,7 @@ export default function Header() {
           </nav>
 
           {/* Mobile menu button */}
-          <div className="md:hidden flex items-center">
+          <div className="lg:hidden flex items-center">
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="text-prosur-gray hover:text-prosur-red focus:outline-none focus:ring-2 focus:ring-prosur-red rounded p-2"
@@ -57,14 +109,18 @@ export default function Header() {
 
       {/* Mobile Navigation */}
       {isMenuOpen && (
-        <div className="md:hidden bg-white border-t border-gray-100">
+        <div className="lg:hidden bg-white border-t border-gray-100">
           <nav className="px-2 pt-2 pb-3 space-y-1 sm:px-3" aria-label="Navegación móvil">
             {navLinks.map((link) => (
               <a
-                key={link.href}
-                href={link.href}
-                onClick={() => setIsMenuOpen(false)}
-                className="block px-3 py-2 rounded-md text-base font-medium text-prosur-gray hover:text-prosur-red hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-prosur-red"
+                key={link.id}
+                href={link.href || '#'}
+                onClick={(e) => handleLinkClick(e, link)}
+                className={`block px-3 py-2 rounded-md text-base font-semibold ${
+                  isLinkActive(link)
+                    ? 'text-prosur-red bg-prosur-red/5'
+                    : 'text-prosur-gray hover:text-prosur-red hover:bg-gray-50'
+                }`}
               >
                 {link.label}
               </a>
