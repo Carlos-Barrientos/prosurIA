@@ -18,6 +18,10 @@ export default defineConfig(({ mode }) => {
           '/ws-proxy': {target: 'ws://localhost:5000', ws: true},
         },
       },
+      build: {
+        outDir: '../backend/public',
+        emptyOutDir: true,
+      },
       plugins: react(),
       resolve: {
         alias: {
