@@ -803,6 +803,51 @@ app.post('/api/posts/:id/comment', (req, res) => {
 });
 
 
+// --- Endpoints del Chat en Vivo (HTTP Fallback) ---
+app.get('/api/chat', (req, res) => {
+  try {
+    const history = JSON.parse(fs.readFileSync(chatHistoryFilePath, 'utf-8') || '[]');
+    res.json(history.slice(-50));
+  } catch (error) {
+    console.error("Error in GET /api/chat:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post('/api/chat', (req, res) => {
+  try {
+    const { author, text } = req.body;
+    if (!author || !text) {
+      return res.status(400).json({ error: "Missing fields." });
+    }
+    const newMessage = {
+      id: Date.now().toString() + '-' + Math.random().toString(36).substr(2, 4),
+      author,
+      text,
+      createdAt: new Date().toISOString()
+    };
+
+    const history = JSON.parse(fs.readFileSync(chatHistoryFilePath, 'utf-8') || '[]');
+    history.push(newMessage);
+    if (history.length > 100) history.shift();
+    fs.writeFileSync(chatHistoryFilePath, JSON.stringify(history, null, 2), 'utf-8');
+
+    // Broadcast to any active WebSocket clients
+    const broadcastData = JSON.stringify({ type: 'message', message: newMessage });
+    for (const client of chatClients) {
+      if (client.readyState === WebSocket.OPEN) {
+        client.send(broadcastData);
+      }
+    }
+
+    res.status(201).json(newMessage);
+  } catch (error) {
+    console.error("Error in POST /api/chat:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+
 // Serve index.html for any other route if it exists (Single Page Application fallback)
 app.get(/.*/, (req, res, next) => {
   if (req.path.startsWith('/api-proxy') || req.path.startsWith('/sheet-proxy') || req.path.startsWith('/ws-proxy')) {

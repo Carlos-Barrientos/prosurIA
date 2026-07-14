@@ -16,12 +16,16 @@ export default function LiveChat() {
   const [tempName, setTempName] = useState('');
   const [isEditingName, setIsEditingName] = useState(false);
   const [connected, setConnected] = useState(false);
+  const [usePolling, setUsePolling] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
 
   const wsRef = useRef<WebSocket | null>(null);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
   // Initialize and maintain WebSocket connection
   useEffect(() => {
+    if (usePolling) return; // Skip if fell back to polling
+    
     let reconnectTimeout: any;
 
     const connect = () => {
@@ -36,6 +40,7 @@ export default function LiveChat() {
         socket.onopen = () => {
           console.log('[Chat Client] Connected to WebSocket');
           setConnected(true);
+          setRetryCount(0);
         };
 
         socket.onmessage = (event) => {
@@ -52,9 +57,19 @@ export default function LiveChat() {
         };
 
         socket.onclose = () => {
-          console.log('[Chat Client] Disconnected from WebSocket, reconnecting...');
+          console.log('[Chat Client] WebSocket disconnected');
           setConnected(false);
-          reconnectTimeout = setTimeout(connect, 3000); // Reconnect in 3s
+          
+          setRetryCount(prev => {
+            const nextCount = prev + 1;
+            if (nextCount >= 2) {
+              console.warn('[Chat Client] WS failed 2 times, falling back to HTTP Polling');
+              setUsePolling(true);
+            } else {
+              reconnectTimeout = setTimeout(connect, 3000); // Try again
+            }
+            return nextCount;
+          });
         };
 
         socket.onerror = (err) => {
@@ -63,6 +78,7 @@ export default function LiveChat() {
         };
       } catch (e) {
         console.error('[Chat Client] WebSocket connection error:', e);
+        setUsePolling(true);
       }
     };
 
@@ -74,32 +90,71 @@ export default function LiveChat() {
       }
       clearTimeout(reconnectTimeout);
     };
-  }, []);
+  }, [usePolling]);
 
-  // Auto-scroll to bottom when new messages arrive or chat opens
+  // Fallback: HTTP Polling connection effect
   useEffect(() => {
-    if (isOpen) {
-      setTimeout(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-      }, 50);
-    }
-  }, [messages, isOpen]);
+    if (!usePolling) return;
 
-  const handleSendMessage = (e: React.FormEvent) => {
+    const fetchHistory = async () => {
+      try {
+        const res = await fetch('/api/chat');
+        if (res.ok) {
+          const data = await res.json();
+          setMessages(data);
+        }
+      } catch (e) {
+        console.error("[Chat Polling] Error fetching chat history:", e);
+      }
+    };
+
+    fetchHistory();
+    const interval = setInterval(fetchHistory, 3000); // Poll every 3s
+    return () => clearInterval(interval);
+  }, [usePolling]);
+
+  // Send message handler (WS or HTTP)
+  const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!inputText.trim() || !username) return;
 
-    if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
-      wsRef.current.send(
-        JSON.stringify({
-          type: 'message',
-          author: username,
-          text: inputText
-        })
-      );
-      setInputText('');
+    if (usePolling) {
+      // Send via HTTP POST
+      try {
+        const res = await fetch('/api/chat', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            author: username,
+            text: inputText
+          })
+        });
+        if (res.ok) {
+          const newMsg = await res.json();
+          setMessages((prev) => [...prev, newMsg]);
+          setInputText('');
+        } else {
+          console.error("[Chat Polling] Server rejected comment");
+        }
+      } catch (err) {
+        console.error("[Chat Polling] Send message failed:", err);
+      }
     } else {
-      alert("Conexión perdida. Intentando reconectar al chat...");
+      // Send via WebSocket
+      if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+        wsRef.current.send(
+          JSON.stringify({
+            type: 'message',
+            author: username,
+            text: inputText
+          })
+        );
+        setInputText('');
+      } else {
+        alert("Conexión perdida. Reintentando conectar...");
+      }
     }
   };
 
@@ -135,7 +190,7 @@ export default function LiveChat() {
         aria-label="Abrir chat en vivo"
       >
         {isOpen ? <X className="w-6 h-6 animate-pulse" /> : <MessageSquare className="w-6 h-6" />}
-        {connected && !isOpen && (
+        {(connected || usePolling) && !isOpen && (
           <span className="absolute top-1 right-1 flex h-3.5 w-3.5">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
             <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-green-500 border border-white"></span>
@@ -154,8 +209,8 @@ export default function LiveChat() {
                 Chat de la Comunidad
               </h3>
               <span className="text-[10px] text-gray-300 flex items-center gap-1 mt-0.5">
-                <span className={`inline-block w-1.5 h-1.5 rounded-full ${connected ? 'bg-green-500' : 'bg-red-500 animate-pulse'}`}></span>
-                {connected ? 'En línea • Real-time' : 'Reconectando...'}
+                <span className={`inline-block w-1.5 h-1.5 rounded-full ${(connected || usePolling) ? 'bg-green-500' : 'bg-red-500 animate-pulse'}`}></span>
+                {(connected || usePolling) ? (usePolling ? 'En línea • Polling' : 'En línea • Real-time') : 'Reconectando...'}
               </span>
             </div>
             <button
