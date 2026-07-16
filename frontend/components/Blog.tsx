@@ -137,78 +137,151 @@ export default function Blog() {
       {/* Grid of articles */}
       {!loading && !error && (
         filteredArticles.length === 0 ? (
-          <div className="text-center py-20 bg-white border border-gray-100 rounded-3xl shadow-sm">
+          <div className="text-center py-20 bg-white border border-gray-150/40 rounded-3xl shadow-sm">
             <BookOpen className="w-12 h-12 text-gray-300 mx-auto mb-3" />
             <p className="text-gray-500 font-medium">No se encontraron artículos en esta categoría.</p>
           </div>
         ) : (
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {filteredArticles.map(article => (
-              <article
-                key={article.id}
-                onClick={() => setSelectedArticle(article)}
-                className="group flex flex-col justify-between bg-white border border-gray-100 rounded-3xl p-6 shadow-sm hover:shadow-xl hover:-translate-y-1 transition duration-300 cursor-pointer"
-              >
-                <div>
-                  <div className="flex justify-between items-center mb-4">
-                    <span className="inline-block bg-prosur-red/5 text-prosur-red text-xs font-semibold px-3 py-1.5 rounded-full border border-prosur-red/10">
-                      {article.category}
-                    </span>
-                    <span className="flex items-center gap-1 text-xs text-gray-400">
-                      <Clock className="w-3.5 h-3.5" />
-                      {article.readTime}
-                    </span>
-                  </div>
-                  
-                  <h3 className="text-xl font-bold text-gray-900 group-hover:text-prosur-red transition-colors mb-2 line-clamp-2">
-                    {article.title}
-                  </h3>
-                  
-                  <p className="text-gray-600 text-sm mb-6 line-clamp-3 leading-relaxed">
-                    {article.summary}
-                  </p>
-                </div>
+          <div className="flex flex-col">
+            {/* Featured Article (First article of the list) */}
+            {(() => {
+              const featuredArticle = filteredArticles[0];
+              const getCategoryColors = (category: string) => {
+                const c = category.toLowerCase();
+                if (c.includes('modelo') || c.includes('lenguaje')) return 'bg-blue-50 text-blue-600 border-blue-100';
+                if (c.includes('agente') || c.includes('software')) return 'bg-purple-50 text-purple-600 border-purple-100';
+                if (c.includes('productividad') || c.includes('eficiencia')) return 'bg-green-50 text-green-600 border-green-100';
+                if (c.includes('diseño') || c.includes('creativ')) return 'bg-pink-50 text-pink-600 border-pink-100';
+                if (c.includes('negocio') || c.includes('corporativo')) return 'bg-amber-50 text-amber-600 border-amber-100';
+                return 'bg-gray-50 text-gray-600 border-gray-150';
+              };
 
-                <div className="pt-4 border-t border-gray-50 flex justify-between items-center text-xs text-gray-400">
-                  <span className="flex items-center gap-1 font-medium text-gray-500">
-                    <User className="w-3.5 h-3.5" />
-                    {article.author}
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <Calendar className="w-3.5 h-3.5" />
-                    {article.date}
-                  </span>
+              return (
+                <div 
+                  onClick={() => setSelectedArticle(featuredArticle)}
+                  className="group relative w-full bg-gradient-to-br from-white/95 to-red-500/[0.02] border border-gray-200/80 rounded-3xl p-6 sm:p-8 shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer flex flex-col md:flex-row gap-6 items-stretch overflow-hidden mb-8 transform hover:-translate-y-0.5"
+                >
+                  <div className="absolute top-0 right-0 w-64 h-64 bg-prosur-red/5 rounded-bl-full transform translate-x-16 -translate-y-16 group-hover:scale-110 transition-transform duration-300 pointer-events-none"></div>
+                  <div className="flex-1 flex flex-col justify-between z-10">
+                    <div>
+                      <div className="flex flex-wrap items-center gap-3 mb-4">
+                        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-red-100 text-prosur-red border border-red-200 shadow-2xs">
+                          ⭐ Destacado
+                        </span>
+                        <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold border ${getCategoryColors(featuredArticle.category)}`}>
+                          {featuredArticle.category}
+                        </span>
+                        <span className="flex items-center gap-1 text-xs text-gray-400">
+                          <Clock className="w-3.5 h-3.5" />
+                          {featuredArticle.readTime}
+                        </span>
+                      </div>
+                      <h3 className="text-2xl sm:text-3xl font-extrabold text-gray-900 group-hover:text-prosur-red transition-colors mb-3 leading-tight">
+                        {featuredArticle.title}
+                      </h3>
+                      <p className="text-gray-500 leading-relaxed mb-6 max-w-4xl text-sm sm:text-base">
+                        {featuredArticle.summary}
+                      </p>
+                    </div>
+                    <div className="pt-4 border-t border-gray-100 flex justify-between items-center text-xs text-gray-400">
+                      <span className="flex items-center gap-1.5 font-bold text-gray-600">
+                        <User className="w-3.5 h-3.5 text-gray-400" />
+                        {featuredArticle.author}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <Calendar className="w-3.5 h-3.5" />
+                        {featuredArticle.date}
+                      </span>
+                    </div>
+                  </div>
                 </div>
-              </article>
-            ))}
+              );
+            })()}
+
+            {/* Standard Grid for Remaining Articles */}
+            {filteredArticles.length > 1 && (
+              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                {filteredArticles.slice(1).map(article => {
+                  const getCategoryColors = (category: string) => {
+                    const c = category.toLowerCase();
+                    if (c.includes('modelo') || c.includes('lenguaje')) return 'bg-blue-50 text-blue-600 border-blue-100';
+                    if (c.includes('agente') || c.includes('software')) return 'bg-purple-50 text-purple-600 border-purple-100';
+                    if (c.includes('productividad') || c.includes('eficiencia')) return 'bg-green-50 text-green-600 border-green-100';
+                    if (c.includes('diseño') || c.includes('creativ')) return 'bg-pink-50 text-pink-600 border-pink-100';
+                    if (c.includes('negocio') || c.includes('corporativo')) return 'bg-amber-50 text-amber-600 border-amber-100';
+                    return 'bg-gray-50 text-gray-600 border-gray-150';
+                  };
+
+                  return (
+                    <article
+                      key={article.id}
+                      onClick={() => setSelectedArticle(article)}
+                      className="group flex flex-col justify-between bg-white border border-gray-150/40 rounded-3xl p-6 shadow-sm hover:shadow-xl hover:-translate-y-1 transition duration-300 cursor-pointer relative overflow-hidden"
+                    >
+                      <div className="absolute top-0 right-0 w-24 h-24 bg-prosur-red/2 rounded-bl-full transform translate-x-8 -translate-y-8 group-hover:scale-110 transition-transform duration-300 pointer-events-none"></div>
+                      <div>
+                        <div className="flex justify-between items-center mb-4 z-10 relative">
+                          <span className={`inline-block text-xs font-semibold px-3 py-1 rounded-full border ${getCategoryColors(article.category)}`}>
+                            {article.category}
+                          </span>
+                          <span className="flex items-center gap-1 text-xs text-gray-400">
+                            <Clock className="w-3.5 h-3.5" />
+                            {article.readTime}
+                          </span>
+                        </div>
+                        
+                        <h3 className="text-lg font-bold text-gray-900 group-hover:text-prosur-red transition-colors mb-2 line-clamp-2 leading-snug">
+                          {article.title}
+                        </h3>
+                        
+                        <p className="text-gray-500 text-sm mb-6 line-clamp-3 leading-relaxed">
+                          {article.summary}
+                        </p>
+                      </div>
+
+                      <div className="pt-4 border-t border-gray-100 flex justify-between items-center text-xs text-gray-400 z-10 relative">
+                        <span className="flex items-center gap-1.5 font-bold text-gray-600">
+                          <User className="w-3.5 h-3.5 text-gray-400" />
+                          {article.author}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <Calendar className="w-3.5 h-3.5" />
+                          {article.date}
+                        </span>
+                      </div>
+                    </article>
+                  );
+                })}
+              </div>
+            )}
           </div>
         )
       )}
 
       {/* Article details modal */}
       {selectedArticle && (
-        <div className="fixed inset-0 z-50 overflow-y-auto bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6 animate-fade-in" role="dialog" aria-modal="true">
-          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col relative animate-slide-up">
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 sm:p-6" role="dialog" aria-modal="true" onClick={() => setSelectedArticle(null)}>
+          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col relative animate-in fade-in zoom-in-95 duration-200" onClick={(e) => e.stopPropagation()}>
             {/* Modal Header */}
             <div className="p-6 sm:p-8 border-b border-gray-100 flex justify-between items-start">
-              <div>
+              <div className="w-full">
                 <button
                   onClick={() => setSelectedArticle(null)}
-                  className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-prosur-red font-medium mb-4 transition"
+                  className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-prosur-red font-semibold mb-4 transition"
                 >
                   <ArrowLeft className="w-4 h-4" />
                   Volver al blog
                 </button>
-                <div className="flex items-center gap-3 mb-2 flex-wrap">
-                  <span className="inline-block bg-prosur-red/5 text-prosur-red text-xs font-semibold px-3 py-1.5 rounded-full border border-prosur-red/10">
+                <div className="flex items-center gap-3 mb-3 flex-wrap">
+                  <span className="inline-block bg-prosur-red/5 text-prosur-red text-xs font-semibold px-3 py-1 rounded-full border border-prosur-red/10 shadow-3xs">
                     {selectedArticle.category}
                   </span>
-                  <span className="flex items-center gap-1 text-xs text-gray-400">
-                    <Clock className="w-3.5 h-3.5" />
+                  <span className="flex items-center gap-1 text-xs text-gray-400 font-medium">
+                    <Clock className="w-3.5 h-3.5 text-gray-400" />
                     {selectedArticle.readTime}
                   </span>
-                  <span className="flex items-center gap-1 text-xs text-gray-400">
-                    <Calendar className="w-3.5 h-3.5" />
+                  <span className="flex items-center gap-1 text-xs text-gray-400 font-medium">
+                    <Calendar className="w-3.5 h-3.5 text-gray-400" />
                     {selectedArticle.date}
                   </span>
                 </div>
@@ -221,23 +294,23 @@ export default function Blog() {
             {/* Modal Content */}
             <div className="p-6 sm:p-8 overflow-y-auto space-y-8 flex-grow">
               {/* Detailed Content */}
-              <div className="prose max-w-none text-gray-600 leading-relaxed space-y-4">
+              <div className="prose max-w-none text-gray-600 leading-relaxed text-sm sm:text-base space-y-6">
                 {selectedArticle.content.split('\n\n').map((paragraph, index) => (
-                  <p key={index}>{paragraph}</p>
+                  <p key={index} className="whitespace-pre-line">{paragraph}</p>
                 ))}
               </div>
 
               {/* Key points */}
               {selectedArticle.keyPoints && selectedArticle.keyPoints.length > 0 && (
-                <div className="bg-gray-50 rounded-2xl p-6 border border-gray-100">
+                <div className="bg-gray-50/80 rounded-2xl p-6 border border-gray-100">
                   <h4 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
                     <CheckCircle className="w-5 h-5 text-prosur-red" />
                     Puntos clave a considerar
                   </h4>
-                  <ul className="grid gap-3 sm:grid-cols-3">
+                  <ul className="grid gap-4 sm:grid-cols-3">
                     {selectedArticle.keyPoints.map((point, index) => (
-                      <li key={index} className="flex gap-2 text-sm text-gray-600 leading-normal">
-                        <span className="text-prosur-red font-semibold text-sm select-none">•</span>
+                      <li key={index} className="flex gap-2 text-sm text-gray-600 leading-relaxed">
+                        <span className="text-prosur-red font-extrabold text-base select-none mt-[-2px]">•</span>
                         <span>{point}</span>
                       </li>
                     ))}
@@ -247,11 +320,11 @@ export default function Blog() {
 
               {/* Impact projection */}
               {selectedArticle.impact && (
-                <div className="bg-prosur-red/[0.02] border border-prosur-red/10 rounded-2xl p-6">
-                  <h4 className="font-bold text-prosur-red mb-2 uppercase tracking-wide text-xs">
+                <div className="bg-gradient-to-br from-red-500/[0.01] to-red-500/[0.04] border border-prosur-red/15 rounded-2xl p-6">
+                  <h4 className="font-bold text-prosur-red mb-2 uppercase tracking-wider text-xs">
                     Impacto Estimado (12 Meses)
                   </h4>
-                  <p className="text-gray-700 text-sm leading-relaxed">
+                  <p className="text-gray-800 text-sm sm:text-base leading-relaxed">
                     {selectedArticle.impact}
                   </p>
                 </div>
@@ -259,14 +332,14 @@ export default function Blog() {
             </div>
 
             {/* Modal Footer */}
-            <div className="p-6 border-t border-gray-100 bg-gray-50 flex justify-between items-center text-xs text-gray-500 rounded-b-3xl">
-              <span className="flex items-center gap-1">
-                <User className="w-3.5 h-3.5" />
-                Escrito por: <strong className="text-gray-700 font-semibold">{selectedArticle.author}</strong>
+            <div className="p-6 border-t border-gray-100 bg-gray-50/50 flex justify-between items-center text-xs text-gray-500 rounded-b-3xl">
+              <span className="flex items-center gap-1.5">
+                <User className="w-3.5 h-3.5 text-gray-400" />
+                Escrito por: <strong className="text-gray-700 font-bold">{selectedArticle.author}</strong>
               </span>
               <button
                 onClick={() => setSelectedArticle(null)}
-                className="bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold px-5 py-2 rounded-xl transition"
+                className="bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 font-bold px-5 py-2.5 rounded-xl shadow-xs transition"
               >
                 Cerrar
               </button>
@@ -277,3 +350,4 @@ export default function Blog() {
     </section>
   );
 }
+

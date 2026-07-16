@@ -76,21 +76,36 @@ export default function Header({ currentView, onViewChange }: HeaderProps) {
           </div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex space-x-6" aria-label="Navegación principal">
-            {navLinks.map((link) => (
-              <a
-                key={link.id}
-                href={link.href || '#'}
-                onClick={(e) => handleLinkClick(e, link)}
-                className={`font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-prosur-red rounded px-2.5 py-1.5 text-sm ${
-                  isLinkActive(link)
-                    ? 'text-prosur-red bg-prosur-red/5'
-                    : 'text-prosur-gray hover:text-prosur-red'
-                }`}
-              >
-                {link.label}
-              </a>
-            ))}
+          <nav className="hidden lg:flex items-center space-x-4" aria-label="Navegación principal">
+            {navLinks.map((link) => {
+              const isActive = isLinkActive(link);
+              let className = `font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-prosur-red rounded px-3 py-2 text-sm flex items-center `;
+              
+              if (link.id === 'blog') {
+                className += isActive
+                  ? 'text-white bg-prosur-red shadow-sm transform scale-105'
+                  : 'text-prosur-red border border-prosur-red/20 hover:bg-prosur-red hover:text-white shadow-xs';
+              } else if (link.id === 'social') {
+                className += isActive
+                  ? 'text-white bg-blue-600 shadow-sm transform scale-105'
+                  : 'text-blue-600 border border-blue-500/20 hover:bg-blue-600 hover:text-white shadow-xs';
+              } else {
+                className += isActive
+                  ? 'text-prosur-red bg-prosur-red/5'
+                  : 'text-prosur-gray hover:text-prosur-red';
+              }
+
+              return (
+                <a
+                  key={link.id}
+                  href={link.href || '#'}
+                  onClick={(e) => handleLinkClick(e, link)}
+                  className={className}
+                >
+                  {link.label}
+                </a>
+              );
+            })}
           </nav>
 
           {/* Mobile menu button */}
@@ -109,22 +124,37 @@ export default function Header({ currentView, onViewChange }: HeaderProps) {
 
       {/* Mobile Navigation */}
       {isMenuOpen && (
-        <div className="lg:hidden bg-white border-t border-gray-100">
-          <nav className="px-2 pt-2 pb-3 space-y-1 sm:px-3" aria-label="Navegación móvil">
-            {navLinks.map((link) => (
-              <a
-                key={link.id}
-                href={link.href || '#'}
-                onClick={(e) => handleLinkClick(e, link)}
-                className={`block px-3 py-2 rounded-md text-base font-semibold ${
-                  isLinkActive(link)
-                    ? 'text-prosur-red bg-prosur-red/5'
-                    : 'text-prosur-gray hover:text-prosur-red hover:bg-gray-50'
-                }`}
-              >
-                {link.label}
-              </a>
-            ))}
+        <div className="lg:hidden bg-white border-t border-gray-100 shadow-inner">
+          <nav className="px-3 pt-2 pb-4 space-y-1.5 sm:px-4" aria-label="Navegación móvil">
+            {navLinks.map((link) => {
+              const isActive = isLinkActive(link);
+              let className = `block px-3 py-2.5 rounded-lg text-base font-semibold transition-colors `;
+              
+              if (link.id === 'blog') {
+                className += isActive
+                  ? 'text-white bg-prosur-red'
+                  : 'text-prosur-red bg-red-50/50 hover:bg-red-50 border border-red-100';
+              } else if (link.id === 'social') {
+                className += isActive
+                  ? 'text-white bg-blue-600'
+                  : 'text-blue-600 bg-blue-50/50 hover:bg-blue-50 border border-blue-100';
+              } else {
+                className += isActive
+                  ? 'text-prosur-red bg-prosur-red/5'
+                  : 'text-prosur-gray hover:text-prosur-red hover:bg-gray-50';
+              }
+
+              return (
+                <a
+                  key={link.id}
+                  href={link.href || '#'}
+                  onClick={(e) => handleLinkClick(e, link)}
+                  className={className}
+                >
+                  {link.label}
+                </a>
+              );
+            })}
           </nav>
         </div>
       )}
