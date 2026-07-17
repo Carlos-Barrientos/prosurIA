@@ -1,0 +1,23 @@
+[debug] [2026-07-17T14:10:03.884Z] ----------------------------------------------------------------------
+[debug] [2026-07-17T14:10:03.886Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\Carlos Barrientos\AppData\Local\npm-cache\_npx\ba4f1959e38407b5\node_modules\firebase-tools\lib\bin\firebase.js init dataconnect --project demo-no-project
+[debug] [2026-07-17T14:10:03.886Z] CLI Version:   15.24.0
+[debug] [2026-07-17T14:10:03.886Z] Platform:      win32
+[debug] [2026-07-17T14:10:03.887Z] Node Version:  v24.18.0
+[debug] [2026-07-17T14:10:03.887Z] Detected Agent: unknown
+[debug] [2026-07-17T14:10:03.887Z] Time:          Fri Jul 17 2026 08:10:03 GMT-0600 (hora estándar central)
+[debug] [2026-07-17T14:10:03.887Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-07-17T14:10:03.898Z] >>> [apiv2][query] GET https://firebase-public.firebaseio.com/cli.json [none]
+[info] 
+     ######## #### ########  ######## ########     ###     ######  ########
+     ##        ##  ##     ## ##       ##     ##  ##   ##  ##       ##
+     ######    ##  ########  ######   ########  #########  ######  ######
+     ##        ##  ##    ##  ##       ##     ## ##     ##       ## ##
+     ##       #### ##     ## ######## ########  ##     ##  ######  ########
+
+You're about to initialize a Firebase project in this directory:
+
+  C:\Users\Carlos Barrientos\Documents\Desarrollos\prosurIA
+
+[debug] [2026-07-17T14:10:07.766Z] <<< [apiv2][status] GET https://firebase-public.firebaseio.com/cli.json 200
+[debug] [2026-07-17T14:10:07.767Z] <<< [apiv2][body] GET https://firebase-public.firebaseio.com/cli.json {"cloudBuildErrorAfter":1594252800000,"cloudBuildWarnAfter":1590019200000,"defaultNode10After":1594252800000,"minVersion":"3.0.5","node8DeploysDisabledAfter":1613390400000,"node8RuntimeDisabledAfter":1615809600000,"node8WarnAfter":1600128000000}
