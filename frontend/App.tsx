@@ -136,7 +136,7 @@ export default function App() {
           )}
         </main>
         <Footer />
-        <LiveChat />
+        {view !== 'social' && <LiveChat />}
       </div>
     </div>
   );
