@@ -355,56 +355,101 @@ export default function SocialNetwork() {
     return 'bg-gray-50 text-gray-600 border-gray-150';
   };
 
+  const challengeProjects = [
+    {
+      teamName: "Procesos",
+      projectName: "Resurtido_compras_rv",
+      diagnosis: "La planeación de compras en la empresa RIO VINYL DE MEXICO requiere la extracción, validación y consolidación manual de información desde el ERP (Microsip) hacia herramientas externas como hojas de cálculo.",
+      solution: "Se creará un sistema que ejecutará automáticamente todo el proceso de planeación al inicio de cada mes. Adicionalmente, la persona encargada podrá solicitarlo enviando un correo.",
+      metric: "Tiempo por ciclo: de 4 horas a menos de 10 minutos. Errores de cálculo: de variable a cero."
+    },
+    {
+      teamName: "T-800",
+      projectName: "Automatización de captura, asignación de leads y atención de prospectos",
+      diagnosis: "Actualmente, el proceso de asignación de leads se realiza de manera manual. Este procedimiento depende completamente de la intervención humana, lo que genera una carga operativa considerable.",
+      solution: "Se propone implementar una automatización integrada entre Kommo, Google Sheet y agentes de IA de Eleven Labs mediante herramientas de automatización de procesos (n8n o make).",
+      metric: "Automatizar el 100% de la asignación de leads y ahorrar al menos 20 horas de trabajo semanales."
+    },
+    {
+      teamName: "Impulso Inteligente",
+      projectName: "PULSO BDC Servicio",
+      diagnosis: "En el BDC utilizamos información de varias fuentes (DMS, CRM, PROSUR, SIMA). Hoy esto nos consume alrededor de 12 horas-persona por semana, genera errores de captura y cuando el tablero está listo, la información ya envejeció.",
+      solution: "Un tablero que reciba uno o varios Excel de cualquier sucursal o fuente, detecte automáticamente el tipo de reporte, estandarice los encabezados y deduzca la marca a partir del VIN.",
+      metric: "Horas-persona ahorradas por semana en consolidación y clasificación (de 12 horas a 1 hora por corte)."
+    },
+    {
+      teamName: "TEAM AMOS",
+      projectName: "automatización de adquisición de seguros",
+      diagnosis: "Proceso tardado para contactar al cliente para el otorgamiento para la renovación de pólizas de seguro.",
+      solution: "Con ayuda de la IA se pretende disminuir considerablemente los tiempos de respuesta y contacto a cliente para la renovación de las pólizas de seguro.",
+      metric: "Ahorro en procesos de autorización de la pólizas de seguro y contacto al cliente."
+    },
+    {
+      teamName: "AI",
+      projectName: "Implementacion de calidad (tiempo, procesos y revision)",
+      diagnosis: "El reloj checador tiene asincronia con la hora actual. Los procesos de bitacora, evaluacion y calidad no tienen distribucion logica. La revision de unidades nocturnas tiene areas de oportunidad.",
+      solution: "Sincronización NTP (Network Time Protocol) automática de biométricos con servidores oficiales. Asistente IA para auditorías cruzadas. Escáner fotográfico de daños nocturno con visión por computadora.",
+      metric: "Resultados inmediatos, prácticos, 100% verificables y reducción drástica de tiempos muertos."
+    },
+    {
+      teamName: "IA conec",
+      projectName: "IA conec",
+      diagnosis: "El asesor divide gran parte de su tiempo redactando mensajes de seguimiento desde cero para ~200 contactos.",
+      solution: "Un asistente de IA que clasifica automáticamente a cada prospecto según respuestas de WhatsApp y genera mensajes de seguimiento personalizados por modelo.",
+      metric: "Tiempo de redacción: de 5-8 min a < 1 min. Prospectos atendidos: de 15-20 a la cartera completa priorizada. Ahorro de 1 a 2 horas diarias."
+    }
+  ];
+
   return (
-    <section className="flex-grow w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col h-[calc(100vh-80px)] overflow-hidden">
+    <section className="flex-grow w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col h-[calc(100vh-80px)] overflow-hidden relative">
       
-      {/* 3-Column Dashboard Container (Image 2 style) */}
-      <div className="flex flex-1 bg-white border border-gray-200/80 rounded-3xl overflow-hidden shadow-md h-full">
+      {/* 3-Column Dashboard Container (Glassmorphic style) */}
+      <div className="flex flex-1 bg-white/40 backdrop-blur-xl border border-white/50 rounded-[32px] overflow-hidden shadow-xl h-full">
         
         {/* ========================================================
             COLUMN 1: Left Navigation Sidebar (Channels/Views)
             ======================================================== */}
-        <div className="w-1/4 min-w-[200px] border-r border-gray-250/60 bg-gray-50/50 p-4 hidden md:flex flex-col justify-between">
+        <div className="w-1/4 min-w-[220px] border-r border-gray-200/40 bg-white/10 backdrop-blur-md p-4 hidden md:flex flex-col justify-between">
           <div className="space-y-6">
             <div>
-              <h2 className="text-xs font-black text-gray-400 uppercase tracking-widest px-3 mb-3">Comunidad Prosur</h2>
-              <div className="space-y-1">
+              <h2 className="text-xs font-black text-gray-400 uppercase tracking-widest px-3 mb-4">Comunidad Prosur</h2>
+              <div className="space-y-1.5">
                 {/* Chat tab link */}
                 <button 
                   onClick={() => setActiveTab('chat')}
-                  className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-extrabold transition-all ${
+                  className={`w-full flex items-center gap-2.5 px-4 py-3 rounded-2xl text-xs sm:text-sm font-black uppercase tracking-wider transition-all duration-300 ${
                     activeTab === 'chat' 
-                      ? 'bg-[#7C3AED]/10 text-[#7C3AED]' 
-                      : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                      ? 'bg-[#7C3AED] text-white shadow-md shadow-[#7C3AED]/20 scale-[1.02]' 
+                      : 'text-gray-600 hover:bg-white/60 hover:text-gray-900'
                   }`}
                 >
-                  <MessageCircle className="w-4.5 h-4.5" />
-                  <span>Canal General (Chat)</span>
+                  <MessageCircle className="w-4.5 h-4.5 shrink-0" />
+                  <span>Canal General</span>
                 </button>
 
                 {/* Shared tools tab link */}
                 <button 
                   onClick={() => setActiveTab('tools')}
-                  className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-extrabold transition-all ${
+                  className={`w-full flex items-center gap-2.5 px-4 py-3 rounded-2xl text-xs sm:text-sm font-black uppercase tracking-wider transition-all duration-300 ${
                     activeTab === 'tools' 
-                      ? 'bg-[#7C3AED]/10 text-[#7C3AED]' 
-                      : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                      ? 'bg-[#7C3AED] text-white shadow-md shadow-[#7C3AED]/20 scale-[1.02]' 
+                      : 'text-gray-600 hover:bg-white/60 hover:text-gray-900'
                   }`}
                 >
-                  <Share2 className="w-4.5 h-4.5" />
+                  <Share2 className="w-4.5 h-4.5 shrink-0" />
                   <span>Compartir Herramientas</span>
                 </button>
 
                 {/* Projects view tab link */}
                 <button 
                   onClick={() => setActiveTab('projects')}
-                  className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-extrabold transition-all ${
+                  className={`w-full flex items-center gap-2.5 px-4 py-3 rounded-2xl text-xs sm:text-sm font-black uppercase tracking-wider transition-all duration-300 ${
                     activeTab === 'projects' 
-                      ? 'bg-[#7C3AED]/10 text-[#7C3AED]' 
-                      : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                      ? 'bg-[#7C3AED] text-white shadow-md shadow-[#7C3AED]/20 scale-[1.02]' 
+                      : 'text-gray-600 hover:bg-white/60 hover:text-gray-900'
                   }`}
                 >
-                  <Award className="w-4.5 h-4.5" />
+                  <Award className="w-4.5 h-4.5 shrink-0" />
                   <span>Proyectos del Reto</span>
                 </button>
               </div>
@@ -412,18 +457,18 @@ export default function SocialNetwork() {
           </div>
           
           {/* User profile metadata info (bottom left sidebar) */}
-          <div className="border-t border-gray-200/80 pt-4 px-3 flex items-center gap-2.5">
-            <div className="w-8 h-8 bg-red-100 border border-red-200 text-prosur-red rounded-full flex items-center justify-center text-xs font-black shrink-0">
+          <div className="border-t border-gray-200/40 pt-4 px-3 flex items-center gap-2.5">
+            <div className="w-9 h-9 bg-red-550 bg-[#CC2027] border border-white/50 text-white rounded-full flex items-center justify-center text-xs font-black shadow-sm shrink-0">
               {username ? username.charAt(0).toUpperCase() : '?'}
             </div>
             <div className="overflow-hidden">
-              <span className="text-xs font-black text-gray-800 block truncate">{username || 'Invitado'}</span>
+              <span className="text-xs font-black text-gray-805 block truncate">{username || 'Invitado'}</span>
               <button 
                 onClick={() => {
                   setTempUsername(username);
                   setIsEditingName(true);
                 }} 
-                className="text-[10px] text-[#7C3AED] hover:underline font-bold"
+                className="text-[10px] text-[#7C3AED] hover:underline font-bold block"
               >
                 Editar Perfil
               </button>
@@ -434,25 +479,25 @@ export default function SocialNetwork() {
         {/* ========================================================
             COLUMN 2: Center Main Panel (Active View Workspace)
             ======================================================== */}
-        <div className="flex-1 flex flex-col h-full overflow-hidden bg-white">
+        <div className="flex-1 flex flex-col h-full overflow-hidden bg-white/40 backdrop-blur-md">
           
           {/* Mobile navigation header */}
-          <div className="flex md:hidden bg-gray-50 border-b border-gray-250/60 p-2 justify-around">
+          <div className="flex md:hidden bg-white/60 border-b border-gray-200/30 p-2 justify-around shrink-0">
             <button 
               onClick={() => setActiveTab('chat')}
-              className={`flex-1 py-2 text-center text-xs font-black rounded-lg ${activeTab === 'chat' ? 'bg-[#7C3AED]/10 text-[#7C3AED]' : 'text-gray-500'}`}
+              className={`flex-1 py-2.5 text-center text-[10px] font-black uppercase tracking-wider rounded-xl transition ${activeTab === 'chat' ? 'bg-[#7C3AED] text-white shadow-sm' : 'text-gray-500'}`}
             >
               Chat
             </button>
             <button 
               onClick={() => setActiveTab('tools')}
-              className={`flex-1 py-2 text-center text-xs font-black rounded-lg ${activeTab === 'tools' ? 'bg-[#7C3AED]/10 text-[#7C3AED]' : 'text-gray-500'}`}
+              className={`flex-1 py-2.5 text-center text-[10px] font-black uppercase tracking-wider rounded-xl transition ${activeTab === 'tools' ? 'bg-[#7C3AED] text-white shadow-sm' : 'text-gray-500'}`}
             >
               Herramientas
             </button>
             <button 
               onClick={() => setActiveTab('projects')}
-              className={`flex-1 py-2 text-center text-xs font-black rounded-lg ${activeTab === 'projects' ? 'bg-[#7C3AED]/10 text-[#7C3AED]' : 'text-gray-500'}`}
+              className={`flex-1 py-2.5 text-center text-[10px] font-black uppercase tracking-wider rounded-xl transition ${activeTab === 'projects' ? 'bg-[#7C3AED] text-white shadow-sm' : 'text-gray-500'}`}
             >
               Proyectos
             </button>
@@ -463,37 +508,37 @@ export default function SocialNetwork() {
             <div className="flex-1 flex flex-col h-full overflow-hidden relative">
               
               {/* Chat Header details */}
-              <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-white shrink-0">
+              <div className="px-6 py-4 border-b border-gray-100 bg-white/80 backdrop-blur-md flex items-center justify-between shrink-0">
                 <div>
-                  <h3 className="text-lg font-black text-gray-900 flex items-center gap-1.5">
+                  <h3 className="text-base sm:text-lg font-black text-gray-900 flex items-center gap-1.5">
                     <Hash className="w-5 h-5 text-gray-400" />
                     canal-general-ia
                   </h3>
-                  <p className="text-xs text-gray-400 font-bold">Chat en vivo de la Comunidad Prosur</p>
+                  <p className="text-xs text-gray-450 font-bold">Chat en vivo de la Comunidad Prosur</p>
                 </div>
                 
                 {/* Connection status tag */}
-                <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-black border uppercase tracking-wider ${
+                <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] font-black border uppercase tracking-wider ${
                   wsConnected 
-                    ? 'bg-green-50 text-green-700 border-green-200' 
+                    ? 'bg-green-50 text-green-700 border-green-200/50' 
                     : usePolling 
-                      ? 'bg-amber-50 text-amber-700 border-amber-200' 
-                      : 'bg-red-50 text-red-700 border-red-200'
+                      ? 'bg-amber-50 text-amber-700 border-amber-200/50' 
+                      : 'bg-red-50 text-red-700 border-red-200/50'
                 }`}>
                   <span className={`w-1.5 h-1.5 rounded-full ${wsConnected ? 'bg-green-500 animate-pulse' : usePolling ? 'bg-amber-500' : 'bg-red-500'}`} />
-                  {wsConnected ? 'Websocket Conectado' : usePolling ? 'Sincronizado' : 'Sin Conexión'}
+                  {wsConnected ? 'Conectado' : usePolling ? 'Sincronizado' : 'Sin Conexión'}
                 </div>
               </div>
 
-              {/* Username Setup Overlay (If editing name) */}
+              {/* Username Setup Overlay */}
               {isEditingName && (
-                <div className="absolute inset-0 bg-white/95 z-20 flex flex-col items-center justify-center p-6 text-center backdrop-blur-xs">
-                  <div className="max-w-md w-full bg-white border border-gray-200 rounded-3xl p-8 shadow-xl">
+                <div className="absolute inset-0 bg-white/90 z-20 flex flex-col items-center justify-center p-6 text-center backdrop-blur-md">
+                  <div className="max-w-md w-full bg-white border border-gray-150 rounded-3xl p-8 shadow-xl">
                     <div className="w-12 h-12 bg-red-50 text-prosur-red rounded-full flex items-center justify-center mx-auto mb-4">
                       <User className="w-6 h-6" />
                     </div>
                     <h4 className="text-xl font-black text-gray-900 mb-2">Ingresa a la Comunidad</h4>
-                    <p className="text-sm text-gray-500 mb-6">Elige el alias con el que te verán los demás colaboradores en el chat y la red de herramientas.</p>
+                    <p className="text-sm text-gray-505 mb-6">Elige el alias con el que te verán los demás colaboradores en el chat y la red de herramientas.</p>
                     
                     <form onSubmit={handleSaveUsername} className="space-y-4">
                       <input
@@ -502,11 +547,11 @@ export default function SocialNetwork() {
                         placeholder="Tu nombre o departamento (ej. Carlos - TI)"
                         value={tempUsername}
                         onChange={(e) => setTempUsername(e.target.value)}
-                        className="w-full border border-gray-200 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#7C3AED] focus:border-transparent transition text-center font-bold"
+                        className="w-full border border-gray-250 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#7C3AED] focus:border-transparent transition text-center font-bold"
                       />
                       <button
                         type="submit"
-                        className="w-full bg-[#7C3AED] hover:bg-[#6D28D9] text-white font-bold py-3 rounded-2xl shadow-md shadow-[#7C3AED]/20 transition"
+                        className="w-full bg-[#7C3AED] hover:bg-[#6D28D9] text-white font-black py-3 rounded-2xl shadow-md shadow-[#7C3AED]/20 transition"
                       >
                         Comenzar a participar
                       </button>
@@ -519,7 +564,7 @@ export default function SocialNetwork() {
               <div className="flex-grow overflow-y-auto p-6 space-y-4">
                 {messages.length === 0 ? (
                   <div className="h-full flex flex-col items-center justify-center text-center text-gray-400 py-10">
-                    <MessageCircle className="w-12 h-12 text-gray-200 mb-2" />
+                    <MessageCircle className="w-12 h-12 text-gray-250 mb-2" />
                     <p className="font-bold text-sm">El chat está listo</p>
                     <p className="text-xs">Escribe un mensaje para iniciar la conversación.</p>
                   </div>
@@ -529,12 +574,12 @@ export default function SocialNetwork() {
                     const initial = msg.author.charAt(0).toUpperCase();
 
                     return (
-                      <div key={msg.id} className={`flex gap-3 max-w-[80%] ${isOwnMessage ? 'ml-auto flex-row-reverse' : 'mr-auto'}`}>
+                      <div key={msg.id} className={`flex gap-3 max-w-[85%] ${isOwnMessage ? 'ml-auto flex-row-reverse' : 'mr-auto'}`}>
                         {/* Avatar */}
-                        <div className={`w-8 h-8 rounded-full border flex items-center justify-center text-xs font-black shrink-0 ${
+                        <div className={`w-8.5 h-8.5 rounded-full border flex items-center justify-center text-xs font-black shrink-0 shadow-3xs ${
                           isOwnMessage 
-                            ? 'bg-[#7C3AED]/15 text-[#7C3AED] border-[#7C3AED]/20' 
-                            : 'bg-gray-100 text-gray-600 border-gray-200'
+                            ? 'bg-[#7C3AED] text-white border-[#7C3AED]' 
+                            : 'bg-white text-gray-650 border-gray-200/80'
                         }`}>
                           {initial}
                         </div>
@@ -544,14 +589,14 @@ export default function SocialNetwork() {
                           {!isOwnMessage && (
                             <span className="text-[10px] font-black text-gray-400 mb-1 block pl-1">{msg.author}</span>
                           )}
-                          <div className={`p-3 rounded-2xl text-sm leading-relaxed shadow-3xs ${
+                          <div className={`p-3.5 rounded-2xl text-sm leading-relaxed shadow-sm ${
                             isOwnMessage 
-                              ? 'bg-[#7C3AED] text-white rounded-tr-none' 
-                              : 'bg-gray-100 text-gray-800 rounded-tl-none border border-gray-150/40'
+                              ? 'bg-gradient-to-br from-[#7C3AED] to-[#6D28D9] text-white rounded-tr-none' 
+                              : 'bg-white text-gray-800 rounded-tl-none border border-gray-150/60'
                           }`}>
                             <p className="whitespace-pre-line">{msg.text}</p>
                           </div>
-                          <span className={`text-[9px] text-gray-400 font-medium mt-1 block px-1 ${isOwnMessage ? 'text-right' : ''}`}>
+                          <span className={`text-[9px] text-gray-400 font-bold mt-1 block px-1 ${isOwnMessage ? 'text-right' : ''}`}>
                             {formatDate(msg.createdAt)}
                           </span>
                         </div>
@@ -562,11 +607,11 @@ export default function SocialNetwork() {
                 <div ref={chatBottomRef} />
               </div>
 
-              {/* Chat send bar and suggestions (Image 2 style) */}
-              <div className="p-4 border-t border-gray-100 bg-white shrink-0">
+              {/* Chat send bar and suggestions */}
+              <div className="p-4 border-t border-gray-150/40 bg-white/70 backdrop-blur-md shrink-0">
                 {/* AI reply suggestion chips above input */}
-                <div className="flex flex-wrap items-center gap-2 mb-3 bg-gradient-to-r from-violet-50/60 to-transparent p-2 rounded-2xl border border-violet-100">
-                  <div className="flex items-center gap-1 text-[10px] font-black text-[#7C3AED] shrink-0 uppercase tracking-wide mr-1">
+                <div className="flex flex-wrap items-center gap-2 mb-3 bg-gradient-to-r from-violet-50/50 to-transparent p-2 rounded-2xl border border-violet-100/50">
+                  <div className="flex items-center gap-1 text-[9px] font-black text-[#7C3AED] shrink-0 uppercase tracking-wider mr-1.5">
                     <Sparkles className="w-3.5 h-3.5 animate-pulse" />
                     <span>Sugerencias IA</span>
                   </div>
@@ -574,7 +619,7 @@ export default function SocialNetwork() {
                     <button
                       key={idx}
                       onClick={() => setChatInput(suggestion)}
-                      className="text-[11px] font-semibold text-gray-700 bg-white border border-gray-250/50 hover:border-[#7C3AED] hover:text-[#7C3AED] px-3 py-1 rounded-xl transition shadow-3xs"
+                      className="text-[10px] font-bold text-gray-700 bg-white hover:bg-violet-50/50 border border-gray-200 hover:border-[#7C3AED]/40 px-3 py-1.5 rounded-full transition shadow-3xs hover:scale-105 active:scale-95"
                     >
                       {suggestion}
                     </button>
@@ -582,7 +627,7 @@ export default function SocialNetwork() {
                 </div>
 
                 {/* Input form */}
-                <form onSubmit={handleSendChatMessage} className="bg-gray-50 border border-gray-200 rounded-2xl p-2.5">
+                <form onSubmit={handleSendChatMessage} className="bg-white border border-gray-200/80 rounded-2xl p-2">
                   <textarea
                     rows={2}
                     value={chatInput}
@@ -594,11 +639,11 @@ export default function SocialNetwork() {
                       }
                     }}
                     placeholder="Escribe un mensaje para la comunidad... (Presiona Enter)"
-                    className="w-full bg-transparent border-none outline-none focus:ring-0 text-sm placeholder-gray-400 resize-none px-2.5 py-1"
+                    className="w-full bg-transparent border-none outline-none focus:ring-0 text-sm placeholder-gray-400 resize-none px-3 py-1.5"
                   />
                   
-                  {/* Toolbar matching Image 2 */}
-                  <div className="flex items-center justify-between border-t border-gray-200/80 pt-2 px-1">
+                  {/* Toolbar */}
+                  <div className="flex items-center justify-between border-t border-gray-100 pt-2 px-1">
                     <div className="flex items-center gap-1 text-gray-400">
                       <button type="button" className="p-1.5 hover:text-gray-600 transition hover:bg-gray-100 rounded-lg">
                         <Smile className="w-4 h-4" />
@@ -622,22 +667,22 @@ export default function SocialNetwork() {
             </div>
           )}
 
-          {/* 2. VIEW: Tools Feed (Product Hunt style list) */}
+          {/* 2. VIEW: Tools Feed */}
           {activeTab === 'tools' && (
             <div className="flex-1 flex flex-col h-full overflow-hidden">
               {/* Header */}
               <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between shrink-0">
                 <div>
-                  <h3 className="text-lg font-black text-gray-900 flex items-center gap-1.5">
+                  <h3 className="text-base sm:text-lg font-black text-gray-900 flex items-center gap-1.5">
                     <Share2 className="w-5 h-5 text-gray-400" />
                     red-de-herramientas
                   </h3>
-                  <p className="text-xs text-gray-400 font-bold">Herramientas compartidas por colaboradores de Prosur</p>
+                  <p className="text-xs text-gray-450 font-bold">Herramientas compartidas por colaboradores de Prosur</p>
                 </div>
                 
                 <button
                   onClick={() => setShowShareForm(true)}
-                  className="flex items-center gap-1.5 bg-[#7C3AED] hover:bg-[#6D28D9] text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-md shadow-[#7C3AED]/20 transition-all hover:scale-105 active:scale-95 shrink-0"
+                  className="flex items-center gap-1.5 bg-[#7C3AED] hover:bg-[#6D28D9] text-xs font-black uppercase tracking-wider text-white px-4 py-2.5 rounded-2xl shadow-md shadow-[#7C3AED]/20 transition-all hover:scale-105 active:scale-95 shrink-0"
                 >
                   <Plus className="w-4 h-4" />
                   <span>Compartir</span>
@@ -645,7 +690,7 @@ export default function SocialNetwork() {
               </div>
 
               {/* Filters & Search */}
-              <div className="px-6 py-3 border-b border-gray-100 bg-gray-50/50 flex flex-col sm:flex-row gap-3 items-center justify-between shrink-0">
+              <div className="px-6 py-3 border-b border-gray-100 bg-white/50 flex flex-col sm:flex-row gap-3 items-center justify-between shrink-0">
                 {/* Search */}
                 <div className="relative w-full sm:max-w-xs">
                   <Search className="w-4 h-4 text-gray-400 absolute left-3 top-2.5" />
@@ -654,26 +699,26 @@ export default function SocialNetwork() {
                     placeholder="Buscar herramienta..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full bg-white border border-gray-200 rounded-xl pl-9 pr-3 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-[#7C3AED] focus:border-transparent transition"
+                    className="w-full bg-white border border-gray-205 rounded-xl pl-9 pr-3 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-[#7C3AED] focus:border-transparent transition"
                   />
                 </div>
 
                 {/* Sort */}
                 <div className="flex items-center gap-1.5 self-end sm:self-auto">
-                  <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wide">Filtrar por:</span>
-                  <div className="inline-flex rounded-xl border border-gray-250/60 p-0.5 bg-white shadow-3xs">
+                  <span className="text-[10px] font-black text-gray-400 uppercase tracking-wider">Filtrar por:</span>
+                  <div className="inline-flex rounded-xl border border-gray-200/80 p-0.5 bg-white shadow-3xs">
                     <button
                       onClick={() => setSortBy('likes')}
-                      className={`px-3 py-1 rounded-lg text-[10px] font-extrabold transition ${
-                        sortBy === 'likes' ? 'bg-[#7C3AED]/10 text-[#7C3AED]' : 'text-gray-500 hover:text-gray-900'
+                      className={`px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-wider transition ${
+                        sortBy === 'likes' ? 'bg-[#7C3AED] text-white shadow-xs' : 'text-gray-500 hover:text-gray-900'
                       }`}
                     >
                       Upvotes
                     </button>
                     <button
                       onClick={() => setSortBy('recent')}
-                      className={`px-3 py-1 rounded-lg text-[10px] font-extrabold transition ${
-                        sortBy === 'recent' ? 'bg-[#7C3AED]/10 text-[#7C3AED]' : 'text-gray-500 hover:text-gray-900'
+                      className={`px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-wider transition ${
+                        sortBy === 'recent' ? 'bg-[#7C3AED] text-white shadow-xs' : 'text-gray-500 hover:text-gray-900'
                       }`}
                     >
                       Fecha
@@ -683,15 +728,15 @@ export default function SocialNetwork() {
               </div>
 
               {/* Tool Category filters row */}
-              <div className="px-6 py-2 border-b border-gray-100 overflow-x-auto flex gap-1.5 shrink-0 select-none no-scrollbar">
+              <div className="px-6 py-2 border-b border-gray-100 bg-white/50 overflow-x-auto flex gap-1.5 shrink-0 select-none no-scrollbar">
                 {categories.map((cat) => (
                   <button
                     key={cat}
                     onClick={() => setSelectedCategory(cat)}
-                    className={`px-3 py-1.5 rounded-lg text-[10px] font-black border uppercase tracking-wider shrink-0 transition-all ${
+                    className={`px-3 py-1.5 rounded-xl text-[9px] font-black border uppercase tracking-wider shrink-0 transition-all ${
                       selectedCategory === cat
                         ? 'bg-gray-900 text-white border-gray-900 shadow-sm'
-                        : 'bg-white text-gray-500 border-gray-200 hover:bg-gray-50 hover:text-gray-800'
+                        : 'bg-white text-gray-550 border-gray-200/80 hover:bg-gray-50'
                     }`}
                   >
                     {cat}
@@ -712,7 +757,7 @@ export default function SocialNetwork() {
                     <button onClick={fetchPosts} className="bg-prosur-red text-white text-xs font-bold px-4 py-2 rounded-xl">Reintentar</button>
                   </div>
                 ) : filteredPosts.length === 0 ? (
-                  <div className="text-center py-16 bg-white border border-gray-150/40 rounded-3xl shadow-sm">
+                  <div className="text-center py-16 bg-white/50 border border-white/50 backdrop-blur-md rounded-3xl shadow-sm">
                     <Share2 className="w-12 h-12 text-gray-300 mx-auto mb-3" />
                     <p className="text-gray-500 font-bold text-sm">No hay herramientas compartidas</p>
                     <p className="text-gray-400 text-xs mt-1">¡Comparte una herramienta de IA para tu departamento!</p>
@@ -721,21 +766,21 @@ export default function SocialNetwork() {
                   filteredPosts.map(post => (
                     <div
                       key={post.id}
-                      className="bg-white border border-gray-200/80 rounded-2xl p-5 shadow-3xs hover:shadow-md transition-all duration-300 relative overflow-hidden"
+                      className="bg-white/80 hover:bg-white border border-white/60 hover:border-violet-500/25 backdrop-blur-md rounded-2xl p-5 shadow-sm hover:shadow-md transition-all duration-300 relative overflow-hidden"
                     >
                       <div className="flex gap-4 items-start">
                         {/* Voting box */}
                         <button
                           onClick={() => handleLike(post.id)}
-                          className="flex flex-col items-center justify-center gap-0.5 bg-gray-50 border border-gray-200 hover:bg-[#7C3AED]/5 hover:border-[#7C3AED]/20 text-gray-500 hover:text-[#7C3AED] rounded-xl w-12 py-2 shrink-0 transition"
+                          className="flex flex-col items-center justify-center gap-1 bg-white border border-gray-200 hover:bg-violet-50 hover:border-violet-300 text-gray-650 hover:text-[#7C3AED] rounded-2xl w-14 py-2 shrink-0 transition-all hover:scale-105 active:scale-95 shadow-3xs"
                         >
-                          <ChevronUp className="w-4 h-4 text-gray-400 hover:text-[#7C3AED] shrink-0" />
+                          <ChevronUp className="w-4.5 h-4.5 text-gray-450" />
                           <span className="text-xs font-black">{post.likes}</span>
                         </button>
 
                         <div className="flex-grow">
                           <div className="flex justify-between items-start gap-2 mb-1.5 flex-wrap">
-                            <h4 className="font-extrabold text-gray-900 text-base flex items-center gap-1.5">
+                            <h4 className="font-extrabold text-gray-905 text-base flex items-center gap-1.5">
                               {post.title}
                               {post.url && (
                                 <a href={post.url} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-[#7C3AED] transition">
@@ -743,28 +788,30 @@ export default function SocialNetwork() {
                                 </a>
                               )}
                             </h4>
-                            <span className={`inline-block text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md border ${getCategoryColors(post.category)}`}>
+                            <span className={`inline-block text-[9px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-lg border shadow-3xs ${getCategoryColors(post.category)}`}>
                               {post.category}
                             </span>
                           </div>
-                          <p className="text-gray-500 text-xs sm:text-sm leading-relaxed mb-3">{post.description}</p>
+                          <p className="text-gray-550 text-xs sm:text-sm leading-relaxed mb-3">{post.description}</p>
                           
                           {/* Business utility box */}
-                          <div className="bg-gradient-to-br from-[#7C3AED]/[0.01] to-[#7C3AED]/[0.03] border border-[#7C3AED]/10 rounded-xl p-3 my-3">
-                            <h5 className="text-[10px] font-black text-[#7C3AED] uppercase tracking-wider mb-1 flex items-center gap-1">
-                              <Sparkles className="w-3 h-3" />
+                          <div className="bg-gradient-to-br from-violet-50/50 via-white/80 to-transparent border border-violet-100/40 rounded-xl p-3 my-3 shadow-3xs">
+                            <h5 className="text-[9px] font-black text-[#7C3AED] uppercase tracking-wider mb-1 flex items-center gap-1">
+                              <Sparkles className="w-3 h-3 animate-pulse" />
                               Utilidad para Prosur
                             </h5>
                             <p className="text-gray-700 text-xs leading-normal">{post.utility}</p>
                           </div>
 
                           {/* Footer details */}
-                          <div className="flex justify-between items-center text-[10px] text-gray-450 border-t border-gray-50 pt-3">
-                            <span className="flex items-center gap-1 font-bold text-gray-500">
-                              <User className="w-3 h-3 text-gray-400" />
+                          <div className="flex justify-between items-center text-[10px] text-gray-450 border-t border-gray-100/50 pt-3">
+                            <span className="flex items-center gap-1.5 font-bold text-gray-600">
+                              <span className="w-5 h-5 rounded-full bg-red-50 text-prosur-red border border-red-100/55 flex items-center justify-center text-[9px] font-black uppercase">
+                                {post.author.charAt(0)}
+                              </span>
                               {post.author}
                             </span>
-                            <span className="flex items-center gap-1 font-semibold">
+                            <span className="flex items-center gap-1 font-semibold text-gray-455">
                               <Calendar className="w-3 h-3 text-gray-400" />
                               {formatDate(post.createdAt)}
                             </span>
@@ -773,7 +820,7 @@ export default function SocialNetwork() {
                           {/* Expand comments thread */}
                           <button
                             onClick={() => setActiveCommentsPostId(activeCommentsPostId === post.id ? null : post.id)}
-                            className={`w-full mt-3 flex items-center justify-center gap-1.5 border font-extrabold py-2 rounded-xl transition text-[11px] ${
+                            className={`w-full mt-3 flex items-center justify-center gap-1.5 border font-extrabold py-2 rounded-xl transition-all text-[11px] ${
                               activeCommentsPostId === post.id
                                 ? 'bg-gray-900 text-white border-gray-900 shadow-sm'
                                 : 'bg-gray-50 hover:bg-gray-100 text-gray-600 border-gray-200'
@@ -811,7 +858,7 @@ export default function SocialNetwork() {
                                     value={commentAuthor}
                                     onChange={(e) => setCommentAuthor(e.target.value)}
                                     required
-                                    className="bg-white border border-gray-250/50 rounded-lg px-2 py-1.5 text-xs w-1/3 focus:outline-none focus:ring-1 focus:ring-[#7C3AED]"
+                                    className="bg-white border border-gray-200 rounded-lg px-2.5 py-1.5 text-xs w-1/3 focus:outline-none focus:ring-1 focus:ring-[#7C3AED]"
                                   />
                                   <input
                                     type="text"
@@ -819,12 +866,12 @@ export default function SocialNetwork() {
                                     value={commentText}
                                     onChange={(e) => setCommentText(e.target.value)}
                                     required
-                                    className="bg-white border border-gray-250/50 rounded-lg px-2.5 py-1.5 text-xs flex-grow focus:outline-none focus:ring-1 focus:ring-[#7C3AED]"
+                                    className="bg-white border border-gray-200 rounded-lg px-2.5 py-1.5 text-xs flex-grow focus:outline-none focus:ring-1 focus:ring-[#7C3AED]"
                                   />
                                   <button
                                     type="submit"
                                     disabled={commentSubmitting}
-                                    className="bg-[#7C3AED] hover:bg-[#6D28D9] text-white font-bold text-xs px-3 rounded-lg transition disabled:opacity-50"
+                                    className="bg-[#7C3AED] hover:bg-[#6D28D9] text-white font-black text-xs px-3 rounded-lg transition disabled:opacity-50"
                                   >
                                     OK
                                   </button>
@@ -846,41 +893,64 @@ export default function SocialNetwork() {
           {activeTab === 'projects' && (
             <div className="flex-grow flex flex-col h-full overflow-hidden p-6">
               <div className="border-b border-gray-100 pb-4 mb-6 shrink-0">
-                <h3 className="text-lg font-black text-gray-900 flex items-center gap-1.5">
+                <h3 className="text-base sm:text-lg font-black text-gray-900 flex items-center gap-1.5">
                   <Award className="w-5 h-5 text-gray-400" />
                   proyectos-registrados
                 </h3>
-                <p className="text-xs text-gray-400 font-bold">Resumen de proyectos de innovación inscritos en el Reto IA Prosur</p>
+                <p className="text-xs text-gray-450 font-bold">Resumen de proyectos de innovación inscritos en el Reto IA Prosur</p>
               </div>
 
-              {/* Informative text about teams */}
-              <div className="flex-grow overflow-y-auto space-y-6 pr-1">
-                <div className="bg-violet-50/50 border border-violet-100 rounded-2xl p-5 flex gap-4 items-start">
-                  <Info className="w-6 h-6 text-[#7C3AED] shrink-0 mt-0.5" />
+              {/* Scrollable list of real projects */}
+              <div className="flex-grow overflow-y-auto space-y-4 pr-1">
+                <div className="bg-violet-50/50 border border-violet-100/50 rounded-2xl p-4 sm:p-5 flex gap-4 items-start shrink-0 mb-2">
+                  <Info className="w-6 h-6 text-[#7C3AED] shrink-0 mt-0.5 animate-pulse" />
                   <div>
                     <h4 className="font-extrabold text-sm text-[#7C3AED] mb-1">Inspiración Colectiva</h4>
                     <p className="text-xs text-gray-600 leading-relaxed">
-                      El Reto IA cuenta con la participación de diversas marcas y empresas del Grupo Prosur (como CaFi, Grupo Chesa, Calzamoda). Ve a la pestaña **Registro** en la página de inicio para ver la lista completa con los alcances técnicos protegidos de cada propuesta.
+                      El Reto IA cuenta con la participación de diversas marcas del Grupo Prosur. Aquí puedes explorar de forma rápida qué ideas e integraciones ya se han propuesto.
                     </p>
                   </div>
                 </div>
 
                 <div className="grid gap-4 sm:grid-cols-2">
-                  <div className="bg-white border border-gray-200/80 rounded-2xl p-5 shadow-3xs flex flex-col justify-between">
-                    <div>
-                      <div className="w-10 h-10 bg-red-100 text-prosur-red rounded-full flex items-center justify-center font-black mb-3">1</div>
-                      <h4 className="font-extrabold text-sm text-gray-900 mb-1">¿Tienes una idea?</h4>
-                      <p className="text-xs text-gray-500 leading-relaxed mb-4">Pregunta a tus compañeros en el Chat si ya han resuelto problemas parecidos o si desean unirse para armar equipo.</p>
-                    </div>
-                  </div>
+                  {challengeProjects.map((proj, idx) => (
+                    <div 
+                      key={idx}
+                      className="bg-white/70 hover:bg-white border border-gray-200/60 rounded-2xl p-5 shadow-xs hover:shadow-md transition-all duration-300 flex flex-col justify-between"
+                    >
+                      <div>
+                        <div className="flex justify-between items-center mb-3">
+                          <span className="inline-block bg-[#7C3AED]/10 text-[#7C3AED] text-[9px] font-black px-2 py-0.5 rounded uppercase tracking-wider">
+                            Equipo: {proj.teamName}
+                          </span>
+                          <span className="text-[10px] font-black text-gray-400">#{idx + 1}</span>
+                        </div>
+                        
+                        <h4 className="font-black text-sm text-gray-900 mb-2 line-clamp-1" title={proj.projectName}>
+                          {proj.projectName}
+                        </h4>
+                        
+                        <div className="space-y-2 text-xs text-gray-650">
+                          <div>
+                            <strong className="text-gray-800 text-[10px] uppercase font-bold block">Diagnóstico:</strong>
+                            <p className="line-clamp-2 leading-relaxed text-gray-500 mt-0.5">{proj.diagnosis}</p>
+                          </div>
+                          <div>
+                            <strong className="text-[#7C3AED] text-[10px] uppercase font-bold block">Propuesta:</strong>
+                            <p className="line-clamp-2 leading-relaxed text-gray-500 mt-0.5">{proj.solution}</p>
+                          </div>
+                        </div>
+                      </div>
 
-                  <div className="bg-white border border-gray-200/80 rounded-2xl p-5 shadow-3xs flex flex-col justify-between">
-                    <div>
-                      <div className="w-10 h-10 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-black mb-3">2</div>
-                      <h4 className="font-extrabold text-sm text-gray-900 mb-1">¡Comparte Herramientas!</h4>
-                      <p className="text-xs text-gray-500 leading-relaxed mb-4">Alimentar la red de herramientas con utilidades prácticas nos ayuda a todos a encontrar soluciones a problemas cotidianos.</p>
+                      <div className="mt-4 pt-3 border-t border-gray-100 flex items-start gap-1.5 bg-green-50/50 p-2 rounded-lg border border-green-100/30">
+                        <Sparkles className="w-3.5 h-3.5 text-green-600 shrink-0 mt-0.5" />
+                        <div>
+                          <strong className="text-green-700 text-[9px] uppercase font-black block">Métrica Clave:</strong>
+                          <p className="text-[10px] text-green-755 font-medium mt-0.5">{proj.metric}</p>
+                        </div>
+                      </div>
                     </div>
-                  </div>
+                  ))}
                 </div>
               </div>
             </div>
@@ -891,7 +961,7 @@ export default function SocialNetwork() {
         {/* ========================================================
             COLUMN 3: Right Sidebar Panel (Details / Stats)
             ======================================================== */}
-        <div className="w-1/4 min-w-[200px] border-l border-gray-250/60 bg-gray-50/30 p-5 hidden lg:flex flex-col justify-between overflow-y-auto">
+        <div className="w-1/4 min-w-[200px] border-l border-gray-200/40 bg-white/10 backdrop-blur-md p-5 hidden lg:flex flex-col justify-between overflow-y-auto">
           
           {/* Details based on activeTab */}
           <div className="space-y-6">
