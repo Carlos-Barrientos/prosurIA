@@ -455,7 +455,55 @@ const chatHistoryFilePath = path.join(__dirname, 'data', 'chat_history.json');
 const FALLBACK_TRENDS = [
   {
     id: 1,
-    title: "Agentes Autónomos en Procesos de Manufactura",
+    title: "Gemini 3.6 y la Nueva Era de Notebooks Interactivos de IA",
+    category: "Modelos de Lenguaje & Analytics",
+    summary: "Google presenta Gemini 3.6 integrado nativamente en Jupyter y Colab Notebooks, ofreciendo ejecución de código asistida, magics SQL/Python de BigQuery y generación de gráficos en tiempo real.",
+    content: "Gemini 3.6 transforma la experiencia de análisis de datos y desarrollo de notebooks corporativos. Con la integración de comandos magics de nivel superior (como %bqsql y %ai), los analistas de datos y desarrolladores pueden consultar millones de registros de BigQuery mediante lenguaje natural y recibir gráficos interactivos listos para producción sin redactar código repetitivo.\n\nLa versión 3.6 introduce autorreparación automática de errores de sintaxis en celdas de Jupyter, análisis predictivo contextualizado al esquema de las tablas y redacción automática de resúmenes ejecutivos en Markdown. Esta evolución convierte a los cuadernos digitales en asistentes analíticos completos.",
+    keyPoints: [
+      "Integración nativa de Gemini 3.6 en Jupyter y Google Colab con soporte para comandos magics %bqsql.",
+      "Autorreparación de código y sugerencias analíticas adaptadas al esquema de datos en tiempo real.",
+      "Generación instantánea de dashboards y reportes ejecutivos directamente dentro del notebook."
+    ],
+    impact: "Aumento de más del 70% en la velocidad de exploración de datos y toma de decisiones analíticas para equipos de inteligencia de negocios.",
+    author: "Comité de Innovación Prosur",
+    readTime: "4 min de lectura",
+    date: new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })
+  },
+  {
+    id: 2,
+    title: "GPT Sol, Terra y Luna: La Nueva Tríada Especializada de OpenAI",
+    category: "Modelos de Lenguaje",
+    summary: "OpenAI diversifica su ecosistema presentando GPT Sol (razonamiento lógico profundo), GPT Terra (visión de entorno y análisis de documentos) y GPT Luna (eficiencia extrema y respuesta ultrarrápida).",
+    content: "OpenAI revoluciona su arquitectura de modelos presentando tres variantes especializadas diseñadas para cubrir distintos requerimientos empresariales. **GPT Sol** está optimizado para razonamiento matemático complejo, programación avanzada y arquitectura de sistemas de gran escala.\n\nPor su parte, **GPT Terra** se enfoca en visión por computadora, interpretación de diagramas técnicos, mapas y documentos escaneados. Finalmente, **GPT Luna** es un modelo ultra liviano diseñado para agentes de voz en tiempo real con latencia inferior a 100 ms, facilitando la atención al cliente automatizada e interactiva.",
+    keyPoints: [
+      "GPT Sol: potencia de cómputo y razonamiento avanzado para lógica compleja y desarrollo de código.",
+      "GPT Terra: especialización multimodal para lectura de planos, visión geoespacial y documentos.",
+      "GPT Luna: modelo ultrarrápido y liviano para experiencias conversacionales de voz en tiempo real."
+    ],
+    impact: "Permite seleccionar el modelo de IA idóneo según la prioridad de costo, latencia o complejidad técnica del proceso corporativo.",
+    author: "División de TI Prosur",
+    readTime: "5 min de lectura",
+    date: new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })
+  },
+  {
+    id: 3,
+    title: "Fable 5: Motor de Simulación Narrativa y Agentes Autónomos",
+    category: "Diseño y Creatividad",
+    summary: "Se lanza Fable 5, la plataforma de IA capaz de simular universos narrativos, personajes virtuales interactivos con memoria a largo plazo y generación multimedia en tiempo real.",
+    content: "Fable 5 establece un nuevo estándar en la simulación narrativa e interacción humana con IA. A diferencia de los generadores de contenido tradicionales, Fable 5 crea agentes virtuales con personalidades consistentes, memoria afectiva a largo plazo y capacidad de responder adaptativamente.\n\nEmpresas de capacitación y comunicación interna están utilizando Fable 5 para simulaciones inmersivas de atención al cliente, entrenando colaboradores frente a avatares virtuales que reaccionan con diferentes niveles de exigencia y empatía según el desenvolvimiento de la sesión.",
+    keyPoints: [
+      "Simulación de personajes interactivos con memoria persistente y coherencia de comportamiento.",
+      "Generación simultánea de diálogos, expresiones de voz y secuencias de video responsivas.",
+      "Aplicación directa en entornos de capacitación inmersiva de personal y desarrollo creativo."
+    ],
+    impact: "Transformación de los entrenamientos de servicio y ventas mediante simulaciones virtuales interactivas de alta fidelidad.",
+    author: "Área de Capacitación y Talento Prosur",
+    readTime: "4 min de lectura",
+    date: new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })
+  },
+  {
+    id: 4,
+    title: "Agentes Autónomos en Procesos de Manufactura y Logística",
     category: "Agentes de Software",
     summary: "Los agentes basados en LLMs están automatizando flujos de trabajo complejos de compras y control de calidad corporativos, integrándose con ERPs locales.",
     content: "La adopción de agentes autónomos inteligentes está marcando el inicio de una nueva era industrial. A diferencia de las automatizaciones rígidas del pasado, estos agentes interpretan correos de clientes, verifican stock en tiempo real y toman decisiones adaptativas sobre compras de repuestos.\n\nEn operaciones logísticas complejas, los agentes coordinan dinámicamente con transportistas ante demoras climáticas, negociando alternativas basadas en costo e historial de entregas. Su capacidad de interactuar mediante APIs con ERPs existentes reduce procesos administrativos que tomaban días a solo minutos, eliminando el error humano de transcripción.",
@@ -470,9 +518,9 @@ const FALLBACK_TRENDS = [
     date: new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })
   },
   {
-    id: 2,
+    id: 5,
     title: "Modelos Locales Eficientes (Edge AI) para Privacidad Absoluta",
-    category: "Modelos de Lenguaje",
+    category: "IA en Negocios",
     summary: "Los nuevos Small Language Models (SLMs) ejecutables localmente abren la puerta a la adopción de IA corporativa sin exponer propiedad intelectual.",
     content: "La seguridad de los datos es el reto principal al incorporar IA en procesos clave. Los modelos de lenguaje pequeños (SLMs) ofrecen una solución a esta problemática, pues pueden ejecutarse en servidores locales corporativos o incluso computadoras de escritorio modernas con NPUs integradas.\n\nEste esquema evita el envío de información confidencial de clientes o finanzas a servidores en la nube de terceros. Su precisión en tareas enfocadas, como auditoría de contratos, análisis de nóminas y resúmenes de minutas internas, ya rivaliza con modelos comerciales gigantescos a una fracción del costo operativo.",
     keyPoints: [
@@ -486,7 +534,7 @@ const FALLBACK_TRENDS = [
     date: new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })
   },
   {
-    id: 3,
+    id: 6,
     title: "Generadores de Código e Interfaces de Usuario Express",
     category: "Productividad",
     summary: "Plataformas de programación generativa permiten a equipos de negocio crear herramientas internas personalizadas en horas en lugar de meses.",
@@ -524,14 +572,14 @@ function initDataStorage() {
         category: "Programación",
         description: "Modelo de lenguaje avanzado líder en codificación y razonamiento lógico.",
         utility: "Nos ayuda a generar scripts de automatización de datos de ventas de manera mucho más rápida e interactiva.",
-        author: "María Pérez",
+        author: "Diego López Guzmán",
         likes: 12,
         likedBy: [],
         createdAt: new Date(Date.now() - 3600000 * 24 * 3).toISOString(),
         comments: [
           {
             id: "c1",
-            author: "Juan Gómez",
+            author: "Oswaldo Rafael Hernández",
             text: "Totalmente de acuerdo, la velocidad de desarrollo ha mejorado significativamente.",
             createdAt: new Date(Date.now() - 3600000 * 24 * 2).toISOString()
           }

@@ -6,14 +6,14 @@
     "category": "Programación",
     "description": "Modelo de lenguaje avanzado líder en codificación y razonamiento lógico.",
     "utility": "Nos ayuda a generar scripts de automatización de datos de ventas de manera mucho más rápida e interactiva.",
-    "author": "María Pérez",
+    "author": "Diego López Guzmán",
     "likes": 12,
     "likedBy": [],
     "createdAt": "2026-07-11T20:49:58.339Z",
     "comments": [
       {
         "id": "c1",
-        "author": "Juan Gómez",
+        "author": "Oswaldo Rafael Hernández",
         "text": "Totalmente de acuerdo, la velocidad de desarrollo ha mejorado significativamente.",
         "createdAt": "2026-07-12T20:49:58.339Z"
       }

@@ -985,17 +985,29 @@ export default function SocialNetwork() {
                 <div className="border-t border-gray-200/85 pt-4">
                   <h4 className="text-xs font-black text-gray-400 uppercase tracking-widest mb-3">Participantes Activos</h4>
                   <ul className="space-y-2 text-xs">
-                    <li className="flex items-center gap-2 text-gray-700">
-                      <span className="w-2 h-2 rounded-full bg-green-500 shrink-0" />
-                      <span className="font-semibold">Gerente de Innovación (Tú)</span>
+                    <li className="flex items-center gap-2 text-gray-800">
+                      <span className="w-2 h-2 rounded-full bg-green-500 shrink-0 animate-pulse" />
+                      <span className="font-bold">Carlos Barrientos - Gerente de Mejora Continua (Tú)</span>
                     </li>
-                    <li className="flex items-center gap-2 text-gray-500">
-                      <span className="w-2 h-2 rounded-full bg-gray-450 shrink-0" />
-                      <span>Carlos Barrientos</span>
+                    <li className="flex items-center gap-2 text-gray-600">
+                      <span className="w-2 h-2 rounded-full bg-green-500/70 shrink-0" />
+                      <span>Diego López Guzmán (Procesos - Calzamoda)</span>
                     </li>
-                    <li className="flex items-center gap-2 text-gray-500">
-                      <span className="w-2 h-2 rounded-full bg-gray-450 shrink-0" />
-                      <span>María Pérez</span>
+                    <li className="flex items-center gap-2 text-gray-600">
+                      <span className="w-2 h-2 rounded-full bg-green-500/70 shrink-0" />
+                      <span>Oswaldo Rafael Hernández (T-800 - CaFi)</span>
+                    </li>
+                    <li className="flex items-center gap-2 text-gray-600">
+                      <span className="w-2 h-2 rounded-full bg-gray-400 shrink-0" />
+                      <span>Angel Francisco Lievano (Impulso Inteligente)</span>
+                    </li>
+                    <li className="flex items-center gap-2 text-gray-600">
+                      <span className="w-2 h-2 rounded-full bg-gray-400 shrink-0" />
+                      <span>Angelina Asunción Díaz (Team AMOS - CaFi)</span>
+                    </li>
+                    <li className="flex items-center gap-2 text-gray-600">
+                      <span className="w-2 h-2 rounded-full bg-gray-400 shrink-0" />
+                      <span>Ricardo Castilleja Delgado (AI - Grupo Chesa)</span>
                     </li>
                   </ul>
                 </div>
