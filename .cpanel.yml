@@ -2,4 +2,4 @@
 deployment:
   tasks:
     - export DEPLOYPATH=/home/prosurco/reto-ia.prosur.com.mx
-    - /bin/cp -R backend $DEPLOYPATH/
+    - /bin/cp -R * $DEPLOYPATH
