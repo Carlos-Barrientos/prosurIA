@@ -11,12 +11,14 @@ import Footer from './components/Footer';
 import Blog from './components/Blog';
 import SocialNetwork from './components/SocialNetwork';
 import LiveChat from './components/LiveChat';
+import AnnouncementModal from './components/AnnouncementModal';
 
 export default function App() {
   const [view, setView] = useState<'landing' | 'blog' | 'social'>('landing');
 
   return (
     <div className="min-h-screen flex flex-col relative bg-prosur-bg">
+      <AnnouncementModal />
       
       {/* Modern AI Background */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">

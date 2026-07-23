@@ -401,9 +401,9 @@ app.get('/sheet-proxy', async (req, res) => {
     if (!response.ok) throw new Error("HTTP error " + response.status);
     const csvText = await response.text();
     
-    // Check if the request includes a valid admin access token
+    // Public access mode enabled: all users have full access to view project scopes
     const clientToken = req.query.token || req.headers['x-admin-token'];
-    const isAdmin = clientToken === ADMIN_ACCESS_CODE;
+    const isAdmin = true;
     
     let responseText = csvText;
     

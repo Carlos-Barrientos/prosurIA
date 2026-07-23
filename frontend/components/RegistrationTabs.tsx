@@ -216,9 +216,9 @@ export default function RegistrationTabs() {
   const [isLoadingTeams, setIsLoadingTeams] = useState(false);
   const [isManualTeam, setIsManualTeam] = useState(false);
 
-  // Admin Mode State
+  // Admin / Open Access Mode State
   const [adminToken, setAdminToken] = useState<string>(() => localStorage.getItem('prosur_admin_token') || '');
-  const [isAdminMode, setIsAdminMode] = useState<boolean>(false);
+  const [isAdminMode, setIsAdminMode] = useState<boolean>(true);
   const [showAdminModal, setShowAdminModal] = useState<boolean>(false);
   const [inputCode, setInputCode] = useState<string>('');
   const [adminError, setAdminError] = useState<string>('');
@@ -625,7 +625,7 @@ export default function RegistrationTabs() {
 
   const renderConfidentialField = (title: string, value: string | undefined, icon: React.ReactNode) => {
     const textVal = value || '';
-    const isProtected = textVal === '[Protegido]' || textVal === '[Protegido por confidencialidad]' || textVal.toLowerCase().includes('protegido');
+    const isProtected = false; // Open access mode: display all text fields without blur or locks
     
     return (
       <div>
@@ -1049,16 +1049,10 @@ export default function RegistrationTabs() {
                       <Unlock className="w-5 h-5" />
                     </div>
                     <div>
-                      <p className="text-sm font-bold text-green-800">Modo Administrador Activo</p>
-                      <p className="text-xs text-green-600 font-medium">Tienes acceso para ver todos los detalles y desgloses de los proyectos.</p>
+                      <p className="text-sm font-bold text-green-800">Acceso Público Abierto</p>
+                      <p className="text-xs text-green-600 font-medium">Todos los participantes pueden consultar el alcance completo y los detalles de los proyectos.</p>
                     </div>
                   </div>
-                  <button 
-                    onClick={handleAdminLogout}
-                    className="px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white text-xs font-semibold rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-green-400"
-                  >
-                    Cerrar Sesión Admin
-                  </button>
                 </div>
               ) : (
                 <div className="bg-gray-50/80 rounded-xl p-4 border border-gray-200/60 mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
