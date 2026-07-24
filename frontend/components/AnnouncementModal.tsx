@@ -51,11 +51,7 @@ export default function AnnouncementModal({ onClose }: AnnouncementModalProps) {
             />
           </div>
 
-          {/* Event Badge */}
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold bg-prosur-red/10 text-prosur-red border border-prosur-red/20 uppercase tracking-widest shadow-2xs">
-            <Sparkles className="w-3.5 h-3.5 animate-pulse text-prosur-red" />
-            Reto de Inteligencia Artificial · Demo Day
-          </div>
+
         </div>
 
         {/* Modal Body */}
