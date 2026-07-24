@@ -43,11 +43,11 @@ export default function AnnouncementModal({ onClose }: AnnouncementModalProps) {
           </button>
 
           {/* Official Prosur Logo */}
-          <div className="flex justify-center mb-3">
+          <div className="flex justify-center mb-2">
             <img 
               src="./logoprosur.png" 
               alt="Logo Grupo Prosur" 
-              className="h-20 sm:h-22 w-auto object-contain drop-shadow-xs"
+              className="h-32 sm:h-44 w-auto object-contain drop-shadow-xs max-w-full"
             />
           </div>
 
