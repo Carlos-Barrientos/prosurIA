@@ -748,6 +748,45 @@ app.post('/api/trends/refresh', async (req, res) => {
 // --- Endpoints del API de la Red Social ---
 app.get('/api/posts', (req, res) => {
   try {
+    initDataStorage();
+    if (!fs.existsSync(postsFilePath)) {
+      const initialPosts = [
+        {
+          id: "1",
+          title: "Claude 3.5 Sonnet",
+          url: "https://www.anthropic.com/claude",
+          category: "Programación",
+          description: "Modelo de lenguaje avanzado líder en codificación y razonamiento lógico.",
+          utility: "Nos ayuda a generar scripts de automatización de datos de ventas de manera mucho más rápida e interactiva.",
+          author: "Diego López Guzmán",
+          likes: 12,
+          likedBy: [],
+          createdAt: new Date(Date.now() - 3600000 * 24 * 3).toISOString(),
+          comments: [
+            {
+              id: "c1",
+              author: "Oswaldo Rafael Hernández",
+              text: "Totalmente de acuerdo, la velocidad de desarrollo ha mejorado significativamente.",
+              createdAt: new Date(Date.now() - 3600000 * 24 * 2).toISOString()
+            }
+          ]
+        },
+        {
+          id: "2",
+          title: "v0 by Vercel",
+          url: "https://v0.dev",
+          category: "Diseño y Creatividad",
+          description: "Generador de interfaces de usuario React/HTML interactivo mediante lenguaje natural.",
+          utility: "Permite a analistas armar prototipos visuales de pantallas internas en minutos sin escribir CSS desde cero.",
+          author: "Carlos Barrientos",
+          likes: 8,
+          likedBy: [],
+          createdAt: new Date(Date.now() - 3600000 * 24 * 1).toISOString(),
+          comments: []
+        }
+      ];
+      fs.writeFileSync(postsFilePath, JSON.stringify(initialPosts, null, 2), 'utf-8');
+    }
     const data = fs.readFileSync(postsFilePath, 'utf-8');
     res.setHeader('Content-Type', 'application/json');
     res.send(data);

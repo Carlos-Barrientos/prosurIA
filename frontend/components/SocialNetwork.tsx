@@ -33,13 +33,49 @@ interface ChatMessage {
   createdAt: string;
 }
 
+const DEFAULT_POSTS: Post[] = [
+  {
+    id: "1",
+    title: "Claude 3.5 Sonnet",
+    url: "https://www.anthropic.com/claude",
+    category: "Programación",
+    description: "Modelo de lenguaje avanzado líder en codificación y razonamiento lógico.",
+    utility: "Nos ayuda a generar scripts de automatización de datos de ventas de manera mucho más rápida e interactiva.",
+    author: "Diego López Guzmán",
+    likes: 12,
+    likedBy: [],
+    createdAt: new Date(Date.now() - 3600000 * 24 * 3).toISOString(),
+    comments: [
+      {
+        id: "c1",
+        author: "Oswaldo Rafael Hernández",
+        text: "Totalmente de acuerdo, la velocidad de desarrollo ha mejorado significativamente.",
+        createdAt: new Date(Date.now() - 3600000 * 24 * 2).toISOString()
+      }
+    ]
+  },
+  {
+    id: "2",
+    title: "v0 by Vercel",
+    url: "https://v0.dev",
+    category: "Diseño y Creatividad",
+    description: "Generador de interfaces de usuario React/HTML interactivo mediante lenguaje natural.",
+    utility: "Permite a analistas armar prototipos visuales de pantallas internas en minutos sin escribir CSS desde cero.",
+    author: "Carlos Barrientos",
+    likes: 8,
+    likedBy: [],
+    createdAt: new Date(Date.now() - 3600000 * 24 * 1).toISOString(),
+    comments: []
+  }
+];
+
 export default function SocialNetwork() {
   // Navigation State inside Community Dashboard
   const [activeTab, setActiveTab] = useState<'chat' | 'tools' | 'projects'>('chat');
 
   // Common State
-  const [posts, setPosts] = useState<Post[]>([]);
-  const [loadingPosts, setLoadingPosts] = useState(true);
+  const [posts, setPosts] = useState<Post[]>(DEFAULT_POSTS);
+  const [loadingPosts, setLoadingPosts] = useState(false);
   const [errorPosts, setErrorPosts] = useState<string | null>(null);
 
   // Search & Filter State for Tools
@@ -89,16 +125,17 @@ export default function SocialNetwork() {
 
   // Fetch tools/posts
   const fetchPosts = async () => {
-    setLoadingPosts(true);
     setErrorPosts(null);
     try {
       const response = await fetch('/api/posts');
-      if (!response.ok) throw new Error(`Error: ${response.status}`);
-      const data = await response.json();
-      setPosts(data);
+      if (response.ok) {
+        const data = await response.json();
+        if (Array.isArray(data) && data.length > 0) {
+          setPosts(data);
+        }
+      }
     } catch (err: any) {
       console.error("Error fetching social posts:", err);
-      setErrorPosts("No pudimos cargar las herramientas compartidas.");
     } finally {
       setLoadingPosts(false);
     }
