@@ -1,0 +1,952 @@
+{
+  "schema": "openai.presentation.layout/v4",
+  "unit": "px",
+  "slide": {
+    "aid": "sl/go4kvy",
+    "id": "go4kvy",
+    "slide": 3,
+    "layoutId": "017a516d-0e7d-49d4-977a-346a286b1cb4",
+    "layoutName": "Title Slide",
+    "layoutType": "title",
+    "masterLayoutId": "94f02f4b-32f1-413f-b0bd-ac13c0a18f49",
+    "masterLayoutName": "Master",
+    "backgroundColor": "#FFFFFF",
+    "frame": {
+      "left": 0,
+      "top": 0,
+      "width": 1280,
+      "height": 720
+    }
+  },
+  "theme": {
+    "colorSchemeName": "ChatGPT",
+    "colors": {
+      "accent1": "#156082",
+      "accent2": "#E97132",
+      "accent3": "#196B24",
+      "accent4": "#0F9ED5",
+      "accent5": "#A02B93",
+      "accent6": "#4EA72E",
+      "bg1": "#FFFFFF",
+      "bg2": "#000000",
+      "tx1": "#1F1F1F",
+      "tx2": "#FFFFFF",
+      "dk1": "#000000",
+      "lt1": "#FFFFFF",
+      "dk2": "#0E2841",
+      "lt2": "#E8E8E8",
+      "hlink": "#467886",
+      "folHlink": "#96607D"
+    },
+    "typefaces": [
+      "Arial"
+    ]
+  },
+  "inheritedLayers": [
+    {
+      "scope": "layout",
+      "id": "017a516d-0e7d-49d4-977a-346a286b1cb4",
+      "name": "Title Slide",
+      "type": "title",
+      "parentLayoutId": "94f02f4b-32f1-413f-b0bd-ac13c0a18f49",
+      "elements": []
+    },
+    {
+      "scope": "master",
+      "id": "94f02f4b-32f1-413f-b0bd-ac13c0a18f49",
+      "name": "Master",
+      "type": "master",
+      "elements": []
+    }
+  ],
+  "elements": [
+    {
+      "order": 1,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/onut4ra5",
+      "id": "1",
+      "name": "accent-3",
+      "bbox": [
+        56,
+        38,
+        8,
+        62
+      ],
+      "geometry": "rect",
+      "fillColor": "#D91E18",
+      "lineWidth": 0
+    },
+    {
+      "order": 2,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/nmlsbm9k",
+      "id": "2",
+      "name": "kicker-3",
+      "bbox": [
+        80,
+        38,
+        800,
+        22
+      ],
+      "geometry": "rect",
+      "text": "PARTICIPACIÓN",
+      "textPreview": "PARTICIPACIÓN",
+      "resolvedFontSize": 14,
+      "resolvedTextStyle": {
+        "anchor": 1,
+        "fontSize": 14,
+        "typeface": "Arial",
+        "color": "#D91E18",
+        "bold": true,
+        "alignment": "left",
+        "verticalAlignment": "top",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "PARTICIPACIÓN"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "PARTICIPACIÓN",
+          "resolvedTextStyle": {
+            "fontSize": 14,
+            "typeface": "Arial",
+            "color": "#D91E18",
+            "bold": true,
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "PARTICIPACIÓN",
+              "fontSize": 14,
+              "typeface": "Arial",
+              "color": "#D91E18",
+              "bold": true,
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 3,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/2lcb2hsf",
+      "id": "3",
+      "name": "title-3",
+      "bbox": [
+        80,
+        62,
+        1110,
+        58
+      ],
+      "geometry": "rect",
+      "text": "El reto está abierto al talento de todo Grupo PROSUR",
+      "textPreview": "El reto está abierto al talento de todo Grupo PROSUR",
+      "resolvedFontSize": 38,
+      "resolvedTextStyle": {
+        "anchor": 1,
+        "fontSize": 38,
+        "typeface": "Arial",
+        "color": "#111111",
+        "bold": true,
+        "alignment": "left",
+        "verticalAlignment": "top",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "El reto está abierto al talento de todo Grupo PROSUR"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "El reto está abierto al talento de todo Grupo PROSUR",
+          "resolvedTextStyle": {
+            "fontSize": 38,
+            "typeface": "Arial",
+            "color": "#111111",
+            "bold": true,
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "El reto está abierto al talento de todo Grupo PROSUR",
+              "fontSize": 38,
+              "typeface": "Arial",
+              "color": "#111111",
+              "bold": true,
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 4,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/xsnuhwr2",
+      "id": "4",
+      "name": "page-3",
+      "bbox": [
+        1164,
+        674,
+        60,
+        18
+      ],
+      "geometry": "rect",
+      "text": "03",
+      "textPreview": "03",
+      "resolvedFontSize": 12,
+      "resolvedTextStyle": {
+        "anchor": 1,
+        "fontSize": 12,
+        "typeface": "Arial",
+        "color": "#5D626B",
+        "alignment": "right",
+        "verticalAlignment": "top",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "03"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "03",
+          "resolvedTextStyle": {
+            "fontSize": 12,
+            "typeface": "Arial",
+            "color": "#5D626B",
+            "alignment": "right"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "03",
+              "fontSize": 12,
+              "typeface": "Arial",
+              "color": "#5D626B",
+              "alignment": "right"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 5,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/crut8rah",
+      "id": "5",
+      "name": "participation-quote",
+      "bbox": [
+        80,
+        172,
+        500,
+        118
+      ],
+      "geometry": "rect",
+      "text": "No es requisito ser programador ni especialista en inteligencia artificial.",
+      "textPreview": "No es requisito ser programador ni especialista en inteligencia artificial.",
+      "resolvedFontSize": 32,
+      "resolvedTextStyle": {
+        "anchor": 1,
+        "fontSize": 32,
+        "typeface": "Arial",
+        "color": "#111111",
+        "bold": true,
+        "alignment": "left",
+        "verticalAlignment": "top",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 3,
+        "lines": [
+          {
+            "index": 1,
+            "text": "No es requisito ser"
+          },
+          {
+            "index": 2,
+            "text": "programador ni especialista en"
+          },
+          {
+            "index": 3,
+            "text": "inteligencia artificial."
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "No es requisito ser programador ni especialista en inteligencia artificial.",
+          "resolvedTextStyle": {
+            "fontSize": 32,
+            "typeface": "Arial",
+            "color": "#111111",
+            "bold": true,
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "No es requisito ser programador ni especialista en inteligencia artificial.",
+              "fontSize": 32,
+              "typeface": "Arial",
+              "color": "#111111",
+              "bold": true,
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 6,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/bqlcfm9w",
+      "id": "6",
+      "name": "participation-body",
+      "bbox": [
+        80,
+        322,
+        500,
+        110
+      ],
+      "geometry": "rect",
+      "text": "Cuenta la capacidad de detectar un problema, construir una solución viable y demostrar su valor en la operación.",
+      "textPreview": "Cuenta la capacidad de detectar un problema, construir una solución viable y demostrar su valor en la operación.",
+      "resolvedFontSize": 20,
+      "resolvedTextStyle": {
+        "anchor": 1,
+        "fontSize": 20,
+        "typeface": "Arial",
+        "color": "#5D626B",
+        "alignment": "left",
+        "verticalAlignment": "top",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 3,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Cuenta la capacidad de detectar un problema,"
+          },
+          {
+            "index": 2,
+            "text": "construir una solución viable y demostrar su valor en"
+          },
+          {
+            "index": 3,
+            "text": "la operación."
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Cuenta la capacidad de detectar un problema, construir una solución viable y demostrar su valor en la operación.",
+          "resolvedTextStyle": {
+            "fontSize": 20,
+            "typeface": "Arial",
+            "color": "#5D626B",
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Cuenta la capacidad de detectar un problema, construir una solución viable y demostrar su valor en la operación.",
+              "fontSize": 20,
+              "typeface": "Arial",
+              "color": "#5D626B",
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 7,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/apcb6hsb",
+      "id": "7",
+      "name": "participation-panel",
+      "bbox": [
+        680,
+        158,
+        500,
+        424
+      ],
+      "geometry": "rect",
+      "fillColor": "#F1F2F3",
+      "lineWidth": 0
+    },
+    {
+      "order": 8,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/dwja5sri",
+      "id": "8",
+      "name": "participation-label",
+      "bbox": [
+        716,
+        192,
+        380,
+        24
+      ],
+      "geometry": "rect",
+      "text": "MODALIDAD Y COLABORACIÓN",
+      "textPreview": "MODALIDAD Y COLABORACIÓN",
+      "resolvedFontSize": 16,
+      "resolvedTextStyle": {
+        "anchor": 1,
+        "fontSize": 16,
+        "typeface": "Arial",
+        "color": "#D91E18",
+        "bold": true,
+        "alignment": "left",
+        "verticalAlignment": "top",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "MODALIDAD Y COLABORACIÓN"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "MODALIDAD Y COLABORACIÓN",
+          "resolvedTextStyle": {
+            "fontSize": 16,
+            "typeface": "Arial",
+            "color": "#D91E18",
+            "bold": true,
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "MODALIDAD Y COLABORACIÓN",
+              "fontSize": 16,
+              "typeface": "Arial",
+              "color": "#D91E18",
+              "bold": true,
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 9,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/svatw7ax",
+      "id": "9",
+      "name": "participation-bullets-dot-0",
+      "bbox": [
+        716,
+        252,
+        12,
+        12
+      ],
+      "geometry": "ellipse",
+      "fillColor": "#D91E18",
+      "lineWidth": 0
+    },
+    {
+      "order": 10,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/ytsji5w7",
+      "id": "10",
+      "name": "participation-bullets-text-0",
+      "bbox": [
+        742,
+        244,
+        394,
+        58
+      ],
+      "geometry": "rect",
+      "text": "Personas colaboradoras de empresas, marcas y áreas del Grupo.",
+      "textPreview": "Personas colaboradoras de empresas, marcas y áreas del Grupo.",
+      "resolvedFontSize": 18,
+      "resolvedTextStyle": {
+        "anchor": 1,
+        "fontSize": 18,
+        "typeface": "Arial",
+        "color": "#111111",
+        "alignment": "left",
+        "verticalAlignment": "top",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 2,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Personas colaboradoras de empresas, marcas"
+          },
+          {
+            "index": 2,
+            "text": "y áreas del Grupo."
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Personas colaboradoras de empresas, marcas y áreas del Grupo.",
+          "resolvedTextStyle": {
+            "fontSize": 18,
+            "typeface": "Arial",
+            "color": "#111111",
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Personas colaboradoras de empresas, marcas y áreas del Grupo.",
+              "fontSize": 18,
+              "typeface": "Arial",
+              "color": "#111111",
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 11,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/zu10radc",
+      "id": "11",
+      "name": "participation-bullets-dot-1",
+      "bbox": [
+        716,
+        314,
+        12,
+        12
+      ],
+      "geometry": "ellipse",
+      "fillColor": "#D91E18",
+      "lineWidth": 0
+    },
+    {
+      "order": 12,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/0va1kfex",
+      "id": "12",
+      "name": "participation-bullets-text-1",
+      "bbox": [
+        742,
+        306,
+        394,
+        58
+      ],
+      "geometry": "rect",
+      "text": "Se promueven equipos multidisciplinarios.",
+      "textPreview": "Se promueven equipos multidisciplinarios.",
+      "resolvedFontSize": 18,
+      "resolvedTextStyle": {
+        "anchor": 1,
+        "fontSize": 18,
+        "typeface": "Arial",
+        "color": "#111111",
+        "alignment": "left",
+        "verticalAlignment": "top",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Se promueven equipos multidisciplinarios."
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Se promueven equipos multidisciplinarios.",
+          "resolvedTextStyle": {
+            "fontSize": 18,
+            "typeface": "Arial",
+            "color": "#111111",
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Se promueven equipos multidisciplinarios.",
+              "fontSize": 18,
+              "typeface": "Arial",
+              "color": "#111111",
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 13,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/lwj2tkvi",
+      "id": "13",
+      "name": "participation-bullets-dot-2",
+      "bbox": [
+        716,
+        376,
+        12,
+        12
+      ],
+      "geometry": "ellipse",
+      "fillColor": "#D91E18",
+      "lineWidth": 0
+    },
+    {
+      "order": 14,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/mhsjmpw3",
+      "id": "14",
+      "name": "participation-bullets-text-2",
+      "bbox": [
+        742,
+        368,
+        394,
+        58
+      ],
+      "geometry": "rect",
+      "text": "Colaboración entre operación, negocio y TI.",
+      "textPreview": "Colaboración entre operación, negocio y TI.",
+      "resolvedFontSize": 18,
+      "resolvedTextStyle": {
+        "anchor": 1,
+        "fontSize": 18,
+        "typeface": "Arial",
+        "color": "#111111",
+        "alignment": "left",
+        "verticalAlignment": "top",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Colaboración entre operación, negocio y TI."
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Colaboración entre operación, negocio y TI.",
+          "resolvedTextStyle": {
+            "fontSize": 18,
+            "typeface": "Arial",
+            "color": "#111111",
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Colaboración entre operación, negocio y TI.",
+              "fontSize": 18,
+              "typeface": "Arial",
+              "color": "#111111",
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 15,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/ni1kvudo",
+      "id": "15",
+      "name": "participation-bullets-dot-3",
+      "bbox": [
+        716,
+        438,
+        12,
+        12
+      ],
+      "geometry": "ellipse",
+      "fillColor": "#D91E18",
+      "lineWidth": 0
+    },
+    {
+      "order": 16,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/8ja1oze9",
+      "id": "16",
+      "name": "participation-bullets-text-3",
+      "bbox": [
+        742,
+        430,
+        394,
+        58
+      ],
+      "geometry": "rect",
+      "text": "Modalidad y máximo de integrantes: por definir.",
+      "textPreview": "Modalidad y máximo de integrantes: por definir.",
+      "resolvedFontSize": 18,
+      "resolvedTextStyle": {
+        "anchor": 1,
+        "fontSize": 18,
+        "typeface": "Arial",
+        "color": "#111111",
+        "alignment": "left",
+        "verticalAlignment": "top",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 2,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Modalidad y máximo de integrantes: por"
+          },
+          {
+            "index": 2,
+            "text": "definir."
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Modalidad y máximo de integrantes: por definir.",
+          "resolvedTextStyle": {
+            "fontSize": 18,
+            "typeface": "Arial",
+            "color": "#111111",
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Modalidad y máximo de integrantes: por definir.",
+              "fontSize": 18,
+              "typeface": "Arial",
+              "color": "#111111",
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 17,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/9kj2x4vu",
+      "id": "17",
+      "name": "participation-bullets-dot-4",
+      "bbox": [
+        716,
+        500,
+        12,
+        12
+      ],
+      "geometry": "ellipse",
+      "fillColor": "#D91E18",
+      "lineWidth": 0
+    },
+    {
+      "order": 18,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/alcjqpwf",
+      "id": "18",
+      "name": "participation-bullets-text-4",
+      "bbox": [
+        742,
+        492,
+        394,
+        58
+      ],
+      "geometry": "rect",
+      "text": "Canal de inscripción: por definir.",
+      "textPreview": "Canal de inscripción: por definir.",
+      "resolvedFontSize": 18,
+      "resolvedTextStyle": {
+        "anchor": 1,
+        "fontSize": 18,
+        "typeface": "Arial",
+        "color": "#111111",
+        "alignment": "left",
+        "verticalAlignment": "top",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Canal de inscripción: por definir."
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Canal de inscripción: por definir.",
+          "resolvedTextStyle": {
+            "fontSize": 18,
+            "typeface": "Arial",
+            "color": "#111111",
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Canal de inscripción: por definir.",
+              "fontSize": 18,
+              "typeface": "Arial",
+              "color": "#111111",
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 19,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/vmlkzudk",
+      "id": "19",
+      "name": "participation-rule",
+      "bbox": [
+        56,
+        650,
+        1168,
+        1
+      ],
+      "geometry": "rect",
+      "fillColor": "#C5C8CD",
+      "lineWidth": 0
+    }
+  ],
+  "composeRuns": []
+}

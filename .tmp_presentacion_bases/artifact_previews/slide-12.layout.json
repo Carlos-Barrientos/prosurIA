@@ -1,0 +1,1299 @@
+{
+  "schema": "openai.presentation.layout/v4",
+  "unit": "px",
+  "slide": {
+    "aid": "sl/j4w3lm",
+    "id": "j4w3lm",
+    "slide": 12,
+    "layoutId": "017a516d-0e7d-49d4-977a-346a286b1cb4",
+    "layoutName": "Title Slide",
+    "layoutType": "title",
+    "masterLayoutId": "94f02f4b-32f1-413f-b0bd-ac13c0a18f49",
+    "masterLayoutName": "Master",
+    "backgroundColor": "#FFFFFF",
+    "frame": {
+      "left": 0,
+      "top": 0,
+      "width": 1280,
+      "height": 720
+    }
+  },
+  "theme": {
+    "colorSchemeName": "ChatGPT",
+    "colors": {
+      "accent1": "#156082",
+      "accent2": "#E97132",
+      "accent3": "#196B24",
+      "accent4": "#0F9ED5",
+      "accent5": "#A02B93",
+      "accent6": "#4EA72E",
+      "bg1": "#FFFFFF",
+      "bg2": "#000000",
+      "tx1": "#1F1F1F",
+      "tx2": "#FFFFFF",
+      "dk1": "#000000",
+      "lt1": "#FFFFFF",
+      "dk2": "#0E2841",
+      "lt2": "#E8E8E8",
+      "hlink": "#467886",
+      "folHlink": "#96607D"
+    },
+    "typefaces": [
+      "Arial"
+    ]
+  },
+  "inheritedLayers": [
+    {
+      "scope": "layout",
+      "id": "017a516d-0e7d-49d4-977a-346a286b1cb4",
+      "name": "Title Slide",
+      "type": "title",
+      "parentLayoutId": "94f02f4b-32f1-413f-b0bd-ac13c0a18f49",
+      "elements": []
+    },
+    {
+      "scope": "master",
+      "id": "94f02f4b-32f1-413f-b0bd-ac13c0a18f49",
+      "name": "Master",
+      "type": "master",
+      "elements": []
+    }
+  ],
+  "elements": [
+    {
+      "order": 1,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/3e1gb6lw",
+      "id": "1",
+      "name": "accent-12",
+      "bbox": [
+        56,
+        38,
+        8,
+        62
+      ],
+      "geometry": "rect",
+      "fillColor": "#D91E18",
+      "lineWidth": 0
+    },
+    {
+      "order": 2,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/ofahkr2h",
+      "id": "2",
+      "name": "kicker-12",
+      "bbox": [
+        80,
+        38,
+        800,
+        22
+      ],
+      "geometry": "rect",
+      "text": "PRESENTACIÓN FINAL",
+      "textPreview": "PRESENTACIÓN FINAL",
+      "resolvedFontSize": 14,
+      "resolvedTextStyle": {
+        "anchor": 1,
+        "fontSize": 14,
+        "typeface": "Arial",
+        "color": "#D91E18",
+        "bold": true,
+        "alignment": "left",
+        "verticalAlignment": "top",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "PRESENTACIÓN FINAL"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "PRESENTACIÓN FINAL",
+          "resolvedTextStyle": {
+            "fontSize": 14,
+            "typeface": "Arial",
+            "color": "#D91E18",
+            "bold": true,
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "PRESENTACIÓN FINAL",
+              "fontSize": 14,
+              "typeface": "Arial",
+              "color": "#D91E18",
+              "bold": true,
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 3,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/pgjydw32",
+      "id": "3",
+      "name": "title-12",
+      "bbox": [
+        80,
+        62,
+        1110,
+        58
+      ],
+      "geometry": "rect",
+      "text": "El pitch final debe probar nueve respuestas",
+      "textPreview": "El pitch final debe probar nueve respuestas",
+      "resolvedFontSize": 38,
+      "resolvedTextStyle": {
+        "anchor": 1,
+        "fontSize": 38,
+        "typeface": "Arial",
+        "color": "#111111",
+        "bold": true,
+        "alignment": "left",
+        "verticalAlignment": "top",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "El pitch final debe probar nueve respuestas"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "El pitch final debe probar nueve respuestas",
+          "resolvedTextStyle": {
+            "fontSize": 38,
+            "typeface": "Arial",
+            "color": "#111111",
+            "bold": true,
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "El pitch final debe probar nueve respuestas",
+              "fontSize": 38,
+              "typeface": "Arial",
+              "color": "#111111",
+              "bold": true,
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 4,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/u98feh4f",
+      "id": "4",
+      "name": "page-12",
+      "bbox": [
+        1164,
+        674,
+        60,
+        18
+      ],
+      "geometry": "rect",
+      "text": "12",
+      "textPreview": "12",
+      "resolvedFontSize": 12,
+      "resolvedTextStyle": {
+        "anchor": 1,
+        "fontSize": 12,
+        "typeface": "Arial",
+        "color": "#5D626B",
+        "alignment": "right",
+        "verticalAlignment": "top",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "12"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "12",
+          "resolvedTextStyle": {
+            "fontSize": 12,
+            "typeface": "Arial",
+            "color": "#5D626B",
+            "alignment": "right"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "12",
+              "fontSize": 12,
+              "typeface": "Arial",
+              "color": "#5D626B",
+              "alignment": "right"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 5,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/fahg7ml0",
+      "id": "5",
+      "name": "pitch-left",
+      "bbox": [
+        80,
+        160,
+        380,
+        440
+      ],
+      "geometry": "rect",
+      "fillColor": "#111111",
+      "lineWidth": 0
+    },
+    {
+      "order": 6,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/gbqxgr2l",
+      "id": "6",
+      "name": "pitch-left-title",
+      "bbox": [
+        112,
+        202,
+        300,
+        116
+      ],
+      "geometry": "rect",
+      "text": "PITCH\n+ DEMO",
+      "textPreview": "PITCH | + DEMO",
+      "resolvedFontSize": 48,
+      "resolvedTextStyle": {
+        "anchor": 1,
+        "fontSize": 48,
+        "typeface": "Arial",
+        "color": "#FFFFFF",
+        "bold": true,
+        "alignment": "left",
+        "verticalAlignment": "top",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 2,
+        "lines": [
+          {
+            "index": 1,
+            "text": "PITCH"
+          },
+          {
+            "index": 2,
+            "text": "+ DEMO"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "PITCH",
+          "resolvedTextStyle": {
+            "fontSize": 48,
+            "typeface": "Arial",
+            "color": "#FFFFFF",
+            "bold": true,
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "PITCH",
+              "fontSize": 48,
+              "typeface": "Arial",
+              "color": "#FFFFFF",
+              "bold": true,
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        },
+        {
+          "index": 2,
+          "text": "+ DEMO",
+          "resolvedTextStyle": {
+            "fontSize": 48,
+            "typeface": "Arial",
+            "color": "#FFFFFF",
+            "bold": true,
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "+ DEMO",
+              "fontSize": 48,
+              "typeface": "Arial",
+              "color": "#FFFFFF",
+              "bold": true,
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 7,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/hczy9w36",
+      "id": "7",
+      "name": "pitch-left-body",
+      "bbox": [
+        112,
+        352,
+        300,
+        106
+      ],
+      "geometry": "rect",
+      "text": "Demostración funcionando en el proceso real o evidencia equivalente autorizada.",
+      "textPreview": "Demostración funcionando en el proceso real o evidencia equivalente autorizada.",
+      "resolvedFontSize": 22,
+      "resolvedTextStyle": {
+        "anchor": 1,
+        "fontSize": 22,
+        "typeface": "Arial",
+        "color": "#C5C8CD",
+        "alignment": "left",
+        "verticalAlignment": "top",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 4,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Demostración funcionando"
+          },
+          {
+            "index": 2,
+            "text": "en el proceso real o"
+          },
+          {
+            "index": 3,
+            "text": "evidencia equivalente"
+          },
+          {
+            "index": 4,
+            "text": "autorizada."
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Demostración funcionando en el proceso real o evidencia equivalente autorizada.",
+          "resolvedTextStyle": {
+            "fontSize": 22,
+            "typeface": "Arial",
+            "color": "#C5C8CD",
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Demostración funcionando en el proceso real o evidencia equivalente autorizada.",
+              "fontSize": 22,
+              "typeface": "Arial",
+              "color": "#C5C8CD",
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 8,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/6lofah4j",
+      "id": "8",
+      "name": "pitch-left-tbd",
+      "bbox": [
+        112,
+        500,
+        300,
+        70
+      ],
+      "geometry": "rect",
+      "text": "Duración, formato, sede, fecha y hora: por definir.",
+      "textPreview": "Duración, formato, sede, fecha y hora: por definir.",
+      "resolvedFontSize": 18,
+      "resolvedTextStyle": {
+        "anchor": 1,
+        "fontSize": 18,
+        "typeface": "Arial",
+        "color": "#D91E18",
+        "bold": true,
+        "alignment": "left",
+        "verticalAlignment": "top",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 2,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Duración, formato, sede, fecha y"
+          },
+          {
+            "index": 2,
+            "text": "hora: por definir."
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Duración, formato, sede, fecha y hora: por definir.",
+          "resolvedTextStyle": {
+            "fontSize": 18,
+            "typeface": "Arial",
+            "color": "#D91E18",
+            "bold": true,
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Duración, formato, sede, fecha y hora: por definir.",
+              "fontSize": 18,
+              "typeface": "Arial",
+              "color": "#D91E18",
+              "bold": true,
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 9,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/76xg3ml4",
+      "id": "9",
+      "name": "pitch-list-dot-0",
+      "bbox": [
+        540,
+        162,
+        12,
+        12
+      ],
+      "geometry": "ellipse",
+      "fillColor": "#D91E18",
+      "lineWidth": 0
+    },
+    {
+      "order": 10,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/nalorels",
+      "id": "10",
+      "name": "pitch-list-text-0",
+      "bbox": [
+        566,
+        154,
+        624,
+        45
+      ],
+      "geometry": "rect",
+      "text": "¿Cuál era el problema y a quién afectaba?",
+      "textPreview": "¿Cuál era el problema y a quién afectaba?",
+      "resolvedFontSize": 17,
+      "resolvedTextStyle": {
+        "anchor": 1,
+        "fontSize": 17,
+        "typeface": "Arial",
+        "color": "#111111",
+        "alignment": "left",
+        "verticalAlignment": "top",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "¿Cuál era el problema y a quién afectaba?"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "¿Cuál era el problema y a quién afectaba?",
+          "resolvedTextStyle": {
+            "fontSize": 17,
+            "typeface": "Arial",
+            "color": "#111111",
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "¿Cuál era el problema y a quién afectaba?",
+              "fontSize": 17,
+              "typeface": "Arial",
+              "color": "#111111",
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 11,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/m9s7y9k7",
+      "id": "11",
+      "name": "pitch-list-dot-1",
+      "bbox": [
+        540,
+        211,
+        12,
+        12
+      ],
+      "geometry": "ellipse",
+      "fillColor": "#D91E18",
+      "lineWidth": 0
+    },
+    {
+      "order": 12,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/9w36to3i",
+      "id": "12",
+      "name": "pitch-list-text-1",
+      "bbox": [
+        566,
+        203,
+        624,
+        45
+      ],
+      "geometry": "rect",
+      "text": "¿Cómo se resolvió y dónde se usó IA?",
+      "textPreview": "¿Cómo se resolvió y dónde se usó IA?",
+      "resolvedFontSize": 17,
+      "resolvedTextStyle": {
+        "anchor": 1,
+        "fontSize": 17,
+        "typeface": "Arial",
+        "color": "#111111",
+        "alignment": "left",
+        "verticalAlignment": "top",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "¿Cómo se resolvió y dónde se usó IA?"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "¿Cómo se resolvió y dónde se usó IA?",
+          "resolvedTextStyle": {
+            "fontSize": 17,
+            "typeface": "Arial",
+            "color": "#111111",
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "¿Cómo se resolvió y dónde se usó IA?",
+              "fontSize": 17,
+              "typeface": "Arial",
+              "color": "#111111",
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 13,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/8vup0j2d",
+      "id": "13",
+      "name": "pitch-list-dot-2",
+      "bbox": [
+        540,
+        260,
+        12,
+        12
+      ],
+      "geometry": "ellipse",
+      "fillColor": "#D91E18",
+      "lineWidth": 0
+    },
+    {
+      "order": 14,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/vylovylo",
+      "id": "14",
+      "name": "pitch-list-text-2",
+      "bbox": [
+        566,
+        252,
+        624,
+        45
+      ],
+      "geometry": "rect",
+      "text": "¿Qué prueba que la solución funciona?",
+      "textPreview": "¿Qué prueba que la solución funciona?",
+      "resolvedFontSize": 17,
+      "resolvedTextStyle": {
+        "anchor": 1,
+        "fontSize": 17,
+        "typeface": "Arial",
+        "color": "#111111",
+        "alignment": "left",
+        "verticalAlignment": "top",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "¿Qué prueba que la solución funciona?"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "¿Qué prueba que la solución funciona?",
+          "resolvedTextStyle": {
+            "fontSize": 17,
+            "typeface": "Arial",
+            "color": "#111111",
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "¿Qué prueba que la solución funciona?",
+              "fontSize": 17,
+              "typeface": "Arial",
+              "color": "#111111",
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 15,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/axc72tk3",
+      "id": "15",
+      "name": "pitch-list-dot-3",
+      "bbox": [
+        540,
+        309,
+        12,
+        12
+      ],
+      "geometry": "ellipse",
+      "fillColor": "#D91E18",
+      "lineWidth": 0
+    },
+    {
+      "order": 16,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/h036xoju",
+      "id": "16",
+      "name": "pitch-list-text-3",
+      "bbox": [
+        566,
+        301,
+        624,
+        45
+      ],
+      "geometry": "rect",
+      "text": "¿Cuál es el Antes vs. Después?",
+      "textPreview": "¿Cuál es el Antes vs. Después?",
+      "resolvedFontSize": 17,
+      "resolvedTextStyle": {
+        "anchor": 1,
+        "fontSize": 17,
+        "typeface": "Arial",
+        "color": "#111111",
+        "alignment": "left",
+        "verticalAlignment": "top",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "¿Cuál es el Antes vs. Después?"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "¿Cuál es el Antes vs. Después?",
+          "resolvedTextStyle": {
+            "fontSize": 17,
+            "typeface": "Arial",
+            "color": "#111111",
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "¿Cuál es el Antes vs. Después?",
+              "fontSize": 17,
+              "typeface": "Arial",
+              "color": "#111111",
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 17,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/wzup4j29",
+      "id": "17",
+      "name": "pitch-list-dot-4",
+      "bbox": [
+        540,
+        358,
+        12,
+        12
+      ],
+      "geometry": "ellipse",
+      "fillColor": "#D91E18",
+      "lineWidth": 0
+    },
+    {
+      "order": 18,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/b21ojulk",
+      "id": "18",
+      "name": "pitch-list-text-4",
+      "bbox": [
+        566,
+        350,
+        624,
+        45
+      ],
+      "geometry": "rect",
+      "text": "¿Cuánto genera, recupera, protege o ahorra?",
+      "textPreview": "¿Cuánto genera, recupera, protege o ahorra?",
+      "resolvedFontSize": 17,
+      "resolvedTextStyle": {
+        "anchor": 1,
+        "fontSize": 17,
+        "typeface": "Arial",
+        "color": "#111111",
+        "alignment": "left",
+        "verticalAlignment": "top",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "¿Cuánto genera, recupera, protege o ahorra?"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "¿Cuánto genera, recupera, protege o ahorra?",
+          "resolvedTextStyle": {
+            "fontSize": 17,
+            "typeface": "Arial",
+            "color": "#111111",
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "¿Cuánto genera, recupera, protege o ahorra?",
+              "fontSize": 17,
+              "typeface": "Arial",
+              "color": "#111111",
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 19,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/q18nqpkz",
+      "id": "19",
+      "name": "pitch-list-dot-5",
+      "bbox": [
+        540,
+        407,
+        12,
+        12
+      ],
+      "geometry": "ellipse",
+      "fillColor": "#D91E18",
+      "lineWidth": 0
+    },
+    {
+      "order": 20,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/exgryx4n",
+      "id": "20",
+      "name": "pitch-list-text-5",
+      "bbox": [
+        566,
+        399,
+        624,
+        45
+      ],
+      "geometry": "rect",
+      "text": "¿Cuánto cuesta implementar y operar?",
+      "textPreview": "¿Cuánto cuesta implementar y operar?",
+      "resolvedFontSize": 17,
+      "resolvedTextStyle": {
+        "anchor": 1,
+        "fontSize": 17,
+        "typeface": "Arial",
+        "color": "#111111",
+        "alignment": "left",
+        "verticalAlignment": "top",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "¿Cuánto cuesta implementar y operar?"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "¿Cuánto cuesta implementar y operar?",
+          "resolvedTextStyle": {
+            "fontSize": 17,
+            "typeface": "Arial",
+            "color": "#111111",
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "¿Cuánto cuesta implementar y operar?",
+              "fontSize": 17,
+              "typeface": "Arial",
+              "color": "#111111",
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 21,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/fypsr2l8",
+      "id": "21",
+      "name": "pitch-list-dot-6",
+      "bbox": [
+        540,
+        456,
+        12,
+        12
+      ],
+      "geometry": "ellipse",
+      "fillColor": "#D91E18",
+      "lineWidth": 0
+    },
+    {
+      "order": 22,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/gzy907md",
+      "id": "22",
+      "name": "pitch-list-text-6",
+      "bbox": [
+        566,
+        448,
+        624,
+        45
+      ],
+      "geometry": "rect",
+      "text": "¿Qué datos utiliza y cómo se protegen?",
+      "textPreview": "¿Qué datos utiliza y cómo se protegen?",
+      "resolvedFontSize": 17,
+      "resolvedTextStyle": {
+        "anchor": 1,
+        "fontSize": 17,
+        "typeface": "Arial",
+        "color": "#111111",
+        "alignment": "left",
+        "verticalAlignment": "top",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "¿Qué datos utiliza y cómo se protegen?"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "¿Qué datos utiliza y cómo se protegen?",
+          "resolvedTextStyle": {
+            "fontSize": 17,
+            "typeface": "Arial",
+            "color": "#111111",
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "¿Qué datos utiliza y cómo se protegen?",
+              "fontSize": 17,
+              "typeface": "Arial",
+              "color": "#111111",
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 23,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/10ratc3y",
+      "id": "23",
+      "name": "pitch-list-dot-7",
+      "bbox": [
+        540,
+        505,
+        12,
+        12
+      ],
+      "geometry": "ellipse",
+      "fillColor": "#D91E18",
+      "lineWidth": 0
+    },
+    {
+      "order": 24,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/6tgrux4b",
+      "id": "24",
+      "name": "pitch-list-text-7",
+      "bbox": [
+        566,
+        497,
+        624,
+        45
+      ],
+      "geometry": "rect",
+      "text": "¿Con qué sistemas o actores se integra?",
+      "textPreview": "¿Con qué sistemas o actores se integra?",
+      "resolvedFontSize": 17,
+      "resolvedTextStyle": {
+        "anchor": 1,
+        "fontSize": 17,
+        "typeface": "Arial",
+        "color": "#111111",
+        "alignment": "left",
+        "verticalAlignment": "top",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "¿Con qué sistemas o actores se integra?"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "¿Con qué sistemas o actores se integra?",
+          "resolvedTextStyle": {
+            "fontSize": 17,
+            "typeface": "Arial",
+            "color": "#111111",
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "¿Con qué sistemas o actores se integra?",
+              "fontSize": 17,
+              "typeface": "Arial",
+              "color": "#111111",
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 25,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/rupsni5w",
+      "id": "25",
+      "name": "pitch-list-dot-8",
+      "bbox": [
+        540,
+        554,
+        12,
+        12
+      ],
+      "geometry": "ellipse",
+      "fillColor": "#D91E18",
+      "lineWidth": 0
+    },
+    {
+      "order": 26,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/svy9wnmh",
+      "id": "26",
+      "name": "pitch-list-text-8",
+      "bbox": [
+        566,
+        546,
+        624,
+        45
+      ],
+      "geometry": "rect",
+      "text": "¿Dónde más puede escalar y qué requiere?",
+      "textPreview": "¿Dónde más puede escalar y qué requiere?",
+      "resolvedFontSize": 17,
+      "resolvedTextStyle": {
+        "anchor": 1,
+        "fontSize": 17,
+        "typeface": "Arial",
+        "color": "#111111",
+        "alignment": "left",
+        "verticalAlignment": "top",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "¿Dónde más puede escalar y qué requiere?"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "¿Dónde más puede escalar y qué requiere?",
+          "resolvedTextStyle": {
+            "fontSize": 17,
+            "typeface": "Arial",
+            "color": "#111111",
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "¿Dónde más puede escalar y qué requiere?",
+              "fontSize": 17,
+              "typeface": "Arial",
+              "color": "#111111",
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 27,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/tw7apsn2",
+      "id": "27",
+      "name": "pitch-rule",
+      "bbox": [
+        56,
+        650,
+        1168,
+        1
+      ],
+      "geometry": "rect",
+      "fillColor": "#C5C8CD",
+      "lineWidth": 0
+    }
+  ],
+  "composeRuns": []
+}

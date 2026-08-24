@@ -1,0 +1,1116 @@
+{
+  "schema": "openai.presentation.layout/v4",
+  "unit": "px",
+  "slide": {
+    "aid": "sl/qc7pls",
+    "id": "qc7pls",
+    "slide": 8,
+    "layoutId": "017a516d-0e7d-49d4-977a-346a286b1cb4",
+    "layoutName": "Title Slide",
+    "layoutType": "title",
+    "masterLayoutId": "94f02f4b-32f1-413f-b0bd-ac13c0a18f49",
+    "masterLayoutName": "Master",
+    "backgroundColor": "#FFFFFF",
+    "frame": {
+      "left": 0,
+      "top": 0,
+      "width": 1280,
+      "height": 720
+    }
+  },
+  "theme": {
+    "colorSchemeName": "ChatGPT",
+    "colors": {
+      "accent1": "#156082",
+      "accent2": "#E97132",
+      "accent3": "#196B24",
+      "accent4": "#0F9ED5",
+      "accent5": "#A02B93",
+      "accent6": "#4EA72E",
+      "bg1": "#FFFFFF",
+      "bg2": "#000000",
+      "tx1": "#1F1F1F",
+      "tx2": "#FFFFFF",
+      "dk1": "#000000",
+      "lt1": "#FFFFFF",
+      "dk2": "#0E2841",
+      "lt2": "#E8E8E8",
+      "hlink": "#467886",
+      "folHlink": "#96607D"
+    },
+    "typefaces": [
+      "Arial"
+    ]
+  },
+  "inheritedLayers": [
+    {
+      "scope": "layout",
+      "id": "017a516d-0e7d-49d4-977a-346a286b1cb4",
+      "name": "Title Slide",
+      "type": "title",
+      "parentLayoutId": "94f02f4b-32f1-413f-b0bd-ac13c0a18f49",
+      "elements": []
+    },
+    {
+      "scope": "master",
+      "id": "94f02f4b-32f1-413f-b0bd-ac13c0a18f49",
+      "name": "Master",
+      "type": "master",
+      "elements": []
+    }
+  ],
+  "elements": [
+    {
+      "order": 1,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/wfq5ovy1",
+      "id": "1",
+      "name": "accent-8",
+      "bbox": [
+        56,
+        38,
+        8,
+        62
+      ],
+      "geometry": "rect",
+      "fillColor": "#D91E18",
+      "lineWidth": 0
+    },
+    {
+      "order": 2,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/vehofqhg",
+      "id": "2",
+      "name": "kicker-8",
+      "bbox": [
+        80,
+        38,
+        800,
+        22
+      ],
+      "geometry": "rect",
+      "text": "IA RESPONSABLE",
+      "textPreview": "IA RESPONSABLE",
+      "resolvedFontSize": 14,
+      "resolvedTextStyle": {
+        "anchor": 1,
+        "fontSize": 14,
+        "typeface": "Arial",
+        "color": "#D91E18",
+        "bold": true,
+        "alignment": "left",
+        "verticalAlignment": "top",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "IA RESPONSABLE"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "IA RESPONSABLE",
+          "resolvedTextStyle": {
+            "fontSize": 14,
+            "typeface": "Arial",
+            "color": "#D91E18",
+            "bold": true,
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "IA RESPONSABLE",
+              "fontSize": 14,
+              "typeface": "Arial",
+              "color": "#D91E18",
+              "bold": true,
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 3,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/ad8nm5gb",
+      "id": "3",
+      "name": "title-8",
+      "bbox": [
+        80,
+        62,
+        1110,
+        58
+      ],
+      "geometry": "rect",
+      "text": "La seguridad es un requisito habilitante, no un punto extra",
+      "textPreview": "La seguridad es un requisito habilitante, no un punto extra",
+      "resolvedFontSize": 38,
+      "resolvedTextStyle": {
+        "anchor": 1,
+        "fontSize": 38,
+        "typeface": "Arial",
+        "color": "#111111",
+        "bold": true,
+        "alignment": "left",
+        "verticalAlignment": "top",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "La seguridad es un requisito habilitante, no un punto extra"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "La seguridad es un requisito habilitante, no un punto extra",
+          "resolvedTextStyle": {
+            "fontSize": 38,
+            "typeface": "Arial",
+            "color": "#111111",
+            "bold": true,
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "La seguridad es un requisito habilitante, no un punto extra",
+              "fontSize": 38,
+              "typeface": "Arial",
+              "color": "#111111",
+              "bold": true,
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 4,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/5kj6lkzy",
+      "id": "4",
+      "name": "page-8",
+      "bbox": [
+        1164,
+        674,
+        60,
+        18
+      ],
+      "geometry": "rect",
+      "text": "08",
+      "textPreview": "08",
+      "resolvedFontSize": 12,
+      "resolvedTextStyle": {
+        "anchor": 1,
+        "fontSize": 12,
+        "typeface": "Arial",
+        "color": "#5D626B",
+        "alignment": "right",
+        "verticalAlignment": "top",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "08"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "08",
+          "resolvedTextStyle": {
+            "fontSize": 12,
+            "typeface": "Arial",
+            "color": "#5D626B",
+            "alignment": "right"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "08",
+              "fontSize": 12,
+              "typeface": "Arial",
+              "color": "#5D626B",
+              "alignment": "right"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 5,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/kjapsfyd",
+      "id": "5",
+      "name": "security-stop",
+      "bbox": [
+        80,
+        164,
+        380,
+        424
+      ],
+      "geometry": "rect",
+      "fillColor": "#111111",
+      "lineWidth": 0
+    },
+    {
+      "order": 6,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/ji1ojahs",
+      "id": "6",
+      "name": "security-stop-label",
+      "bbox": [
+        112,
+        202,
+        300,
+        38
+      ],
+      "geometry": "rect",
+      "text": "DESCALIFICA",
+      "textPreview": "DESCALIFICA",
+      "resolvedFontSize": 24,
+      "resolvedTextStyle": {
+        "anchor": 1,
+        "fontSize": 24,
+        "typeface": "Arial",
+        "color": "#D91E18",
+        "bold": true,
+        "alignment": "left",
+        "verticalAlignment": "top",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "DESCALIFICA"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "DESCALIFICA",
+          "resolvedTextStyle": {
+            "fontSize": 24,
+            "typeface": "Arial",
+            "color": "#D91E18",
+            "bold": true,
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "DESCALIFICA",
+              "fontSize": 24,
+              "typeface": "Arial",
+              "color": "#D91E18",
+              "bold": true,
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 7,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/ih87q5g7",
+      "id": "7",
+      "name": "security-stop-body",
+      "bbox": [
+        112,
+        270,
+        300,
+        145
+      ],
+      "geometry": "rect",
+      "text": "Usar datos, cuentas, herramientas, APIs o licencias no autorizadas.",
+      "textPreview": "Usar datos, cuentas, herramientas, APIs o licencias no autorizadas.",
+      "resolvedFontSize": 30,
+      "resolvedTextStyle": {
+        "anchor": 1,
+        "fontSize": 30,
+        "typeface": "Arial",
+        "color": "#FFFFFF",
+        "bold": true,
+        "alignment": "left",
+        "verticalAlignment": "top",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 5,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Usar datos,"
+          },
+          {
+            "index": 2,
+            "text": "cuentas,"
+          },
+          {
+            "index": 3,
+            "text": "herramientas, APIs"
+          },
+          {
+            "index": 4,
+            "text": "o licencias no"
+          },
+          {
+            "index": 5,
+            "text": "autorizadas."
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Usar datos, cuentas, herramientas, APIs o licencias no autorizadas.",
+          "resolvedTextStyle": {
+            "fontSize": 30,
+            "typeface": "Arial",
+            "color": "#FFFFFF",
+            "bold": true,
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Usar datos, cuentas, herramientas, APIs o licencias no autorizadas.",
+              "fontSize": 30,
+              "typeface": "Arial",
+              "color": "#FFFFFF",
+              "bold": true,
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 8,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/toj6pkzu",
+      "id": "8",
+      "name": "security-stop-foot",
+      "bbox": [
+        112,
+        462,
+        300,
+        90
+      ],
+      "geometry": "rect",
+      "text": "El control aplica aunque el incumplimiento se detecte después de la inscripción.",
+      "textPreview": "El control aplica aunque el incumplimiento se detecte después de la inscripción.",
+      "resolvedFontSize": 18,
+      "resolvedTextStyle": {
+        "anchor": 1,
+        "fontSize": 18,
+        "typeface": "Arial",
+        "color": "#C5C8CD",
+        "alignment": "left",
+        "verticalAlignment": "top",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 3,
+        "lines": [
+          {
+            "index": 1,
+            "text": "El control aplica aunque el"
+          },
+          {
+            "index": 2,
+            "text": "incumplimiento se detecte"
+          },
+          {
+            "index": 3,
+            "text": "después de la inscripción."
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "El control aplica aunque el incumplimiento se detecte después de la inscripción.",
+          "resolvedTextStyle": {
+            "fontSize": 18,
+            "typeface": "Arial",
+            "color": "#C5C8CD",
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "El control aplica aunque el incumplimiento se detecte después de la inscripción.",
+              "fontSize": 18,
+              "typeface": "Arial",
+              "color": "#C5C8CD",
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 9,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/snapwfy9",
+      "id": "9",
+      "name": "security-list-dot-0",
+      "bbox": [
+        560,
+        174,
+        12,
+        12
+      ],
+      "geometry": "ellipse",
+      "fillColor": "#D91E18",
+      "lineWidth": 0
+    },
+    {
+      "order": 10,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/e5wb618r",
+      "id": "10",
+      "name": "security-list-text-0",
+      "bbox": [
+        586,
+        166,
+        594,
+        54
+      ],
+      "geometry": "rect",
+      "text": "Canales corporativos y privados aprobados.",
+      "textPreview": "Canales corporativos y privados aprobados.",
+      "resolvedFontSize": 18,
+      "resolvedTextStyle": {
+        "anchor": 1,
+        "fontSize": 18,
+        "typeface": "Arial",
+        "color": "#111111",
+        "alignment": "left",
+        "verticalAlignment": "top",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Canales corporativos y privados aprobados."
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Canales corporativos y privados aprobados.",
+          "resolvedTextStyle": {
+            "fontSize": 18,
+            "typeface": "Arial",
+            "color": "#111111",
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Canales corporativos y privados aprobados.",
+              "fontSize": 18,
+              "typeface": "Arial",
+              "color": "#111111",
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 11,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/f65sz69c",
+      "id": "11",
+      "name": "security-list-dot-1",
+      "bbox": [
+        560,
+        232,
+        12,
+        12
+      ],
+      "geometry": "ellipse",
+      "fillColor": "#D91E18",
+      "lineWidth": 0
+    },
+    {
+      "order": 12,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/07et8bqx",
+      "id": "12",
+      "name": "security-list-text-1",
+      "bbox": [
+        586,
+        224,
+        594,
+        54
+      ],
+      "geometry": "rect",
+      "text": "Procesamiento local o proveedor autorizado.",
+      "textPreview": "Procesamiento local o proveedor autorizado.",
+      "resolvedFontSize": 18,
+      "resolvedTextStyle": {
+        "anchor": 1,
+        "fontSize": 18,
+        "typeface": "Arial",
+        "color": "#111111",
+        "alignment": "left",
+        "verticalAlignment": "top",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Procesamiento local o proveedor autorizado."
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Procesamiento local o proveedor autorizado.",
+          "resolvedTextStyle": {
+            "fontSize": 18,
+            "typeface": "Arial",
+            "color": "#111111",
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Procesamiento local o proveedor autorizado.",
+              "fontSize": 18,
+              "typeface": "Arial",
+              "color": "#111111",
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 13,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/187a1gri",
+      "id": "13",
+      "name": "security-list-dot-2",
+      "bbox": [
+        560,
+        290,
+        12,
+        12
+      ],
+      "geometry": "ellipse",
+      "fillColor": "#D91E18",
+      "lineWidth": 0
+    },
+    {
+      "order": 14,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/29gbal83",
+      "id": "14",
+      "name": "security-list-text-2",
+      "bbox": [
+        586,
+        282,
+        594,
+        54
+      ],
+      "geometry": "rect",
+      "text": "Minimización, acceso, retención y eliminación.",
+      "textPreview": "Minimización, acceso, retención y eliminación.",
+      "resolvedFontSize": 18,
+      "resolvedTextStyle": {
+        "anchor": 1,
+        "fontSize": 18,
+        "typeface": "Arial",
+        "color": "#111111",
+        "alignment": "left",
+        "verticalAlignment": "top",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Minimización, acceso, retención y eliminación."
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Minimización, acceso, retención y eliminación.",
+          "resolvedTextStyle": {
+            "fontSize": 18,
+            "typeface": "Arial",
+            "color": "#111111",
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Minimización, acceso, retención y eliminación.",
+              "fontSize": 18,
+              "typeface": "Arial",
+              "color": "#111111",
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 15,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/naps3q98",
+      "id": "15",
+      "name": "security-list-dot-3",
+      "bbox": [
+        560,
+        348,
+        12,
+        12
+      ],
+      "geometry": "ellipse",
+      "fillColor": "#D91E18",
+      "lineWidth": 0
+    },
+    {
+      "order": 16,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/obytcvqt",
+      "id": "16",
+      "name": "security-list-text-3",
+      "bbox": [
+        586,
+        340,
+        594,
+        54
+      ],
+      "geometry": "rect",
+      "text": "Supervisión humana antes de efectos relevantes.",
+      "textPreview": "Supervisión humana antes de efectos relevantes.",
+      "resolvedFontSize": 18,
+      "resolvedTextStyle": {
+        "anchor": 1,
+        "fontSize": 18,
+        "typeface": "Arial",
+        "color": "#111111",
+        "alignment": "left",
+        "verticalAlignment": "top",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Supervisión humana antes de efectos relevantes."
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Supervisión humana antes de efectos relevantes.",
+          "resolvedTextStyle": {
+            "fontSize": 18,
+            "typeface": "Arial",
+            "color": "#111111",
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Supervisión humana antes de efectos relevantes.",
+              "fontSize": 18,
+              "typeface": "Arial",
+              "color": "#111111",
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 17,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/9w7a50re",
+      "id": "17",
+      "name": "security-list-dot-4",
+      "bbox": [
+        560,
+        406,
+        12,
+        12
+      ],
+      "geometry": "ellipse",
+      "fillColor": "#D91E18",
+      "lineWidth": 0
+    },
+    {
+      "order": 18,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/idcryhsj",
+      "id": "18",
+      "name": "security-list-text-4",
+      "bbox": [
+        586,
+        398,
+        594,
+        54
+      ],
+      "geometry": "rect",
+      "text": "Errores, sesgos, alucinaciones y límites documentados.",
+      "textPreview": "Errores, sesgos, alucinaciones y límites documentados.",
+      "resolvedFontSize": 18,
+      "resolvedTextStyle": {
+        "anchor": 1,
+        "fontSize": 18,
+        "typeface": "Arial",
+        "color": "#111111",
+        "alignment": "left",
+        "verticalAlignment": "top",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Errores, sesgos, alucinaciones y límites documentados."
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Errores, sesgos, alucinaciones y límites documentados.",
+          "resolvedTextStyle": {
+            "fontSize": 18,
+            "typeface": "Arial",
+            "color": "#111111",
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Errores, sesgos, alucinaciones y límites documentados.",
+              "fontSize": 18,
+              "typeface": "Arial",
+              "color": "#111111",
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 19,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/3elsrm94",
+      "id": "19",
+      "name": "security-list-dot-5",
+      "bbox": [
+        560,
+        464,
+        12,
+        12
+      ],
+      "geometry": "ellipse",
+      "fillColor": "#D91E18",
+      "lineWidth": 0
+    },
+    {
+      "order": 20,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/7i18zipw",
+      "id": "20",
+      "name": "security-list-text-5",
+      "bbox": [
+        586,
+        456,
+        594,
+        54
+      ],
+      "geometry": "rect",
+      "text": "Modelos, APIs, datos de terceros y licencias declarados.",
+      "textPreview": "Modelos, APIs, datos de terceros y licencias declarados.",
+      "resolvedFontSize": 18,
+      "resolvedTextStyle": {
+        "anchor": 1,
+        "fontSize": 18,
+        "typeface": "Arial",
+        "color": "#111111",
+        "alignment": "left",
+        "verticalAlignment": "top",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Modelos, APIs, datos de terceros y licencias declarados."
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Modelos, APIs, datos de terceros y licencias declarados.",
+          "resolvedTextStyle": {
+            "fontSize": 18,
+            "typeface": "Arial",
+            "color": "#111111",
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Modelos, APIs, datos de terceros y licencias declarados.",
+              "fontSize": 18,
+              "typeface": "Arial",
+              "color": "#111111",
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 21,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/6hs76d8b",
+      "id": "21",
+      "name": "security-list-dot-6",
+      "bbox": [
+        560,
+        522,
+        12,
+        12
+      ],
+      "geometry": "ellipse",
+      "fillColor": "#D91E18",
+      "lineWidth": 0
+    },
+    {
+      "order": 22,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/tkjq1s72",
+      "id": "22",
+      "name": "security-list-text-6",
+      "bbox": [
+        586,
+        514,
+        594,
+        54
+      ],
+      "geometry": "rect",
+      "text": "Revisión de TI/Seguridad cuando corresponda.",
+      "textPreview": "Revisión de TI/Seguridad cuando corresponda.",
+      "resolvedFontSize": 18,
+      "resolvedTextStyle": {
+        "anchor": 1,
+        "fontSize": 18,
+        "typeface": "Arial",
+        "color": "#111111",
+        "alignment": "left",
+        "verticalAlignment": "top",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Revisión de TI/Seguridad cuando corresponda."
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Revisión de TI/Seguridad cuando corresponda.",
+          "resolvedTextStyle": {
+            "fontSize": 18,
+            "typeface": "Arial",
+            "color": "#111111",
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Revisión de TI/Seguridad cuando corresponda.",
+              "fontSize": 18,
+              "typeface": "Arial",
+              "color": "#111111",
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 23,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/8jap8n6h",
+      "id": "23",
+      "name": "security-rule",
+      "bbox": [
+        56,
+        650,
+        1168,
+        1
+      ],
+      "geometry": "rect",
+      "fillColor": "#C5C8CD",
+      "lineWidth": 0
+    }
+  ],
+  "composeRuns": []
+}
