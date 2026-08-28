@@ -2,4 +2,4 @@
 deployment:
   tasks:
     - export DEPLOYPATH=/home/prosurco/public_html/
-    - /bin/cp -R frontend/dist/* $DEPLOYPATH
+    - /bin/cp -R backend/public/* $DEPLOYPATH
