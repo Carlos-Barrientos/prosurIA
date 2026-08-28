@@ -1,5 +1,5 @@
 ---
 deployment:
   tasks:
-    - export DEPLOYPATH=/home/prosurco/reto-ia.prosur.com.mx
+    - export DEPLOYPATH=/home/prosurco/public_html/
     - /bin/cp -R * $DEPLOYPATH
