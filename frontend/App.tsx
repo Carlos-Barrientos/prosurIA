@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Search, ChevronUp, BookOpen, Terminal, CheckCircle2, Play, ArrowLeft, Layout, ShieldAlert, Cpu, Database, Network, Key, Code, Boxes, Activity, Eye, RefreshCw, FileJson, Rocket } from 'lucide-react';
+import { Search, ChevronUp, BookOpen, Terminal, CheckCircle2, Play, ArrowLeft, Layout, ShieldAlert, Cpu, Database, Network, Key, Code, Boxes, Activity, Eye, RefreshCw, FileJson, Rocket, Globe } from 'lucide-react';
+import FuturoMundial from './components/FuturoMundial';
 
 const SYLLABUS = [
   {
@@ -521,6 +522,10 @@ export default function App() {
     return <CourseView setView={setCurrentView} />;
   }
 
+  if (currentView === 'futuro-mundial') {
+    return <FuturoMundial setView={setCurrentView} />;
+  }
+
   return (
     <div className="min-h-screen bg-white text-[#1a1a1a] font-sans antialiased selection:bg-red-600 selection:text-white">
       
@@ -534,20 +539,33 @@ export default function App() {
             </span>
           </div>
           
-          <nav className="hidden lg:flex items-center gap-10 text-[11px] font-bold tracking-[0.15em] uppercase text-gray-600">
+          <nav className="hidden lg:flex items-center gap-8 text-[11px] font-bold tracking-[0.15em] uppercase text-gray-600">
             <a href="#proposito" className="hover:text-[#E30613] transition-colors">Propósito</a>
             <a href="#categorias" className="hover:text-[#E30613] transition-colors">Categorías</a>
             <a href="#scorecard" className="hover:text-[#E30613] transition-colors">Scorecard</a>
             <a href="#etapas" className="hover:text-[#E30613] transition-colors">Etapas</a>
-            
-            {/* BOTÓN ACTUALIZADO: ESTILO PROSUR (ROJO BOLD) */}
-            <button 
-              onClick={() => setCurrentView('course')}
-              className="flex items-center gap-2 bg-[#E30613] text-white font-black px-8 py-3.5 hover:bg-red-700 transition-colors shadow-md tracking-[0.2em]"
-            >
-              <BookOpen className="w-4 h-4" /> ACADEMIA PROSUR
-            </button>
-            <button className="ml-2">
+
+            {/* GRUPO DE BOTONES DE ACCIÓN */}
+            <div className="flex items-center gap-3">
+              {/* BOTÓN FUTURO MUNDIAL */}
+              <button 
+                onClick={() => setCurrentView('futuro-mundial')}
+                className="group flex items-center gap-2.5 px-5 py-2.5 rounded-full text-[11px] font-bold tracking-[0.15em] uppercase text-gray-700 hover:text-[#E30613] bg-gray-50/90 hover:bg-white border border-gray-200/90 hover:border-[#E30613]/40 shadow-xs hover:shadow-md transition-all duration-300 cursor-pointer"
+              >
+                <Globe className="w-3.5 h-3.5 text-gray-400 group-hover:text-[#E30613] group-hover:rotate-12 transition-all duration-300" />
+                <span>Futuro Mundial</span>
+              </button>
+              
+              {/* BOTÓN ACADEMIA PROSUR */}
+              <button 
+                onClick={() => setCurrentView('course')}
+                className="flex items-center gap-2.5 px-6 py-2.5 rounded-full text-[11px] font-bold tracking-[0.15em] uppercase text-white bg-[#E30613] hover:bg-[#b80510] shadow-sm hover:shadow-lg hover:shadow-red-600/25 active:scale-95 transition-all duration-300 cursor-pointer"
+              >
+                <BookOpen className="w-3.5 h-3.5" />
+                <span>Academia Prosur</span>
+              </button>
+            </div>
+            <button className="ml-2 cursor-pointer">
               <Search className="w-5 h-5 text-gray-400 hover:text-[#1a1a1a] transition-colors" />
             </button>
           </nav>
@@ -854,7 +872,8 @@ export default function App() {
             <ul className="space-y-3">
               <li><a href="#" className="text-sm text-gray-400 hover:text-white transition-colors">Bases Oficiales (PDF)</a></li>
               <li><a href="#" className="text-sm text-gray-400 hover:text-white transition-colors">Inscripciones</a></li>
-              <li><button onClick={() => setCurrentView('course')} className="text-sm text-gray-400 hover:text-white transition-colors">Academia Prosur</button></li>
+              <li><button onClick={() => setCurrentView('course')} className="text-sm text-gray-400 hover:text-white transition-colors cursor-pointer">Academia Prosur</button></li>
+              <li><button onClick={() => setCurrentView('futuro-mundial')} className="text-sm text-teal-400 hover:text-teal-300 font-semibold transition-colors cursor-pointer">Futuro Mundial (WEF)</button></li>
             </ul>
           </div>
           
