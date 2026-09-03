@@ -16,7 +16,8 @@ import {
   AlertTriangle, 
   Share2, 
   Briefcase, 
-  Zap 
+  Zap,
+  BookOpen 
 } from 'lucide-react';
 import Chart from 'chart.js/auto';
 
@@ -340,23 +341,33 @@ export default function FuturoMundial({ setView }: FuturoMundialProps) {
       
       {/* Barra de Navegación Superior Corporativa */}
       <header className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-2xs">
-        <div className="max-w-[1600px] mx-auto px-6 h-20 flex items-center justify-between">
-          <div className="flex items-center gap-5">
+        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 h-16 sm:h-20 flex items-center justify-between">
+          <div className="flex items-center gap-3 sm:gap-5">
             <button 
               onClick={() => setView('landing')} 
-              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-50 hover:bg-gray-100 text-gray-700 hover:text-[#CC2027] border border-gray-200 text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer"
+              className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 rounded-lg bg-gray-50 hover:bg-gray-100 text-gray-700 hover:text-[#CC2027] border border-gray-200 text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer"
             >
               <ArrowLeft className="w-3.5 h-3.5" /> 
-              <span>Volver al Reto</span>
+              <span>Volver</span>
             </button>
             <div className="h-6 w-[1px] bg-gray-200 hidden sm:block"></div>
-            <img src="/logoprosur.png" alt="Grupo PROSUR" className="h-12 sm:h-14 w-auto object-contain" />
+            <img src="/logoprosur.png" alt="Grupo PROSUR" className="h-9 sm:h-12 w-auto object-contain" />
             <span className="text-[12px] tracking-widest font-bold text-gray-400 uppercase hidden md:inline border-l border-gray-200 pl-4">
               INTELIGENCIA ESTRATÉGICA REGIONAL
             </span>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
+            {/* Acceso a Academia Prosur */}
+            <button 
+              onClick={() => setView('course')}
+              className="flex items-center gap-1.5 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-[10px] sm:text-[11px] font-bold tracking-wider uppercase text-white bg-[#E30613] hover:bg-[#b80510] shadow-sm active:scale-95 transition-all cursor-pointer"
+              title="Academia Prosur"
+            >
+              <BookOpen className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Academia Prosur</span>
+              <span className="sm:hidden">Academia</span>
+            </button>
             <div className="hidden sm:flex items-center gap-2 text-[11px] font-semibold text-gray-600 bg-gray-50 px-3.5 py-1.5 rounded-lg border border-gray-200">
               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
               <span>Fuente Oficial: WEF Davos 2025</span>

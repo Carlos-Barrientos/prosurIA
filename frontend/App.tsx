@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, ChevronUp, BookOpen, Terminal, CheckCircle2, Play, ArrowLeft, Layout, ShieldAlert, Cpu, Database, Network, Key, Code, Boxes, Activity, Eye, RefreshCw, FileJson, Rocket, Globe, MessageCircle } from 'lucide-react';
+import { Search, ChevronUp, BookOpen, Terminal, CheckCircle2, Play, ArrowLeft, Layout, ShieldAlert, Cpu, Database, Network, Key, Code, Boxes, Activity, Eye, RefreshCw, FileJson, Rocket, Globe, MessageCircle, Menu, X } from 'lucide-react';
 import FuturoMundial from './components/FuturoMundial';
 
 const SYLLABUS = [
@@ -11,7 +11,7 @@ const SYLLABUS = [
       { id: 1, title: "1. Fundamentos de IA y Modelos Generativos" },
       { id: 2, title: "2. Ingeniería de Prompts Avanzada", hasLab: true },
       { id: 3, title: "3. Copilotos Conversacionales Estratégicos" },
-      { id: 4, title: "4. Productividad con M365 Copilot" }
+      { id: 4, title: "4. Productividad con Claude" }
     ]
   },
   {
@@ -330,9 +330,9 @@ function CourseView({ setView }) {
             caso: "Cálculo del tiempo promedio de resolución de patentes por país antes y después del sistema de cooperación, generando visualizaciones de tendencias con Python integrado."
           },
           4: {
-            fundamento: "Microsoft 365 Copilot combina la potencia de los modelos de frontera con el grafo de información institucional (Microsoft Graph), contextualizando solicitudes con SharePoint y Exchange.",
-            instruccion: "Realizar una auditoría de gobernanza de datos en SharePoint previa a la adopción, certificando que los sitios cuenten con listas de control de acceso (ACL) bien definidas.",
-            caso: "Condensar informes técnicos de más de cien páginas en minutas directivas y presentaciones ejecutivas dinámicas para las asambleas directivas de Prosur."
+            fundamento: "Claude (Anthropic) destaca por su capacidad de razonamiento profundo, ventanas de contexto hiper-extensas y funcionalidades avanzadas como Projects y Artifacts, permitiendo procesar y estructurar volúmenes masivos de documentación institucional con máxima fidelidad semántica.",
+            instruccion: "Configurar Proyectos en Claude (Claude Projects) con directrices del sistema y bases de conocimiento documental de Prosur. Utilizar artefactos interactivos para generar tablas comparativas, resúmenes analíticos y síntesis reproducibles.",
+            caso: "Procesamiento, análisis comparativo y condensación de normativas y expedientes técnicos de más de cien páginas en minutas directivas y reportes estructurados para Prosur."
           },
           5: {
             fundamento: "El desarrollo asistido por IA generativa permite materializar herramientas de software complejas mediante instrucciones declarativas. Plataformas como Lovable transforman abstracciones en aplicaciones web React/Tailwind.",
@@ -452,17 +452,28 @@ function CourseView({ setView }) {
   return (
     <div className="min-h-screen bg-[#f9f9f9] text-[#1a1a1a] font-sans">
       <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
-        <div className="max-w-[1600px] mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <button onClick={() => setView('landing')} className="text-gray-400 hover:text-red-600 transition-colors flex items-center gap-2 text-sm font-bold uppercase tracking-widest">
+        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-2.5 sm:gap-4">
+            <button onClick={() => setView('landing')} className="text-gray-500 hover:text-red-600 transition-colors flex items-center gap-1.5 text-xs sm:text-sm font-bold uppercase tracking-widest cursor-pointer">
               <ArrowLeft className="w-4 h-4" /> Volver
             </button>
-            <div className="h-6 w-[1px] bg-gray-200 mx-2"></div>
-            <img src="/logoprosur.png" alt="Grupo PROSUR" className="h-10 w-auto object-contain grayscale opacity-60" />
-            <span className="text-[12px] tracking-widest font-bold text-[#1a1a1a] uppercase ml-2">
+            <div className="h-5 w-[1px] bg-gray-200 mx-1 sm:mx-2"></div>
+            <img src="/logoprosur.png" alt="Grupo PROSUR" className="h-8 sm:h-10 w-auto object-contain grayscale opacity-60" />
+            <span className="text-[11px] sm:text-[12px] tracking-widest font-bold text-[#1a1a1a] uppercase ml-1 sm:ml-2">
               Academia Prosur
             </span>
           </div>
+
+          {/* Acceso a Futuro Mundial */}
+          <button 
+            onClick={() => setView('futuro-mundial')}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] sm:text-[11px] font-bold tracking-wider uppercase text-gray-700 hover:text-[#E30613] bg-gray-50 hover:bg-white border border-gray-200/90 shadow-xs active:scale-95 transition-all cursor-pointer"
+            title="Futuro Mundial (WEF)"
+          >
+            <Globe className="w-3.5 h-3.5 text-gray-400" />
+            <span className="hidden sm:inline">Futuro Mundial</span>
+            <span className="sm:hidden">Futuro</span>
+          </button>
         </div>
       </header>
 
@@ -517,6 +528,7 @@ export default function App() {
   const [currentView, setCurrentView] = useState('landing');
   const [selectedCategory, setSelectedCategory] = useState<any>(null);
   const [showEnrollModal, setShowEnrollModal] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   if (currentView === 'course') {
     return <CourseView setView={setCurrentView} />;
@@ -531,12 +543,43 @@ export default function App() {
       
       {/* Header - Prosur Style */}
       <header className="sticky top-0 z-50 bg-white border-b border-gray-100 shadow-sm">
-        <div className="max-w-[1600px] mx-auto px-6 h-24 flex items-center justify-between">
-          <div className="flex items-center gap-6">
-            <img src="/logoprosur.png" alt="Grupo PROSUR" className="h-16 sm:h-20 w-auto object-contain" />
+        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 h-20 sm:h-24 flex items-center justify-between">
+          <div className="flex items-center gap-3 sm:gap-6">
+            <img src="/logoprosur.png" alt="Grupo PROSUR" className="h-11 sm:h-16 lg:h-20 w-auto object-contain" />
             <span className="text-[13px] tracking-widest font-bold text-gray-400 hidden md:block border-l border-gray-200 pl-6">
               RETO DE INTELIGENCIA ARTIFICIAL
             </span>
+          </div>
+
+          {/* Opciones directas para celular (< lg) - Diseño elegante, limpio y sin contaminar */}
+          <div className="flex lg:hidden items-center gap-1.5 sm:gap-2">
+            <button 
+              onClick={() => { setCurrentView('futuro-mundial'); setMobileMenuOpen(false); }}
+              className="group flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-full text-[10px] sm:text-[11px] font-bold tracking-[0.12em] uppercase text-gray-700 hover:text-[#E30613] bg-gray-50/90 hover:bg-white border border-gray-200/90 hover:border-[#E30613]/40 shadow-xs active:scale-95 transition-all cursor-pointer"
+              title="Futuro Mundial"
+            >
+              <Globe className="w-3.5 h-3.5 text-gray-400 group-hover:text-[#E30613] transition-colors" />
+              <span className="hidden sm:inline">Futuro Mundial</span>
+              <span className="sm:hidden">Futuro</span>
+            </button>
+            
+            <button 
+              onClick={() => { setCurrentView('course'); setMobileMenuOpen(false); }}
+              className="flex items-center gap-1.5 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-[10px] sm:text-[11px] font-bold tracking-[0.12em] uppercase text-white bg-[#E30613] hover:bg-[#b80510] shadow-sm active:scale-95 transition-all cursor-pointer"
+              title="Academia Prosur"
+            >
+              <BookOpen className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Academia Prosur</span>
+              <span className="sm:hidden">Academia</span>
+            </button>
+
+            <button 
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="p-1.5 sm:p-2 text-gray-500 hover:text-gray-900 rounded-lg hover:bg-gray-100 transition-colors ml-0.5 cursor-pointer"
+              aria-label="Menú"
+            >
+              {mobileMenuOpen ? <X className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700" /> : <Menu className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700" />}
+            </button>
           </div>
           
           <nav className="hidden lg:flex items-center gap-8 text-[11px] font-bold tracking-[0.15em] uppercase text-gray-600">
@@ -570,6 +613,46 @@ export default function App() {
             </button>
           </nav>
         </div>
+
+        {/* Menú Desplegable Móvil */}
+        {mobileMenuOpen && (
+          <div className="lg:hidden bg-white border-t border-gray-100 px-6 py-4 shadow-lg animate-in fade-in slide-in-from-top-2 duration-200">
+            <nav className="flex flex-col space-y-3 text-[11px] font-bold tracking-[0.12em] uppercase text-gray-600">
+              <a 
+                href="#proposito" 
+                onClick={() => setMobileMenuOpen(false)}
+                className="py-2 hover:text-[#E30613] transition-colors border-b border-gray-50 flex items-center justify-between"
+              >
+                <span>Propósito</span>
+                <span className="text-gray-300 text-xs">→</span>
+              </a>
+              <a 
+                href="#categorias" 
+                onClick={() => setMobileMenuOpen(false)}
+                className="py-2 hover:text-[#E30613] transition-colors border-b border-gray-50 flex items-center justify-between"
+              >
+                <span>5 Categorías</span>
+                <span className="text-gray-300 text-xs">→</span>
+              </a>
+              <a 
+                href="#scorecard" 
+                onClick={() => setMobileMenuOpen(false)}
+                className="py-2 hover:text-[#E30613] transition-colors border-b border-gray-50 flex items-center justify-between"
+              >
+                <span>Scorecard (100 Puntos)</span>
+                <span className="text-gray-300 text-xs">→</span>
+              </a>
+              <a 
+                href="#etapas" 
+                onClick={() => setMobileMenuOpen(false)}
+                className="py-2 hover:text-[#E30613] transition-colors border-b border-gray-50 flex items-center justify-between"
+              >
+                <span>Etapas y Cronograma</span>
+                <span className="text-gray-300 text-xs">→</span>
+              </a>
+            </nav>
+          </div>
+        )}
       </header>
 
       {/* Sub-nav */}
