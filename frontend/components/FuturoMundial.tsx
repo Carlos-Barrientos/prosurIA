@@ -350,7 +350,7 @@ export default function FuturoMundial({ setView }: FuturoMundialProps) {
               <span>Volver al Reto</span>
             </button>
             <div className="h-6 w-[1px] bg-gray-200 hidden sm:block"></div>
-            <img src="/logoprosur.png" alt="Grupo PROSUR" className="h-8 object-contain" />
+            <img src="/logoprosur.png" alt="Grupo PROSUR" className="h-12 sm:h-14 w-auto object-contain" />
             <span className="text-[12px] tracking-widest font-bold text-gray-400 uppercase hidden md:inline border-l border-gray-200 pl-4">
               INTELIGENCIA ESTRATÉGICA REGIONAL
             </span>

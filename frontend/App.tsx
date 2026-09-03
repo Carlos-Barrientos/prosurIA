@@ -458,7 +458,7 @@ function CourseView({ setView }) {
               <ArrowLeft className="w-4 h-4" /> Volver
             </button>
             <div className="h-6 w-[1px] bg-gray-200 mx-2"></div>
-            <img src="/logoprosur.png" alt="Grupo PROSUR" className="h-6 object-contain grayscale opacity-50" />
+            <img src="/logoprosur.png" alt="Grupo PROSUR" className="h-10 w-auto object-contain grayscale opacity-60" />
             <span className="text-[12px] tracking-widest font-bold text-[#1a1a1a] uppercase ml-2">
               Academia Prosur
             </span>
@@ -533,7 +533,7 @@ export default function App() {
       <header className="sticky top-0 z-50 bg-white border-b border-gray-100 shadow-sm">
         <div className="max-w-[1600px] mx-auto px-6 h-24 flex items-center justify-between">
           <div className="flex items-center gap-6">
-            <img src="/logoprosur.png" alt="Grupo PROSUR" className="h-10 object-contain" />
+            <img src="/logoprosur.png" alt="Grupo PROSUR" className="h-16 sm:h-20 w-auto object-contain" />
             <span className="text-[13px] tracking-widest font-bold text-gray-400 hidden md:block border-l border-gray-200 pl-6">
               RETO DE INTELIGENCIA ARTIFICIAL
             </span>
