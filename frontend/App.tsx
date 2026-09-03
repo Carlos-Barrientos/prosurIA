@@ -137,7 +137,7 @@ function CourseView({ setView }) {
         return (
           <div className="animate-in fade-in slide-in-from-bottom-4">
             <div className="mb-10">
-              <span className="text-red-600 text-[11px] font-bold tracking-widest uppercase block mb-3">— TEMA 2</span>
+              <span className="text-red-600 text-[11px] font-bold tracking-widest uppercase block mb-3">TEMA 2</span>
               <h1 className="text-4xl font-bold tracking-tight mb-4">Laboratorio: Ingeniería de Prompts</h1>
               <p className="text-gray-500 leading-relaxed max-w-3xl">
                 En Prosur, formalizamos una estructura innegociable de 5 componentes para garantizar respuestas deterministas y reproducibles. <strong>Modifica el prompt y ejecuta la simulación:</strong>
@@ -184,7 +184,7 @@ function CourseView({ setView }) {
         return (
           <div className="animate-in fade-in slide-in-from-bottom-4">
             <div className="mb-10">
-              <span className="text-red-600 text-[11px] font-bold tracking-widest uppercase block mb-3">— TEMA 6</span>
+              <span className="text-red-600 text-[11px] font-bold tracking-widest uppercase block mb-3">TEMA 6</span>
               <h1 className="text-4xl font-bold tracking-tight mb-4">Simulador: Flujos n8n y LangChain</h1>
               <p className="text-gray-500 leading-relaxed max-w-3xl">
                 Observa la orquestación visual de grado empresarial donde eventos en tiempo real activan cadenas de razonamiento analítico.
@@ -238,7 +238,7 @@ function CourseView({ setView }) {
         return (
           <div className="animate-in fade-in slide-in-from-bottom-4">
             <div className="mb-10">
-              <span className="text-red-600 text-[11px] font-bold tracking-widest uppercase block mb-3">— TEMA 11</span>
+              <span className="text-red-600 text-[11px] font-bold tracking-widest uppercase block mb-3">TEMA 11</span>
               <h1 className="text-4xl font-bold tracking-tight mb-4">Laboratorio: Tokenización BPE</h1>
               <p className="text-gray-500 leading-relaxed max-w-3xl">
                 Los modelos no interpretan caracteres, sino secuencias de valores enteros (Tokens). Escribe una frase para visualizar cómo el tokenizador la fragmenta antes de vectorizarla en el espacio latente.
@@ -270,7 +270,7 @@ function CourseView({ setView }) {
         return (
           <div className="animate-in fade-in slide-in-from-bottom-4">
             <div className="mb-10">
-              <span className="text-red-600 text-[11px] font-bold tracking-widest uppercase block mb-3">— TEMA 14</span>
+              <span className="text-red-600 text-[11px] font-bold tracking-widest uppercase block mb-3">TEMA 14</span>
               <h1 className="text-4xl font-bold tracking-tight mb-4">Simulador RAG (Azure AI)</h1>
               <p className="text-gray-500 leading-relaxed max-w-3xl">
                 Observa cómo el sistema recupera fragmentos de documentos oficiales de Prosur antes de generar la respuesta, garantizando la eliminación de alucinaciones.
@@ -409,7 +409,7 @@ function CourseView({ setView }) {
         return (
           <div className="animate-in fade-in slide-in-from-bottom-4">
             <div className="mb-10">
-              <span className="text-red-600 text-[11px] font-bold tracking-widest uppercase block mb-3">— {currentModule.title}</span>
+              <span className="text-red-600 text-[11px] font-bold tracking-widest uppercase block mb-3">{currentModule.title}</span>
               <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-4 text-[#1a1a1a]">{currentTopic.title}</h1>
             </div>
 
@@ -598,17 +598,17 @@ export default function App() {
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mt-16 border-t border-gray-200 pt-16">
             <div>
-              <span className="text-[#E30613] text-[11px] font-bold tracking-widest uppercase mb-4 block">— 01</span>
+              <span className="text-[#E30613] text-[11px] font-bold tracking-widest uppercase mb-4 block">01</span>
               <h3 className="text-xl font-bold mb-3">Problema Real</h3>
               <p className="text-gray-500 text-sm leading-relaxed">Dolor operativo y necesidad detectada en la empresa.</p>
             </div>
             <div>
-              <span className="text-[#E30613] text-[11px] font-bold tracking-widest uppercase mb-4 block">— 02</span>
+              <span className="text-[#E30613] text-[11px] font-bold tracking-widest uppercase mb-4 block">02</span>
               <h3 className="text-xl font-bold mb-3">Solución Operativa</h3>
               <p className="text-gray-500 text-sm leading-relaxed">Uso sustantivo y explicable de Inteligencia Artificial ya funcionando.</p>
             </div>
             <div>
-              <span className="text-[#E30613] text-[11px] font-bold tracking-widest uppercase mb-4 block">— 03</span>
+              <span className="text-[#E30613] text-[11px] font-bold tracking-widest uppercase mb-4 block">03</span>
               <h3 className="text-xl font-bold mb-3">Valor Verificable</h3>
               <p className="text-gray-500 text-sm leading-relaxed">Medición clara de un Antes vs. Después con ahorros comprobables.</p>
             </div>
@@ -627,7 +627,7 @@ export default function App() {
               <div className="aspect-[4/3] overflow-hidden mb-6 bg-gray-200">
                 <img src="https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?q=80&w=2070&auto=format&fit=crop" alt="Finanzas" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
               </div>
-              <span className="text-[#E30613] text-[11px] font-bold tracking-[0.15em] uppercase mb-3 block">— CATEGORÍA A</span>
+              <span className="text-[#E30613] text-[11px] font-bold tracking-[0.15em] uppercase mb-3 block">CATEGORÍA A</span>
               <h3 className="text-2xl font-bold mb-3 group-hover:text-[#E30613] transition-colors">Finanzas, Contabilidad y Tesorería</h3>
               <p className="text-gray-500 text-sm leading-relaxed">Cierres contables, conciliaciones automatizadas, cumplimiento fiscal y dispersión bancaria masiva sin errores.</p>
             </div>
@@ -636,7 +636,7 @@ export default function App() {
               <div className="aspect-[4/3] overflow-hidden mb-6 bg-gray-200">
                 <img src="https://images.unsplash.com/photo-1580674285054-bed31e145f59?q=80&w=2070&auto=format&fit=crop" alt="Operaciones" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
               </div>
-              <span className="text-[#E30613] text-[11px] font-bold tracking-[0.15em] uppercase mb-3 block">— CATEGORÍA B</span>
+              <span className="text-[#E30613] text-[11px] font-bold tracking-[0.15em] uppercase mb-3 block">CATEGORÍA B</span>
               <h3 className="text-2xl font-bold mb-3 group-hover:text-[#E30613] transition-colors">Operaciones, Taller y Logística</h3>
               <p className="text-gray-500 text-sm leading-relaxed">Control físico de inventarios, optimización de tiempos en talleres mecánicos, mermas y reportes integrados.</p>
             </div>
@@ -645,7 +645,7 @@ export default function App() {
               <div className="aspect-[4/3] overflow-hidden mb-6 bg-gray-200">
                 <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=2070&auto=format&fit=crop" alt="Ventas" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
               </div>
-              <span className="text-[#E30613] text-[11px] font-bold tracking-[0.15em] uppercase mb-3 block">— CATEGORÍA C</span>
+              <span className="text-[#E30613] text-[11px] font-bold tracking-[0.15em] uppercase mb-3 block">CATEGORÍA C</span>
               <h3 className="text-2xl font-bold mb-3 group-hover:text-[#E30613] transition-colors">Ventas y Marketing</h3>
               <p className="text-gray-500 text-sm leading-relaxed">Captación de leads, asistentes de voz conversacionales, CRM inteligente y seguimiento de retención proactiva.</p>
             </div>
@@ -654,7 +654,7 @@ export default function App() {
               <div className="aspect-[4/3] overflow-hidden mb-6 bg-gray-200">
                 <img src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?q=80&w=2070&auto=format&fit=crop" alt="Capital Humano" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
               </div>
-              <span className="text-[#E30613] text-[11px] font-bold tracking-[0.15em] uppercase mb-3 block">— CATEGORÍA D</span>
+              <span className="text-[#E30613] text-[11px] font-bold tracking-[0.15em] uppercase mb-3 block">CATEGORÍA D</span>
               <h3 className="text-2xl font-bold mb-3 group-hover:text-[#E30613] transition-colors">Capital Humano y Compliance</h3>
               <p className="text-gray-500 text-sm leading-relaxed">Atracción de talento (ATS), portales gamificados, trackers de normativas (STPS) y bases de conocimiento.</p>
             </div>
@@ -663,7 +663,7 @@ export default function App() {
               <div className="aspect-[4/3] overflow-hidden mb-6 bg-gray-200">
                 <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop" alt="Tecnología" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
               </div>
-              <span className="text-[#E30613] text-[11px] font-bold tracking-[0.15em] uppercase mb-3 block">— CATEGORÍA E</span>
+              <span className="text-[#E30613] text-[11px] font-bold tracking-[0.15em] uppercase mb-3 block">CATEGORÍA E</span>
               <h3 className="text-2xl font-bold mb-3 group-hover:text-[#E30613] transition-colors">Tecnología e Innovación</h3>
               <p className="text-gray-500 text-sm leading-relaxed">Integración de APIs, gobierno de datos, ciberseguridad, infraestructura corporativa y soluciones transversales.</p>
             </div>
@@ -745,19 +745,19 @@ export default function App() {
         <div className="max-w-[1600px] mx-auto px-6 pb-24">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
             <div className="group">
-              <span className="text-[#E30613] text-[11px] font-bold tracking-[0.15em] uppercase mb-2 block">— FASE 1</span>
+              <span className="text-[#E30613] text-[11px] font-bold tracking-[0.15em] uppercase mb-2 block">FASE 1</span>
               <h3 className="text-2xl font-bold mb-4">Lanzamiento</h3>
               <p className="text-gray-500 text-sm leading-relaxed mb-4">Convocatoria oficial, bases e inscripciones.</p>
               <span className="text-[11px] font-bold text-[#1a1a1a] tracking-widest uppercase border-b border-gray-300 pb-1">Fechas por definir</span>
             </div>
             <div className="group">
-              <span className="text-[#E30613] text-[11px] font-bold tracking-[0.15em] uppercase mb-2 block">— FASE 2</span>
+              <span className="text-[#E30613] text-[11px] font-bold tracking-[0.15em] uppercase mb-2 block">FASE 2</span>
               <h3 className="text-2xl font-bold mb-4">Validación</h3>
               <p className="text-gray-500 text-sm leading-relaxed mb-4">Admisibilidad, mentoría y auditoría de la evidencia.</p>
               <span className="text-[11px] font-bold text-[#1a1a1a] tracking-widest uppercase border-b border-gray-300 pb-1">Próximamente</span>
             </div>
             <div className="group">
-              <span className="text-[#E30613] text-[11px] font-bold tracking-[0.15em] uppercase mb-2 block">— FASE 3</span>
+              <span className="text-[#E30613] text-[11px] font-bold tracking-[0.15em] uppercase mb-2 block">FASE 3</span>
               <h3 className="text-2xl font-bold mb-4">Cierre</h3>
               <p className="text-gray-500 text-sm leading-relaxed mb-4">Presentación final (Pitch) y ceremonia de premiación.</p>
               <span className="text-[11px] font-bold text-[#1a1a1a] tracking-widest uppercase border-b border-gray-300 pb-1">Próximamente</span>
