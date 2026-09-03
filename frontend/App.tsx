@@ -514,7 +514,7 @@ export default function App() {
 
             <div className="group cursor-pointer">
               <div className="aspect-[4/3] overflow-hidden mb-6 bg-gray-200">
-                <img src="https://images.unsplash.com/photo-1586528116311-ad8ed7c8d63a?q=80&w=2070&auto=format&fit=crop" alt="Operaciones" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                <img src="https://images.unsplash.com/photo-1580674285054-bed31e145f59?q=80&w=2070&auto=format&fit=crop" alt="Operaciones" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
               </div>
               <span className="text-[#E30613] text-[11px] font-bold tracking-[0.15em] uppercase mb-3 block">— CATEGORÍA B</span>
               <h3 className="text-2xl font-bold mb-3 group-hover:text-[#E30613] transition-colors">Operaciones, Taller y Logística</h3>
