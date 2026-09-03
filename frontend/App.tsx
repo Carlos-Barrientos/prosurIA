@@ -61,7 +61,7 @@ const SYLLABUS = [
 
 // --- COMPONENTE DEL CURSO INTERACTIVO ---
 function CourseView({ setView }) {
-  const [activeTopic, setActiveTopic] = useState(2);
+  const [activeTopic, setActiveTopic] = useState(1);
 
   // Estados Módulo 1 (T2)
   const [rol, setRol] = useState('Especialista en normalización marcaria de Prosur');
