@@ -1,0 +1,81 @@
+{
+  "sessionId": "fbf114e7-c9ef-433a-996d-d711a723e5e7",
+  "name": "Página IA",
+  "createdAt": "2026-07-10T00:10:50.324Z",
+  "filename": "fbf114e7-c9ef-433a-996d-d711a723e5e7.json",
+  "geminiStarted": false,
+  "messages": [
+    {
+      "id": "86955d52-eff6-4d34-b153-a4d4a289fd56",
+      "role": "user",
+      "content": "Puedes agregar un botón para agendar su demo en los proyectos registrados",
+      "status": "pending",
+      "model": "gemini-3-pro-preview",
+      "client_type": "gemini-bridge",
+      "parent_message_id": null,
+      "created_at": "2026-07-10T00:16:59.106+00:00",
+      "sender": "ios",
+      "is_cancelled": false
+    },
+    {
+      "id": "d9de4930-0507-4fb6-b502-66b533fff6aa",
+      "role": "agent",
+      "content": "Bridge internal error while processing your message.\n\nAntigravity CLI executable path is empty. Please ensure the CLI is installed.",
+      "status": "error",
+      "model": "gemini-3-pro-preview",
+      "client_type": "gemini-bridge",
+      "parent_message_id": "86955d52-eff6-4d34-b153-a4d4a289fd56",
+      "created_at": "2026-07-10T00:17:00.293Z",
+      "sender": "macOS",
+      "is_cancelled": false
+    },
+    {
+      "id": "8b74004f-d511-4df1-b34a-a56a4233ac4a",
+      "role": "user",
+      "content": "Puedes agregar un botón para agendar su demo, y los proyectos registrados es un calendaly",
+      "status": "pending",
+      "model": "gemini-3-pro-preview",
+      "client_type": "gemini-bridge",
+      "parent_message_id": null,
+      "created_at": "2026-07-10T00:17:40.892+00:00",
+      "sender": "ios",
+      "is_cancelled": false
+    },
+    {
+      "id": "5fa43188-83f8-4d19-86d0-940bb6c619a3",
+      "role": "agent",
+      "content": "Bridge internal error while processing your message.\n\nAntigravity CLI executable path is empty. Please ensure the CLI is installed.",
+      "status": "error",
+      "model": "gemini-3-pro-preview",
+      "client_type": "gemini-bridge",
+      "parent_message_id": "8b74004f-d511-4df1-b34a-a56a4233ac4a",
+      "created_at": "2026-07-10T00:17:41.825Z",
+      "sender": "macOS",
+      "is_cancelled": false
+    },
+    {
+      "id": "012681d8-7b0f-49a7-a172-952bffbfee94",
+      "role": "user",
+      "content": "Que puedes hacer ?",
+      "status": "pending",
+      "model": "gemini-3-pro-preview",
+      "client_type": "gemini-bridge",
+      "parent_message_id": null,
+      "created_at": "2026-07-10T00:19:56.671+00:00",
+      "sender": "ios",
+      "is_cancelled": false
+    },
+    {
+      "id": "b10793d6-9a06-44ec-9d92-ffb454cb79b8",
+      "role": "agent",
+      "content": "Bridge internal error while processing your message.\n\nAntigravity CLI executable path is empty. Please ensure the CLI is installed.",
+      "status": "error",
+      "model": "gemini-3-pro-preview",
+      "client_type": "gemini-bridge",
+      "parent_message_id": "012681d8-7b0f-49a7-a172-952bffbfee94",
+      "created_at": "2026-07-10T00:19:57.630Z",
+      "sender": "macOS",
+      "is_cancelled": false
+    }
+  ]
+}
