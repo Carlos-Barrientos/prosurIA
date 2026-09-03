@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Search, ChevronUp, BookOpen, Terminal, CheckCircle2, Play, ArrowLeft, Layout, ShieldAlert, Cpu, Database, Network, Key, Code, Boxes, Activity, Eye, RefreshCw, FileJson, Rocket, Globe, MessageCircle, Menu, X } from 'lucide-react';
+import { Search, ChevronUp, BookOpen, Terminal, CheckCircle2, Play, ArrowLeft, Layout, ShieldAlert, Cpu, Database, Network, Key, Code, Boxes, Activity, Eye, RefreshCw, FileJson, Rocket, Globe, MessageCircle, Menu, X, Users } from 'lucide-react';
 import FuturoMundial from './components/FuturoMundial';
+import ProjectPortal from './components/ProjectPortal';
 
 const SYLLABUS = [
   {
@@ -19,7 +20,7 @@ const SYLLABUS = [
     title: "Módulo 2: Prototipado y Automatización",
     icon: <Layout className="w-4 h-4" />,
     topics: [
-      { id: 5, title: "5. Prototipado Web con Lovable" },
+      { id: 5, title: "5. Prototipado Web con Claude Code" },
       { id: 6, title: "6. Automatización de Flujos con n8n", hasLab: true },
       { id: 7, title: "7. Generación Visual con Difusión" },
       { id: 8, title: "8. Producción Audiovisual Sintética" }
@@ -335,9 +336,9 @@ function CourseView({ setView }) {
             caso: "Procesamiento, análisis comparativo y condensación de normativas y expedientes técnicos de más de cien páginas en minutas directivas y reportes estructurados para Prosur."
           },
           5: {
-            fundamento: "El desarrollo asistido por IA generativa permite materializar herramientas de software complejas mediante instrucciones declarativas. Plataformas como Lovable transforman abstracciones en aplicaciones web React/Tailwind.",
-            instruccion: "Redactar un documento maestro de especificación funcional. La construcción debe ser modular: navegación, estructura de base de datos, y finalmente la lógica de negocio.",
-            caso: "Construcción de un Visualizador Estadístico de Propiedad Industrial Prosur con filtros dinámicos por país, gráficos interactivos y conexión a Supabase."
+            fundamento: "El desarrollo y prototipado asistido por IA agéntica permite materializar herramientas de software completas directamente en el repositorio local. Con Claude Code, los modelos de frontera interactúan con la terminal y el código fuente para construir y desplegar interfaces web React y Tailwind a partir de especificaciones declarativas.",
+            instruccion: "Inicializar Claude Code en el entorno del proyecto, documentar las pautas de arquitectura en CLAUDE.md y solicitar la construcción modular del prototipo (navegación, componentes visuales, integración de datos y estilos).",
+            caso: "Construcción y despliegue acelerado de un Visualizador Estadístico de Propiedad Industrial Prosur con filtros dinámicos por país, gráficos interactivos y conexión a fuentes de datos."
           },
           7: {
             fundamento: "Los modelos de difusión latente (Midjourney, Flux) operan proyectando conceptos textuales en representaciones numéricas dentro de un espacio latente para generar imágenes de alta fidelidad.",
@@ -526,6 +527,7 @@ function CourseView({ setView }) {
 // --- COMPONENTE PRINCIPAL (LANDING) ---
 export default function App() {
   const [currentView, setCurrentView] = useState('landing');
+  const [portalCategory, setPortalCategory] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<any>(null);
   const [showEnrollModal, setShowEnrollModal] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -536,6 +538,10 @@ export default function App() {
 
   if (currentView === 'futuro-mundial') {
     return <FuturoMundial setView={setCurrentView} />;
+  }
+
+  if (currentView === 'portal') {
+    return <ProjectPortal onBack={() => setCurrentView('landing')} initialCategory={portalCategory} />;
   }
 
   return (
@@ -589,11 +595,11 @@ export default function App() {
             <a href="#etapas" className="hover:text-[#E30613] transition-colors">Etapas</a>
 
             {/* GRUPO DE BOTONES DE ACCIÓN */}
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2.5">
               {/* BOTÓN FUTURO MUNDIAL */}
               <button 
                 onClick={() => setCurrentView('futuro-mundial')}
-                className="group flex items-center gap-2.5 px-5 py-2.5 rounded-full text-[11px] font-bold tracking-[0.15em] uppercase text-gray-700 hover:text-[#E30613] bg-gray-50/90 hover:bg-white border border-gray-200/90 hover:border-[#E30613]/40 shadow-xs hover:shadow-md transition-all duration-300 cursor-pointer"
+                className="group flex items-center gap-2 px-3.5 py-2.5 rounded-full text-[11px] font-bold tracking-[0.12em] uppercase text-gray-700 hover:text-[#E30613] bg-gray-50/90 hover:bg-white border border-gray-200/90 hover:border-[#E30613]/40 shadow-xs hover:shadow-md transition-all duration-300 cursor-pointer"
               >
                 <Globe className="w-3.5 h-3.5 text-gray-400 group-hover:text-[#E30613] group-hover:rotate-12 transition-all duration-300" />
                 <span>Futuro Mundial</span>
@@ -602,10 +608,20 @@ export default function App() {
               {/* BOTÓN ACADEMIA PROSUR */}
               <button 
                 onClick={() => setCurrentView('course')}
-                className="flex items-center gap-2.5 px-6 py-2.5 rounded-full text-[11px] font-bold tracking-[0.15em] uppercase text-white bg-[#E30613] hover:bg-[#b80510] shadow-sm hover:shadow-lg hover:shadow-red-600/25 active:scale-95 transition-all duration-300 cursor-pointer"
+                className="flex items-center gap-2 px-4 py-2.5 rounded-full text-[11px] font-bold tracking-[0.12em] uppercase text-white bg-[#E30613] hover:bg-[#b80510] shadow-sm hover:shadow-lg hover:shadow-red-600/25 active:scale-95 transition-all duration-300 cursor-pointer"
               >
                 <BookOpen className="w-3.5 h-3.5" />
                 <span>Academia Prosur</span>
+              </button>
+
+              {/* BOTÓN PORTAL PROYECTOS / REGISTRO */}
+              <button 
+                onClick={() => { setPortalCategory(null); setCurrentView('portal'); }}
+                className="group flex items-center gap-2 px-4 py-2.5 rounded-full text-[11px] font-black tracking-[0.12em] uppercase text-gray-900 hover:text-white bg-white hover:bg-black border border-gray-300 hover:border-black shadow-xs hover:shadow-md active:scale-95 transition-all duration-300 cursor-pointer"
+                title="Registrar Proyecto / Iniciar Sesión"
+              >
+                <Users className="w-3.5 h-3.5 text-red-600 group-hover:text-white transition-colors" />
+                <span>Portal Proyectos</span>
               </button>
             </div>
             <button className="ml-2 cursor-pointer">
@@ -650,6 +666,18 @@ export default function App() {
                 <span>Etapas y Cronograma</span>
                 <span className="text-gray-300 text-xs">→</span>
               </a>
+
+              {/* Botón Destacado Móvil: Portal de Proyectos */}
+              <button 
+                onClick={() => { setPortalCategory(null); setCurrentView('portal'); setMobileMenuOpen(false); }}
+                className="w-full mt-2 py-3 px-4 rounded-xl bg-gray-900 text-white font-black text-xs uppercase tracking-wider flex items-center justify-between shadow-sm cursor-pointer"
+              >
+                <div className="flex items-center gap-2">
+                  <Users className="w-4 h-4 text-red-400" />
+                  <span>Portal Proyectos / Registro</span>
+                </div>
+                <span>→</span>
+              </button>
             </nav>
           </div>
         )}
@@ -796,10 +824,14 @@ export default function App() {
               
               <div className="border-t border-gray-100 pt-8 flex flex-col sm:flex-row gap-4">
                 <button 
-                  onClick={() => setShowEnrollModal(true)}
-                  className="bg-[#E30613] text-white px-8 py-4 font-black tracking-widest uppercase text-sm hover:bg-red-700 transition-colors flex-1 text-center"
+                  onClick={() => {
+                    setPortalCategory(selectedCategory?.id || 'A');
+                    setSelectedCategory(null);
+                    setCurrentView('portal');
+                  }}
+                  className="bg-[#E30613] text-white px-8 py-4 font-black tracking-widest uppercase text-sm hover:bg-red-700 transition-colors flex-1 text-center cursor-pointer shadow-md"
                 >
-                  Inscribirse a esta categoría
+                  Inscribirse y Registrar Proyecto
                 </button>
                 <button 
                   onClick={() => setSelectedCategory(null)}
@@ -969,7 +1001,7 @@ export default function App() {
           <div>
             <span className="text-red-500 text-[10px] font-bold tracking-widest uppercase mb-4 block">ENLACES</span>
             <ul className="space-y-3">
-              <li><a href="#" className="text-sm text-gray-400 hover:text-white transition-colors">Bases Oficiales (PDF)</a></li>
+              <li><a href="/Base_IA_Grupo_Prosur.pdf" target="_blank" rel="noopener noreferrer" className="text-sm text-gray-400 hover:text-white transition-colors">Bases Oficiales</a></li>
               <li><a href="#" className="text-sm text-gray-400 hover:text-white transition-colors">Inscripciones</a></li>
               <li><button onClick={() => setCurrentView('course')} className="text-sm text-gray-400 hover:text-white transition-colors cursor-pointer">Academia Prosur</button></li>
               <li><button onClick={() => setCurrentView('futuro-mundial')} className="text-sm text-teal-400 hover:text-teal-300 font-semibold transition-colors cursor-pointer">Futuro Mundial (WEF)</button></li>
