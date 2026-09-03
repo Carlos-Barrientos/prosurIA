@@ -312,17 +312,137 @@ function CourseView({ setView }) {
           </div>
         );
 
-      default: // Generic placeholder for non-lab topics
+      default: // Render real theoretical content for non-lab topics
         const currentModule = SYLLABUS.find(m => m.topics.some(t => t.id === activeTopic));
         const currentTopic = currentModule.topics.find(t => t.id === activeTopic);
+        
+        // Diccionario de contenido extraído del PDF corporativo de Prosur
+        const CONTENT_DB = {
+          1: {
+            fundamento: "La inteligencia artificial moderna se apoya en arquitecturas de redes neuronales profundas que superaron los clasificadores supervisados tradicionales para dar paso a modelos generativos fundacionales. En Prosur, estos modelos no deben ser tratados como bases de datos estáticas, sino como procesadores probabilísticos.",
+            instruccion: "Clasificar primero cada tarea operativa en uno de los cuatro dominios funcionales: clasificación supervisada, extracción estructurada, inferencia lógica o generación creativa de contenido.",
+            caso: "En la recepción de correspondencia interinstitucional de Prosur, se categorizan las comunicaciones para enrutarlas a las oficinas nacionales mediante un clasificador documental en JSON."
+          },
+          3: {
+            fundamento: "Los modelos conversacionales avanzados operan como asistentes analíticos y copilotos cognitivos cuando se les dota de herramientas computacionales complementarias (intérpretes de código).",
+            instruccion: "Configurar directrices personalizadas (Custom Instructions) estableciendo la identidad de Prosur, el tono técnico formal y las restricciones de confidencialidad institucional.",
+            caso: "Cálculo del tiempo promedio de resolución de patentes por país antes y después del sistema de cooperación, generando visualizaciones de tendencias con Python integrado."
+          },
+          4: {
+            fundamento: "Microsoft 365 Copilot combina la potencia de los modelos de frontera con el grafo de información institucional (Microsoft Graph), contextualizando solicitudes con SharePoint y Exchange.",
+            instruccion: "Realizar una auditoría de gobernanza de datos en SharePoint previa a la adopción, certificando que los sitios cuenten con listas de control de acceso (ACL) bien definidas.",
+            caso: "Condensar informes técnicos de más de cien páginas en minutas directivas y presentaciones ejecutivas dinámicas para las asambleas directivas de Prosur."
+          },
+          5: {
+            fundamento: "El desarrollo asistido por IA generativa permite materializar herramientas de software complejas mediante instrucciones declarativas. Plataformas como Lovable transforman abstracciones en aplicaciones web React/Tailwind.",
+            instruccion: "Redactar un documento maestro de especificación funcional. La construcción debe ser modular: navegación, estructura de base de datos, y finalmente la lógica de negocio.",
+            caso: "Construcción de un Visualizador Estadístico de Propiedad Industrial Prosur con filtros dinámicos por país, gráficos interactivos y conexión a Supabase."
+          },
+          7: {
+            fundamento: "Los modelos de difusión latente (Midjourney, Flux) operan proyectando conceptos textuales en representaciones numéricas dentro de un espacio latente para generar imágenes de alta fidelidad.",
+            instruccion: "Especificar claramente el sujeto principal, contexto ambiental, técnica visual y paleta cromática corporativa. Usar exclusión negativa para descartar aberraciones.",
+            caso: "Generación de la imagen de portada del compendio anual de innovación tecnológica: delegados internacionales revisando planos de patentes en mesas táctiles."
+          },
+          8: {
+            fundamento: "La síntesis audiovisual mediante redes generativas espaciotemporales (Runway, Sora, HeyGen) traduce directivas escritas a video resolviendo la coherencia temporal de fotogramas.",
+            instruccion: "Adoptar un flujo Image-to-Video en lugar de Text-to-Video para evitar transformaciones no deseadas en logotipos e identidades visuales institucionales de Prosur.",
+            caso: "Diseño de una cápsula formativa de 30 segundos sobre el Procedimiento Acelerado de Patentes (PPH) de Prosur, con locución neuronal y cámara lenta cinematográfica."
+          },
+          9: {
+            fundamento: "El intercambio de información técnica genera repositorios documentales masivos y heterogéneos. La IA actúa como motor de extracción semántica avanzada para normalizar registros.",
+            instruccion: "Emplear bibliotecas de validación de tipado estricto como Pydantic en Python, forzando a los modelos a emitir salidas validadas mediante el modo de Salidas Estructuradas (Structured Outputs).",
+            caso: "Extracción programática de metadatos (Número, Titular, IPC, Estado) de resoluciones oficiales para su incorporación a la base de datos consolidada de Prosur."
+          },
+          10: {
+            fundamento: "La adopción de IA en una organización multilateral requiere una estructura de gobernanza técnica que minimice riesgos jurídicos y preserve la soberanía de datos de los estados miembros.",
+            instruccion: "Aplicar una matriz de triple evaluación: criticidad de alucinación, estructuración de datos y Costo Total de Propiedad (TCO). Obligatorio protocolo Human-in-the-Loop para decisiones registrales.",
+            caso: "Prohibición explícita de uso de modelos estocásticos para balances contables, y validación humana obligatoria en la generación de borradores de memorandos internos."
+          },
+          12: {
+            fundamento: "El ecosistema Gemini destaca por su arquitectura multimodal nativa, correlacionando tokens textuales, auditivos y visuales con ventanas de contexto hiper-extensas para analizar manuales completos.",
+            instruccion: "Cargar archivos multimedia íntegros (grabaciones de reuniones técnicas) y solicitar la extracción directa de compromisos, evitando pasos de transcripción manual que descontextualizan.",
+            caso: "Creación de un Gem institucional para la homologación y cotejo de diseños industriales, contrastando la novedad geométrica de planos directamente desde la imagen."
+          },
+          13: {
+            fundamento: "Cursor AI es un IDE especializado que integra modelos de frontera con el grafo de incrustaciones de los archivos del proyecto, facilitando refactorizaciones masivas y corrección de fallos.",
+            instruccion: "Configurar el archivo .cursorrules con los estándares de ingeniería institucionales. Usar Ctrl+K para modificar bloques y Ctrl+I (Composer) para ediciones multi-archivo.",
+            caso: "Migración de un servicio backend legado escrito en Flask hacia una arquitectura asíncrona moderna con FastAPI y SQLAlchemy asíncrono en Prosur."
+          },
+          15: {
+            fundamento: "El Model Context Protocol (MCP) es un estándar abierto que universaliza la interacción entre modelos de lenguaje, clientes de software y fuentes de datos corporativas en entornos Azure.",
+            instruccion: "Empaquetar servicios internos como servidores MCP. Establecer permisos granulares y requerir confirmación interactiva para herramientas que ejecuten modificaciones en bases de datos.",
+            caso: "Conexión de un copiloto institucional a las bases de datos de resoluciones PostgreSQL y al catálogo de recursos de Azure mediante protocolo JSON-RPC."
+          },
+          16: {
+            fundamento: "Claude Code es una interfaz de línea de comandos (CLI) agéntica con acceso directo al sistema de archivos, terminal y entorno de ejecución del proyecto para planificar intervenciones.",
+            instruccion: "Mantener limpio el contexto reiniciándolo con /clear. Establecer directivas técnicas en un archivo CLAUDE.md detallando estándares de diseño y testing.",
+            caso: "Auditoría y remediación técnica automatizada de vulnerabilidades de desbordamiento de búfer en el microservicio de autenticación de Prosur en modo headless."
+          },
+          17: {
+            fundamento: "Los asistentes corporativos requieren persistencia de estado, segmentación de memoria y llamadas a funciones (Tool Calling) donde el LLM actúa como planificador lógico.",
+            instruccion: "Registrar herramientas mediante esquemas OpenAPI y persistir conversaciones con un sessionId indexado en Redis o PostgreSQL, desacoplando el estado conversacional.",
+            caso: "Chatbot institucional para la consulta en tiempo real del estado de trámites en las oficinas de Prosur utilizando invocación de herramientas (Function Calling)."
+          },
+          18: {
+            fundamento: "LangGraph introduce la orquestación de agentes mediante Grafos Dirigidos Acíclicos y Cíclicos, modelando la computación como una máquina de estados finitos con ciclos reflexivos.",
+            instruccion: "Implementar clases de estado estricto empleando TypedDict, y configurar un mecanismo de persistencia (Checkpointer) para pausar la ejecución y solicitar revisión humana.",
+            caso: "Agente reflexivo iterativo para la revisión y autocorrección formal de memorias descriptivas de patentes técnicas en Prosur."
+          },
+          19: {
+            fundamento: "El despliegue de sistemas no deterministas exige telemetría continua para monitorear la latencia, deriva semántica y costos a través de trazas (Traces) y tramos de ejecución (Spans).",
+            instruccion: "Instrumentar variables de entorno de LangSmith en todos los microservicios. Estructurar conjuntos de datos de prueba basados en casos reales resueltos por Prosur.",
+            caso: "Detección, diagnóstico y corrección de un fallo de bucle infinito (consumo excesivo de tokens) en un agente automatizado de patentes utilizando el árbol jerárquico de LangSmith."
+          },
+          20: {
+            fundamento: "La arquitectura empresarial cohesiva integra n8n (orquestación y eventos), LangGraph (razonamiento agéntico), Azure/MCP (acceso a datos) y LangSmith (trazabilidad).",
+            instruccion: "Mantener clara separación de responsabilidades: la interfaz web/correo en n8n, el razonamiento en APIs REST aseguradas con mTLS, y propagar el TraceId a lo largo del flujo.",
+            caso: "Resolución automatizada de consultas transfronterizas: Formulario Web -> Webhook n8n -> LangGraph -> Recuperación MCP/Azure -> Telemetría LangSmith -> Reporte final en PDF."
+          }
+        };
+
+        const tData = CONTENT_DB[activeTopic] || {
+          fundamento: "El documento oficial del programa formativo establece los principios rectores para este módulo de inteligencia artificial, enfocándose en la soberanía de los datos, la precisión técnica y la reducción del error estocástico en la administración pública.",
+          instruccion: "El personal técnico de Prosur debe asegurar que cada implementación mantenga estrictos controles de confidencialidad, evaluando la sensibilidad de la información antes de conectarla a modelos fundacionales públicos o privados.",
+          caso: "Aplicación progresiva en las oficinas nacionales de patentes y marcas, optimizando la resolución de expedientes, categorización automatizada y emisión de dictámenes técnicos validados."
+        };
+
         return (
-          <div className="animate-in fade-in slide-in-from-bottom-4 flex flex-col items-center justify-center text-center p-24 bg-white border border-gray-100 shadow-sm">
-            <BookOpen className="w-16 h-16 text-gray-200 mb-6" />
-            <h1 className="text-3xl font-bold tracking-tight mb-4 text-[#1a1a1a]">{currentTopic.title}</h1>
-            <p className="text-gray-500 leading-relaxed max-w-xl">
-              Contenido teórico y documentación normativa para este tema en desarrollo. El programa formativo completo integra arquitecturas, casos de uso y gobernanza estricta.
-            </p>
-            <span className="mt-8 px-4 py-1.5 bg-gray-100 text-gray-500 text-[10px] font-bold tracking-widest uppercase rounded-full">Lectura Documental</span>
+          <div className="animate-in fade-in slide-in-from-bottom-4">
+            <div className="mb-10">
+              <span className="text-red-600 text-[11px] font-bold tracking-widest uppercase block mb-3">— {currentModule.title}</span>
+              <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-4 text-[#1a1a1a]">{currentTopic.title}</h1>
+            </div>
+
+            <div className="bg-white border border-gray-200 shadow-sm overflow-hidden">
+              <div className="p-8 border-b border-gray-100 bg-gray-50/50">
+                <h3 className="text-xs font-bold uppercase tracking-widest text-red-600 mb-4 flex items-center gap-2">
+                  <BookOpen className="w-4 h-4" /> Fundamentación Conceptual
+                </h3>
+                <p className="text-gray-600 leading-relaxed text-sm md:text-base">
+                  {tData.fundamento}
+                </p>
+              </div>
+
+              <div className="p-8 border-b border-gray-100">
+                <h3 className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-4 flex items-center gap-2">
+                  <Terminal className="w-4 h-4" /> Instrucciones Operativas de Uso
+                </h3>
+                <div className="bg-[#f9f9f9] p-5 border-l-4 border-gray-300">
+                  <p className="text-gray-700 text-sm leading-relaxed font-medium">
+                    {tData.instruccion}
+                  </p>
+                </div>
+              </div>
+
+              <div className="p-8">
+                <h3 className="text-xs font-bold uppercase tracking-widest text-[#1a1a1a] mb-4 flex items-center gap-2">
+                  <Layout className="w-4 h-4 text-red-600" /> Aplicación Práctica y Caso Ejemplar
+                </h3>
+                <p className="text-gray-600 leading-relaxed text-sm">
+                  {tData.caso}
+                </p>
+              </div>
+            </div>
           </div>
         );
     }
