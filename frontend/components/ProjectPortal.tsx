@@ -658,12 +658,6 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
                             <option key={c.id} value={c.id}>{c.name} - {c.subtitle}</option>
                           ))}
                         </select>
-                        {authCompany === 'prosur' && (
-                          <div className="mt-2 p-2.5 rounded-lg bg-red-50 border border-red-200/60 text-xs text-[#CC2027] font-medium flex items-center gap-2">
-                            <Sparkles className="w-4 h-4 shrink-0 text-[#CC2027]" />
-                            <span>Al elegir <strong>Grupo Prosur</strong>, tu propuesta se desarrollará e implementará como una solución transversal para <strong>todas las empresas</strong> del Grupo.</span>
-                          </div>
-                        )}
                       </div>
 
                       <div>
@@ -967,12 +961,6 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
                         <option key={c.id} value={c.id}>{c.name} - {c.subtitle}</option>
                       ))}
                     </select>
-                    {project.companyId === 'prosur' && (
-                      <p className="mt-2 text-xs font-semibold text-[#CC2027] flex items-center gap-1.5">
-                        <Sparkles className="w-3.5 h-3.5" />
-                        <span>Desarrollo transversal para todas las empresas del Grupo.</span>
-                      </p>
-                    )}
                   </div>
 
                   <div>
