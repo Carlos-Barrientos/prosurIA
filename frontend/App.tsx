@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, ChevronUp, BookOpen, Terminal, CheckCircle2, Play, ArrowLeft, Layout, ShieldAlert, Cpu, Database, Network, Key, Code, Boxes, Activity, Eye, RefreshCw, FileJson } from 'lucide-react';
+import { Search, ChevronUp, BookOpen, Terminal, CheckCircle2, Play, ArrowLeft, Layout, ShieldAlert, Cpu, Database, Network, Key, Code, Boxes, Activity, Eye, RefreshCw, FileJson, Rocket } from 'lucide-react';
 
 const SYLLABUS = [
   {
@@ -514,6 +514,8 @@ function CourseView({ setView }) {
 // --- COMPONENTE PRINCIPAL (LANDING) ---
 export default function App() {
   const [currentView, setCurrentView] = useState('landing');
+  const [selectedCategory, setSelectedCategory] = useState<any>(null);
+  const [showEnrollModal, setShowEnrollModal] = useState(false);
 
   if (currentView === 'course') {
     return <CourseView setView={setCurrentView} />;
@@ -622,55 +624,117 @@ export default function App() {
           <h2 className="text-3xl md:text-5xl font-bold tracking-tight mb-16 uppercase">5 Categorías Oficiales</h2>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16">
-            
-            <div className="group cursor-pointer">
-              <div className="aspect-[4/3] overflow-hidden mb-6 bg-gray-200">
-                <img src="https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?q=80&w=2070&auto=format&fit=crop" alt="Finanzas" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+            {[
+              {
+                id: "A",
+                title: "Finanzas, Contabilidad y Tesorería",
+                desc: "Cierres contables, conciliaciones automatizadas, cumplimiento fiscal y dispersión bancaria masiva sin errores.",
+                longDesc: "Esta categoría premia proyectos que reduzcan el trabajo manual en el área contable y financiera. Se buscan automatizaciones en procesos como la validación cruzada de facturas, dispersiones bancarias de alto volumen, y generación automática de pólizas contables.",
+                img: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?q=80&w=2070&auto=format&fit=crop"
+              },
+              {
+                id: "B",
+                title: "Operaciones, Taller y Logística",
+                desc: "Control físico de inventarios, optimización de tiempos en talleres mecánicos, mermas y reportes integrados.",
+                longDesc: "Categoría enfocada en el 'corazón' de la empresa. Buscamos modelos que optimicen las rutas de entrega, controlen el desgaste en talleres mediante mantenimiento predictivo, e integren IA visual para el control de inventarios físicos.",
+                img: "https://images.unsplash.com/photo-1580674285054-bed31e145f59?q=80&w=2070&auto=format&fit=crop"
+              },
+              {
+                id: "C",
+                title: "Ventas y Marketing",
+                desc: "Captación de leads, asistentes de voz conversacionales, CRM inteligente y seguimiento de retención proactiva.",
+                longDesc: "El objetivo es aumentar la tasa de conversión y mejorar el servicio al cliente. Propuestas como asistentes virtuales que cierran citas, segmentación predictiva de campañas, o score inteligente de leads.",
+                img: "https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=2070&auto=format&fit=crop"
+              },
+              {
+                id: "D",
+                title: "Capital Humano y Compliance",
+                desc: "Atracción de talento (ATS), portales gamificados, trackers de normativas (STPS) y bases de conocimiento.",
+                longDesc: "Soluciones de IA para modernizar Recursos Humanos: chatbots para onboarding, procesamiento automático de normativas, y plataformas inteligentes para medir clima laboral y prevenir riesgos de rotación.",
+                img: "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?q=80&w=2070&auto=format&fit=crop"
+              },
+              {
+                id: "E",
+                title: "Tecnología e Innovación",
+                desc: "Integración de APIs, gobierno de datos, ciberseguridad, infraestructura corporativa y soluciones transversales.",
+                longDesc: "Categoría técnica. Se premian soluciones de arquitectura profunda: RAG empresarial transversal, protocolos de ciberseguridad asistidos, y agentes autónomos para monitoreo de infraestructura (DevOps).",
+                img: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop"
+              }
+            ].map(cat => (
+              <div key={cat.id} className="group cursor-pointer" onClick={() => setSelectedCategory(cat)}>
+                <div className="aspect-[4/3] overflow-hidden mb-6 bg-gray-200">
+                  <img src={cat.img} alt={cat.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                </div>
+                <span className="text-[#E30613] text-[11px] font-bold tracking-[0.15em] uppercase mb-3 block">CATEGORÍA {cat.id}</span>
+                <h3 className="text-2xl font-bold mb-3 group-hover:text-[#E30613] transition-colors">{cat.title}</h3>
+                <p className="text-gray-500 text-sm leading-relaxed">{cat.desc}</p>
+                <div className="mt-4 flex items-center gap-2 text-sm font-bold text-gray-900 group-hover:text-[#E30613] transition-colors">
+                  Ver detalles <ArrowLeft className="w-4 h-4 rotate-180" />
+                </div>
               </div>
-              <span className="text-[#E30613] text-[11px] font-bold tracking-[0.15em] uppercase mb-3 block">CATEGORÍA A</span>
-              <h3 className="text-2xl font-bold mb-3 group-hover:text-[#E30613] transition-colors">Finanzas, Contabilidad y Tesorería</h3>
-              <p className="text-gray-500 text-sm leading-relaxed">Cierres contables, conciliaciones automatizadas, cumplimiento fiscal y dispersión bancaria masiva sin errores.</p>
-            </div>
-
-            <div className="group cursor-pointer">
-              <div className="aspect-[4/3] overflow-hidden mb-6 bg-gray-200">
-                <img src="https://images.unsplash.com/photo-1580674285054-bed31e145f59?q=80&w=2070&auto=format&fit=crop" alt="Operaciones" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-              </div>
-              <span className="text-[#E30613] text-[11px] font-bold tracking-[0.15em] uppercase mb-3 block">CATEGORÍA B</span>
-              <h3 className="text-2xl font-bold mb-3 group-hover:text-[#E30613] transition-colors">Operaciones, Taller y Logística</h3>
-              <p className="text-gray-500 text-sm leading-relaxed">Control físico de inventarios, optimización de tiempos en talleres mecánicos, mermas y reportes integrados.</p>
-            </div>
-
-            <div className="group cursor-pointer">
-              <div className="aspect-[4/3] overflow-hidden mb-6 bg-gray-200">
-                <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=2070&auto=format&fit=crop" alt="Ventas" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-              </div>
-              <span className="text-[#E30613] text-[11px] font-bold tracking-[0.15em] uppercase mb-3 block">CATEGORÍA C</span>
-              <h3 className="text-2xl font-bold mb-3 group-hover:text-[#E30613] transition-colors">Ventas y Marketing</h3>
-              <p className="text-gray-500 text-sm leading-relaxed">Captación de leads, asistentes de voz conversacionales, CRM inteligente y seguimiento de retención proactiva.</p>
-            </div>
-
-            <div className="group cursor-pointer">
-              <div className="aspect-[4/3] overflow-hidden mb-6 bg-gray-200">
-                <img src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?q=80&w=2070&auto=format&fit=crop" alt="Capital Humano" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-              </div>
-              <span className="text-[#E30613] text-[11px] font-bold tracking-[0.15em] uppercase mb-3 block">CATEGORÍA D</span>
-              <h3 className="text-2xl font-bold mb-3 group-hover:text-[#E30613] transition-colors">Capital Humano y Compliance</h3>
-              <p className="text-gray-500 text-sm leading-relaxed">Atracción de talento (ATS), portales gamificados, trackers de normativas (STPS) y bases de conocimiento.</p>
-            </div>
-
-            <div className="group cursor-pointer">
-              <div className="aspect-[4/3] overflow-hidden mb-6 bg-gray-200">
-                <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop" alt="Tecnología" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-              </div>
-              <span className="text-[#E30613] text-[11px] font-bold tracking-[0.15em] uppercase mb-3 block">CATEGORÍA E</span>
-              <h3 className="text-2xl font-bold mb-3 group-hover:text-[#E30613] transition-colors">Tecnología e Innovación</h3>
-              <p className="text-gray-500 text-sm leading-relaxed">Integración de APIs, gobierno de datos, ciberseguridad, infraestructura corporativa y soluciones transversales.</p>
-            </div>
-
+            ))}
           </div>
         </div>
       </section>
+
+      {/* Category Detail Modal */}
+      {selectedCategory && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/70 backdrop-blur-sm animate-in fade-in duration-300" onClick={() => setSelectedCategory(null)}>
+          <div className="relative bg-white w-full max-w-4xl max-h-[90vh] overflow-y-auto flex flex-col md:flex-row shadow-2xl animate-in zoom-in-95 duration-300" onClick={e => e.stopPropagation()}>
+            <button onClick={() => setSelectedCategory(null)} className="absolute top-4 right-4 bg-white/50 hover:bg-white p-2 rounded-full z-10 transition-colors">
+              <span className="sr-only">Cerrar</span>
+              <svg className="w-6 h-6 text-gray-900" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+            <div className="w-full md:w-5/12 h-64 md:h-auto relative">
+              <img src={selectedCategory.img} alt={selectedCategory.title} className="absolute inset-0 w-full h-full object-cover" />
+            </div>
+            <div className="w-full md:w-7/12 p-8 md:p-12 flex flex-col justify-center">
+              <span className="text-[#E30613] text-xs font-bold tracking-widest uppercase mb-4 block">CATEGORÍA {selectedCategory.id}</span>
+              <h2 className="text-3xl md:text-4xl font-black text-gray-900 mb-6 leading-tight">{selectedCategory.title}</h2>
+              <p className="text-gray-600 mb-8 leading-relaxed text-lg">{selectedCategory.longDesc}</p>
+              
+              <div className="border-t border-gray-100 pt-8 flex flex-col sm:flex-row gap-4">
+                <button 
+                  onClick={() => setShowEnrollModal(true)}
+                  className="bg-[#E30613] text-white px-8 py-4 font-black tracking-widest uppercase text-sm hover:bg-red-700 transition-colors flex-1 text-center"
+                >
+                  Inscribirse a esta categoría
+                </button>
+                <button 
+                  onClick={() => setSelectedCategory(null)}
+                  className="px-8 py-4 font-bold tracking-widest uppercase text-sm text-gray-500 hover:text-gray-900 transition-colors text-center"
+                >
+                  Volver
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Enroll "Soon" Modal */}
+      {showEnrollModal && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-300" onClick={() => setShowEnrollModal(false)}>
+          <div className="bg-white max-w-md w-full p-8 md:p-10 text-center relative animate-in zoom-in-95 duration-300 shadow-2xl border-t-4 border-[#E30613]" onClick={e => e.stopPropagation()}>
+            <button onClick={() => setShowEnrollModal(false)} className="absolute top-4 right-4 text-gray-400 hover:text-gray-900 transition-colors">
+              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+            <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Rocket className="w-8 h-8 text-[#E30613]" />
+            </div>
+            <h3 className="text-2xl font-black text-gray-900 mb-4">¡Próximamente!</h3>
+            <p className="text-gray-600 mb-8 leading-relaxed">
+              Pronto se abrirán las inscripciones oficiales para la <strong className="text-gray-900">Categoría {selectedCategory?.id}</strong>. Mantente atento a los comunicados internos para registrar tu proyecto.
+            </p>
+            <button 
+              onClick={() => setShowEnrollModal(false)}
+              className="w-full bg-gray-900 text-white px-6 py-4 font-black uppercase tracking-widest text-sm hover:bg-black transition-colors"
+            >
+              Entendido
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Scorecard Section */}
       <section id="scorecard" className="py-24 max-w-[1600px] mx-auto px-6 border-b border-gray-100">
