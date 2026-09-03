@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, ChevronUp, BookOpen, Terminal, CheckCircle2, Play, ArrowLeft, Layout, ShieldAlert, Cpu, Database, Network, Key, Code, Boxes, Activity, Eye, RefreshCw, FileJson, Rocket, Globe } from 'lucide-react';
+import { Search, ChevronUp, BookOpen, Terminal, CheckCircle2, Play, ArrowLeft, Layout, ShieldAlert, Cpu, Database, Network, Key, Code, Boxes, Activity, Eye, RefreshCw, FileJson, Rocket, Globe, MessageCircle } from 'lucide-react';
 import FuturoMundial from './components/FuturoMundial';
 
 const SYLLABUS = [
@@ -862,9 +862,25 @@ export default function App() {
           
           <div>
             <span className="text-red-500 text-[10px] font-bold tracking-widest uppercase mb-4 block">CONTACTO</span>
-            <p className="text-sm text-gray-400 mb-2">Área responsable: Por definir</p>
-            <p className="text-sm text-gray-400 mb-2">Correo: Por definir</p>
-            <p className="text-sm text-gray-400">Extensión: Por definir</p>
+            <p className="text-sm text-gray-400 mb-2"><span className="text-gray-300 font-medium">Área responsable:</span> Mejora Continua</p>
+            <p className="text-sm text-gray-400 mb-2">
+              <span className="text-gray-300 font-medium">Correo:</span>{' '}
+              <a href="mailto:gerencia.mejoracontinua@prosur.com.mx" className="hover:text-white transition-colors underline-offset-2 hover:underline">
+                gerencia.mejoracontinua@prosur.com.mx
+              </a>
+            </p>
+            <p className="text-sm text-gray-400 flex items-center gap-2">
+              <span className="text-gray-300 font-medium">WhatsApp:</span>{' '}
+              <a 
+                href="https://wa.me/526672005343" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 text-emerald-400 hover:text-emerald-300 font-medium transition-colors"
+              >
+                <MessageCircle className="w-4 h-4 text-emerald-400" />
+                667 200 5343
+              </a>
+            </p>
           </div>
           
           <div>
