@@ -50,7 +50,7 @@ export interface Company {
 
 export const PARTICIPATING_COMPANIES: Company[] = [
   // Fila 1: Prosur, Chesa, CAFI
-  { id: 'prosur', name: 'Grupo Prosur', logo: '/companies/prosur.png', subtitle: 'Desarrollo para todas las empresas', badgeColor: 'border-red-200 bg-red-50 text-red-700' },
+  { id: 'prosur', name: 'Grupo Prosur', logo: '/companies/prosur.png', subtitle: 'Corporativo', badgeColor: 'border-red-200 bg-red-50 text-red-700' },
   { id: 'chesa', name: 'Chesa', logo: '/companies/chesa.png', subtitle: 'Grupo Automotríz', badgeColor: 'border-gray-200 bg-gray-50 text-gray-800' },
   { id: 'cafi', name: 'CAFI', logo: '/companies/cafi.png', subtitle: 'Tu Casa Financiera', badgeColor: 'border-orange-200 bg-orange-50 text-orange-800' },
   // Fila 2: Calzamoda, Rio Vinyl, Cinco Pinos
@@ -124,6 +124,27 @@ export interface RegisteredUser {
   categoryId?: string;
   registeredAt?: string;
 }
+
+export const DEFAULT_ADMIN_USERS: RegisteredUser[] = [
+  {
+    id: 'user-carlos',
+    email: 'gerencia.mejoracontinua@prosur.com.mx',
+    name: 'Carlos Barrientos',
+    role: 'admin',
+    companyId: 'prosur',
+    categoryId: 'A',
+    registeredAt: '2026-09-01T00:00:00.000Z'
+  },
+  {
+    id: 'user-dario',
+    email: 'dario.gonzalez@prosur.com.mx',
+    name: 'Dario Gonzalez',
+    role: 'admin',
+    companyId: 'prosur',
+    categoryId: 'A',
+    registeredAt: '2026-09-01T00:00:00.000Z'
+  }
+];
 
 interface ProjectPortalProps {
   onBack: () => void;
@@ -228,15 +249,18 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
   const [adminActiveTab, setAdminActiveTab] = useState<'projects' | 'users'>('projects');
   
   const [allUsers, setAllUsers] = useState<RegisteredUser[]>(() => {
+    const userMap = new Map<string, RegisteredUser>();
+    DEFAULT_ADMIN_USERS.forEach(u => userMap.set(u.email.toLowerCase().trim(), u));
     const saved = localStorage.getItem('prosur_all_users_db');
     if (saved) {
       try {
-        return JSON.parse(saved) || [];
+        const parsed: RegisteredUser[] = JSON.parse(saved) || [];
+        parsed.forEach(u => { if (u && u.email) userMap.set(u.email.toLowerCase().trim(), u); });
       } catch (e) {
-        return [];
+        // ignore
       }
     }
-    return [];
+    return Array.from(userMap.values());
   });
 
   const [allProjects, setAllProjects] = useState<ProjectData[]>(() => {
@@ -377,10 +401,39 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
       }
 
       const userMap = new Map<string, RegisteredUser>();
+      // 1. Siempre asegurar administradores corporativos base (Carlos y Dario)
+      DEFAULT_ADMIN_USERS.forEach(admin => {
+        userMap.set(admin.email.toLowerCase().trim(), admin);
+      });
+
+      // 2. Cargar usuarios locales y de backend
       localUsers.forEach(u => { if (u && u.email) userMap.set(u.email.toLowerCase().trim(), u); });
       backendUsers.forEach(u => { if (u && u.email) userMap.set(u.email.toLowerCase().trim(), u); });
 
-      // Si el usuario actual está en sesión, registrarlo si no está
+      // 3. Intentar sincronizar usuarios de Supabase si la tabla existe
+      try {
+        const { data: sUsers } = await supabase.from('registered_users').select('*');
+        if (sUsers && Array.isArray(sUsers)) {
+          sUsers.forEach((su: any) => {
+            if (su && su.email) {
+              userMap.set(su.email.toLowerCase().trim(), {
+                id: su.id,
+                email: su.email,
+                name: su.name,
+                role: su.role,
+                companyId: su.company_id,
+                categoryId: su.category_id,
+                targetCompanies: su.target_companies,
+                registeredAt: su.registered_at
+              });
+            }
+          });
+        }
+      } catch (e) {
+        // Supabase registered_users opcional
+      }
+
+      // 4. Si el usuario actual está en sesión, registrarlo si no está
       if (currentUser && currentUser.email) {
         const cEmail = currentUser.email.toLowerCase().trim();
         if (!userMap.has(cEmail)) {
@@ -395,7 +448,7 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
         }
       }
 
-      // Extraer usuarios de los proyectos guardados si no existen en la lista
+      // 5. Extraer usuarios de los proyectos guardados si no existen en la lista
       merged.forEach(p => {
         if (p.userId && p.userId.includes('@')) {
           const cleanEmail = p.userId.toLowerCase().trim();
@@ -418,7 +471,7 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
       setAllUsers(mergedUsers);
       localStorage.setItem('prosur_all_users_db', JSON.stringify(mergedUsers));
 
-      // Sincronizar usuarios al backend si no estaban guardados en disco
+      // 6. Sincronizar usuarios al backend local si no estaban guardados en disco
       mergedUsers.forEach(u => {
         if (!backendUsers.some(bu => bu.email?.toLowerCase() === u.email?.toLowerCase())) {
           fetch('/api/users', {
@@ -428,6 +481,22 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
           }).catch(() => {});
         }
       });
+
+      // 7. Intentar sincronizar usuarios a Supabase
+      try {
+        supabase.from('registered_users').upsert(
+          mergedUsers.map(u => ({
+            id: u.id,
+            email: u.email,
+            name: u.name,
+            role: u.role,
+            company_id: u.companyId,
+            category_id: u.categoryId,
+            target_companies: u.targetCompanies || [],
+            registered_at: u.registeredAt || new Date().toISOString()
+          }))
+        ).catch(() => {});
+      } catch (e) {}
     }
 
     loadProjectsAndUsers();

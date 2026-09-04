@@ -18,7 +18,7 @@ CREATE POLICY "Public can view companies" ON companies FOR SELECT USING (true);
 
 -- Insertar las 9 empresas convocadas iniciales
 INSERT INTO companies (id, name, subtitle, logo_url) VALUES
-('prosur', 'Grupo Prosur', 'Corporativo y Logística', '/companies/prosur.png'),
+('prosur', 'Grupo Prosur', 'Corporativo', '/companies/prosur.png'),
 ('chesa', 'Chesa', 'Grupo Automotríz', '/companies/chesa.png'),
 ('comercialtos', 'Comercialtos', 'Comercialización y Abasto', '/companies/comercialtos.jpg'),
 ('cincopinos', 'Cinco Pinos', 'Inmobiliaria y Proyectos', '/companies/cincopinos.png'),
@@ -109,4 +109,29 @@ USING (
     AND projects.user_id = auth.uid()
   )
 );
+
+-- 5. Tabla de Usuarios Registrados (Portal)
+CREATE TABLE IF NOT EXISTS registered_users (
+    id TEXT PRIMARY KEY,
+    email TEXT UNIQUE NOT NULL,
+    name TEXT NOT NULL,
+    role TEXT DEFAULT 'participant',
+    company_id TEXT,
+    category_id TEXT,
+    target_companies JSONB DEFAULT '[]'::jsonb,
+    registered_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE registered_users ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Public can view and edit registered_users" ON registered_users;
+CREATE POLICY "Public can view and edit registered_users" 
+ON registered_users FOR ALL 
+USING (true) 
+WITH CHECK (true);
+
+-- Insertar administradores base
+INSERT INTO registered_users (id, email, name, role, company_id, registered_at) VALUES
+('user-carlos', 'gerencia.mejoracontinua@prosur.com.mx', 'Carlos Barrientos', 'admin', 'prosur', NOW()),
+('user-dario', 'dario.gonzalez@prosur.com.mx', 'Dario Gonzalez', 'admin', 'prosur', NOW())
+ON CONFLICT (id) DO NOTHING;
 
