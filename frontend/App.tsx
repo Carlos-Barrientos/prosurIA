@@ -933,24 +933,44 @@ export default function App() {
         </div>
 
         <div className="max-w-[1600px] mx-auto px-6 pb-24">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-            <div className="group">
-              <span className="text-[#E30613] text-[11px] font-bold tracking-[0.15em] uppercase mb-2 block">FASE 1</span>
-              <h3 className="text-2xl font-bold mb-4">Lanzamiento</h3>
-              <p className="text-gray-500 text-sm leading-relaxed mb-4">Convocatoria oficial, bases e inscripciones.</p>
-              <span className="text-[11px] font-bold text-[#1a1a1a] tracking-widest uppercase border-b border-gray-300 pb-1">Fechas por definir</span>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="group p-8 rounded-2xl bg-gray-50/70 border border-gray-200/80 hover:border-[#E30613]/40 hover:bg-white hover:shadow-md transition-all duration-300">
+              <div className="flex items-center justify-between mb-4">
+                <span className="text-[#E30613] text-[11px] font-black tracking-[0.15em] uppercase">FASE 1</span>
+                <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">Apertura</span>
+              </div>
+              <h3 className="text-2xl font-black text-gray-900 mb-3">Lanzamiento</h3>
+              <p className="text-gray-500 text-sm leading-relaxed mb-6">Convocatoria oficial, publicación de bases y apertura del portal de registro.</p>
+              <div className="pt-4 border-t border-gray-200/80 flex items-center gap-2 text-xs font-bold text-gray-900">
+                <Calendar className="w-4 h-4 text-[#E30613]" />
+                <span className="uppercase tracking-wider">7 de Septiembre 2026</span>
+              </div>
             </div>
-            <div className="group">
-              <span className="text-[#E30613] text-[11px] font-bold tracking-[0.15em] uppercase mb-2 block">FASE 2</span>
-              <h3 className="text-2xl font-bold mb-4">Validación</h3>
-              <p className="text-gray-500 text-sm leading-relaxed mb-4">Admisibilidad, mentoría y auditoría de la evidencia.</p>
-              <span className="text-[11px] font-bold text-[#1a1a1a] tracking-widest uppercase border-b border-gray-300 pb-1">Próximamente</span>
+
+            <div className="group p-8 rounded-2xl bg-gray-50/70 border border-gray-200/80 hover:border-[#E30613]/40 hover:bg-white hover:shadow-md transition-all duration-300">
+              <div className="flex items-center justify-between mb-4">
+                <span className="text-[#E30613] text-[11px] font-black tracking-[0.15em] uppercase">FASE 2</span>
+                <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200">En Proceso</span>
+              </div>
+              <h3 className="text-2xl font-black text-gray-900 mb-3">Validación</h3>
+              <p className="text-gray-500 text-sm leading-relaxed mb-6">Admisibilidad, mentoría y auditoría de la evidencia en operación real.</p>
+              <div className="pt-4 border-t border-gray-200/80 flex items-center gap-2 text-xs font-bold text-gray-900">
+                <Calendar className="w-4 h-4 text-[#E30613]" />
+                <span className="uppercase tracking-wider">Hasta el 1 de Diciembre 2026</span>
+              </div>
             </div>
-            <div className="group">
-              <span className="text-[#E30613] text-[11px] font-bold tracking-[0.15em] uppercase mb-2 block">FASE 3</span>
-              <h3 className="text-2xl font-bold mb-4">Cierre</h3>
-              <p className="text-gray-500 text-sm leading-relaxed mb-4">Presentación final (Pitch) y ceremonia de premiación.</p>
-              <span className="text-[11px] font-bold text-[#1a1a1a] tracking-widest uppercase border-b border-gray-300 pb-1">Próximamente</span>
+
+            <div className="group p-8 rounded-2xl bg-gray-50/70 border border-gray-200/80 hover:border-[#E30613]/40 hover:bg-white hover:shadow-md transition-all duration-300">
+              <div className="flex items-center justify-between mb-4">
+                <span className="text-[#E30613] text-[11px] font-black tracking-[0.15em] uppercase">FASE 3</span>
+                <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-red-50 text-red-700 border border-red-200">Gran Final</span>
+              </div>
+              <h3 className="text-2xl font-black text-gray-900 mb-3">Cierre</h3>
+              <p className="text-gray-500 text-sm leading-relaxed mb-6">Presentación final (Pitch), jurado calificador y ceremonia de premiación.</p>
+              <div className="pt-4 border-t border-gray-200/80 flex items-center gap-2 text-xs font-bold text-gray-900">
+                <Calendar className="w-4 h-4 text-[#E30613]" />
+                <span className="uppercase tracking-wider">12 de Enero 2027</span>
+              </div>
             </div>
           </div>
         </div>
