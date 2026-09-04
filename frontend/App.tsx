@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, ChevronUp, BookOpen, Terminal, CheckCircle2, Play, ArrowLeft, Layout, ShieldAlert, Cpu, Database, Network, Key, Code, Boxes, Activity, Eye, RefreshCw, FileJson, Rocket, Globe, MessageCircle, Menu, X, Users } from 'lucide-react';
+import { Search, ChevronUp, BookOpen, Terminal, CheckCircle2, Play, ArrowLeft, Layout, ShieldAlert, Cpu, Database, Network, Key, Code, Boxes, Activity, Eye, RefreshCw, FileJson, Rocket, Globe, MessageCircle, Menu, X, Users, Calendar } from 'lucide-react';
 import FuturoMundial from './components/FuturoMundial';
 import ProjectPortal from './components/ProjectPortal';
 
@@ -588,44 +588,37 @@ export default function App() {
             </button>
           </div>
           
-          <nav className="hidden lg:flex items-center gap-8 text-[11px] font-bold tracking-[0.15em] uppercase text-gray-600">
+          <nav className="hidden lg:flex items-center gap-6 xl:gap-7 text-[11px] font-bold tracking-[0.12em] uppercase text-gray-600">
             <a href="#proposito" className="hover:text-[#E30613] transition-colors">Propósito</a>
             <a href="#categorias" className="hover:text-[#E30613] transition-colors">Categorías</a>
             <a href="#scorecard" className="hover:text-[#E30613] transition-colors">Scorecard</a>
             <a href="#etapas" className="hover:text-[#E30613] transition-colors">Etapas</a>
 
-            {/* GRUPO DE BOTONES DE ACCIÓN */}
-            <div className="flex items-center gap-2.5">
-              {/* BOTÓN FUTURO MUNDIAL */}
-              <button 
-                onClick={() => setCurrentView('futuro-mundial')}
-                className="group flex items-center gap-2 px-3.5 py-2.5 rounded-full text-[11px] font-bold tracking-[0.12em] uppercase text-gray-700 hover:text-[#E30613] bg-gray-50/90 hover:bg-white border border-gray-200/90 hover:border-[#E30613]/40 shadow-xs hover:shadow-md transition-all duration-300 cursor-pointer"
-              >
-                <Globe className="w-3.5 h-3.5 text-gray-400 group-hover:text-[#E30613] group-hover:rotate-12 transition-all duration-300" />
-                <span>Futuro Mundial</span>
-              </button>
-              
-              {/* BOTÓN ACADEMIA PROSUR */}
-              <button 
-                onClick={() => setCurrentView('course')}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-full text-[11px] font-bold tracking-[0.12em] uppercase text-white bg-[#E30613] hover:bg-[#b80510] shadow-sm hover:shadow-lg hover:shadow-red-600/25 active:scale-95 transition-all duration-300 cursor-pointer"
-              >
-                <BookOpen className="w-3.5 h-3.5" />
-                <span>Academia Prosur</span>
-              </button>
+            <div className="h-4 w-[1px] bg-gray-200 hidden xl:block"></div>
 
-              {/* BOTÓN PORTAL PROYECTOS / REGISTRO */}
-              <button 
-                onClick={() => { setPortalCategory(null); setCurrentView('portal'); }}
-                className="group flex items-center gap-2 px-4 py-2.5 rounded-full text-[11px] font-black tracking-[0.12em] uppercase text-gray-900 hover:text-white bg-white hover:bg-black border border-gray-300 hover:border-black shadow-xs hover:shadow-md active:scale-95 transition-all duration-300 cursor-pointer"
-                title="Registrar Proyecto / Iniciar Sesión"
-              >
-                <Users className="w-3.5 h-3.5 text-red-600 group-hover:text-white transition-colors" />
-                <span>Portal Proyectos</span>
-              </button>
-            </div>
-            <button className="ml-2 cursor-pointer">
-              <Search className="w-5 h-5 text-gray-400 hover:text-[#1a1a1a] transition-colors" />
+            <button 
+              onClick={() => setCurrentView('futuro-mundial')}
+              className="hover:text-[#E30613] transition-colors cursor-pointer flex items-center gap-1.5"
+            >
+              <Globe className="w-3.5 h-3.5 text-gray-400" />
+              <span>Futuro Mundial</span>
+            </button>
+
+            <button 
+              onClick={() => setCurrentView('course')}
+              className="hover:text-[#E30613] transition-colors cursor-pointer flex items-center gap-1.5"
+            >
+              <BookOpen className="w-3.5 h-3.5 text-gray-400" />
+              <span>Academia Prosur</span>
+            </button>
+
+            <button 
+              onClick={() => { setPortalCategory(null); setCurrentView('portal'); }}
+              className="flex items-center gap-2 px-5 py-2.5 rounded-full text-[11px] font-black tracking-[0.12em] uppercase text-white bg-[#CC2027] hover:bg-[#b01b21] shadow-xs hover:shadow-md active:scale-95 transition-all cursor-pointer ml-1"
+              title="Registrar Proyecto / Iniciar Sesión"
+            >
+              <Users className="w-3.5 h-3.5 text-white" />
+              <span>Portal Proyectos</span>
             </button>
           </nav>
         </div>
