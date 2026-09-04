@@ -43,8 +43,8 @@ const SYLLABUS = [
     title: "Módulo 4: Arquitecturas Avanzadas y Agentes",
     icon: <Cpu className="w-4 h-4" />,
     topics: [
-      { id: 14, title: "14. Arquitectura RAG Empresarial (Azure)", hasLab: true },
-      { id: 15, title: "15. Model Context Protocol (MCP) en Azure" },
+      { id: 14, title: "14. Arquitectura RAG Empresarial con Claude", hasLab: true },
+      { id: 15, title: "15. Model Context Protocol (MCP) con Claude" },
       { id: 16, title: "16. Automatización con Claude Code CLI" },
       { id: 17, title: "17. Chatbots y Manejo de Estado (OpenAI)" },
       { id: 18, title: "18. Agentes de IA con LangGraph" }
@@ -273,7 +273,7 @@ function CourseView({ setView }) {
           <div className="animate-in fade-in slide-in-from-bottom-4">
             <div className="mb-10">
               <span className="text-red-600 text-[11px] font-bold tracking-widest uppercase block mb-3">TEMA 14</span>
-              <h1 className="text-4xl font-bold tracking-tight mb-4">Simulador RAG (Azure AI)</h1>
+              <h1 className="text-4xl font-bold tracking-tight mb-4">Simulador RAG con Claude</h1>
               <p className="text-gray-500 leading-relaxed max-w-3xl">
                 Observa cómo el sistema recupera fragmentos de documentos oficiales de Prosur antes de generar la respuesta, garantizando la eliminación de alucinaciones.
               </p>
@@ -371,9 +371,9 @@ function CourseView({ setView }) {
             caso: "Migración de un servicio backend legado escrito en Flask hacia una arquitectura asíncrona moderna con FastAPI y SQLAlchemy asíncrono en Prosur."
           },
           15: {
-            fundamento: "El Model Context Protocol (MCP) es un estándar abierto que universaliza la interacción entre modelos de lenguaje, clientes de software y fuentes de datos corporativas en entornos Azure.",
-            instruccion: "Empaquetar servicios internos como servidores MCP. Establecer permisos granulares y requerir confirmación interactiva para herramientas que ejecuten modificaciones en bases de datos.",
-            caso: "Conexión de un copiloto institucional a las bases de datos de resoluciones PostgreSQL y al catálogo de recursos de Azure mediante protocolo JSON-RPC."
+            fundamento: "El Model Context Protocol (MCP), desarrollado por Anthropic, es el estándar abierto que universaliza la interacción directa y segura de Claude con fuentes de datos, APIs y herramientas corporativas.",
+            instruccion: "Empaquetar servicios internos como servidores MCP para Claude. Establecer permisos granulares y requerir confirmación interactiva para herramientas que ejecuten modificaciones en bases de datos.",
+            caso: "Conexión de Claude Desktop y agentes autónomos a las bases de datos de resoluciones PostgreSQL y al repositorio corporativo de Prosur mediante protocolo JSON-RPC."
           },
           16: {
             fundamento: "Claude Code es una interfaz de línea de comandos (CLI) agéntica con acceso directo al sistema de archivos, terminal y entorno de ejecución del proyecto para planificar intervenciones.",
@@ -396,9 +396,9 @@ function CourseView({ setView }) {
             caso: "Detección, diagnóstico y corrección de un fallo de bucle infinito (consumo excesivo de tokens) en un agente automatizado de patentes utilizando el árbol jerárquico de LangSmith."
           },
           20: {
-            fundamento: "La arquitectura empresarial cohesiva integra n8n (orquestación y eventos), LangGraph (razonamiento agéntico), Azure/MCP (acceso a datos) y LangSmith (trazabilidad).",
+            fundamento: "La arquitectura empresarial cohesiva integra n8n (orquestación y eventos), LangGraph (razonamiento agéntico), Claude/MCP (acceso a datos) y LangSmith (trazabilidad).",
             instruccion: "Mantener clara separación de responsabilidades: la interfaz web/correo en n8n, el razonamiento en APIs REST aseguradas con mTLS, y propagar el TraceId a lo largo del flujo.",
-            caso: "Resolución automatizada de consultas transfronterizas: Formulario Web -> Webhook n8n -> LangGraph -> Recuperación MCP/Azure -> Telemetría LangSmith -> Reporte final en PDF."
+            caso: "Resolución automatizada de consultas transfronterizas: Formulario Web -> Webhook n8n -> LangGraph -> Recuperación Claude/MCP -> Telemetría LangSmith -> Reporte final en PDF."
           }
         };
 
