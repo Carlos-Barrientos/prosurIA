@@ -934,10 +934,133 @@ app.post('/api/chat', (req, res) => {
   }
 });
 
+// --- Endpoints del API de Proyectos ---
+const projectsFilePath = path.join(__dirname, 'data', 'projects.json');
+
+app.get('/api/projects', (req, res) => {
+  try {
+    initDataStorage();
+    if (!fs.existsSync(projectsFilePath)) {
+      fs.writeFileSync(projectsFilePath, '[]', 'utf-8');
+    }
+    const data = fs.readFileSync(projectsFilePath, 'utf-8');
+    res.setHeader('Content-Type', 'application/json');
+    res.send(data || '[]');
+  } catch (error) {
+    console.error("Error in GET /api/projects:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post('/api/projects', (req, res) => {
+  try {
+    initDataStorage();
+    let projects = [];
+    if (fs.existsSync(projectsFilePath)) {
+      try {
+        projects = JSON.parse(fs.readFileSync(projectsFilePath, 'utf-8') || '[]');
+      } catch (e) {
+        projects = [];
+      }
+    }
+    const project = req.body;
+    if (!project || !project.id) {
+      return res.status(400).json({ error: "Missing project id." });
+    }
+    const idx = projects.findIndex(p => p.id === project.id);
+    if (idx >= 0) {
+      projects[idx] = { ...projects[idx], ...project, updatedAt: new Date().toISOString() };
+    } else {
+      projects.unshift({ ...project, updatedAt: new Date().toISOString() });
+    }
+    fs.writeFileSync(projectsFilePath, JSON.stringify(projects, null, 2), 'utf-8');
+    res.status(200).json({ success: true, project });
+  } catch (error) {
+    console.error("Error in POST /api/projects:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.delete('/api/projects/:id', (req, res) => {
+  try {
+    if (!fs.existsSync(projectsFilePath)) {
+      return res.status(200).json({ success: true });
+    }
+    let projects = JSON.parse(fs.readFileSync(projectsFilePath, 'utf-8') || '[]');
+    projects = projects.filter(p => p.id !== req.params.id);
+    fs.writeFileSync(projectsFilePath, JSON.stringify(projects, null, 2), 'utf-8');
+    res.status(200).json({ success: true });
+  } catch (error) {
+    console.error("Error in DELETE /api/projects/:id:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// --- Endpoints del API de Usuarios Registrados ---
+const usersFilePath = path.join(__dirname, 'data', 'users.json');
+
+app.get('/api/users', (req, res) => {
+  try {
+    initDataStorage();
+    if (!fs.existsSync(usersFilePath)) {
+      fs.writeFileSync(usersFilePath, '[]', 'utf-8');
+    }
+    const data = fs.readFileSync(usersFilePath, 'utf-8');
+    res.setHeader('Content-Type', 'application/json');
+    res.send(data || '[]');
+  } catch (error) {
+    console.error("Error in GET /api/users:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post('/api/users', (req, res) => {
+  try {
+    initDataStorage();
+    let users = [];
+    if (fs.existsSync(usersFilePath)) {
+      try {
+        users = JSON.parse(fs.readFileSync(usersFilePath, 'utf-8') || '[]');
+      } catch (e) {
+        users = [];
+      }
+    }
+    const user = req.body;
+    if (!user || (!user.email && !user.id)) {
+      return res.status(400).json({ error: "Missing user email or id." });
+    }
+    const idx = users.findIndex(u => (u.email && u.email.toLowerCase() === (user.email || '').toLowerCase()) || (u.id && u.id === user.id));
+    if (idx >= 0) {
+      users[idx] = { ...users[idx], ...user, updatedAt: new Date().toISOString() };
+    } else {
+      users.unshift({ ...user, id: user.id || 'user-' + Date.now(), registeredAt: new Date().toISOString() });
+    }
+    fs.writeFileSync(usersFilePath, JSON.stringify(users, null, 2), 'utf-8');
+    res.status(200).json({ success: true, user });
+  } catch (error) {
+    console.error("Error in POST /api/users:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.delete('/api/users/:id', (req, res) => {
+  try {
+    if (!fs.existsSync(usersFilePath)) {
+      return res.status(200).json({ success: true });
+    }
+    let users = JSON.parse(fs.readFileSync(usersFilePath, 'utf-8') || '[]');
+    users = users.filter(u => u.id !== req.params.id && u.email !== req.params.id);
+    fs.writeFileSync(usersFilePath, JSON.stringify(users, null, 2), 'utf-8');
+    res.status(200).json({ success: true });
+  } catch (error) {
+    console.error("Error in DELETE /api/users/:id:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
 
 // Serve index.html for any other route if it exists (Single Page Application fallback)
 app.get(/.*/, (req, res, next) => {
-  if (req.path.startsWith('/api-proxy') || req.path.startsWith('/sheet-proxy') || req.path.startsWith('/ws-proxy')) {
+  if (req.path.startsWith('/api-proxy') || req.path.startsWith('/sheet-proxy') || req.path.startsWith('/ws-proxy') || req.path.startsWith('/api/')) {
     return next();
   }
   const indexPath = path.join(__dirname, 'public', 'index.html');

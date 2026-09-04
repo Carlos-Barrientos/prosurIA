@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, ChevronUp, BookOpen, Terminal, CheckCircle2, Play, ArrowLeft, Layout, ShieldAlert, Cpu, Database, Network, Key, Code, Boxes, Activity, Eye, RefreshCw, FileJson, Rocket, Globe, MessageCircle, Menu, X, Users, Calendar } from 'lucide-react';
+import { Search, ChevronUp, BookOpen, Terminal, CheckCircle2, Play, ArrowLeft, Layout, ShieldAlert, Cpu, Database, Network, Key, Code, Boxes, Activity, Eye, RefreshCw, FileJson, Rocket, Globe, MessageCircle, Menu, X, Users, Calendar, Award, Trophy, Sparkles } from 'lucide-react';
 import FuturoMundial from './components/FuturoMundial';
 import ProjectPortal from './components/ProjectPortal';
 
@@ -526,22 +526,29 @@ function CourseView({ setView }) {
 
 // --- COMPONENTE PRINCIPAL (LANDING) ---
 export default function App() {
-  const [currentView, setCurrentView] = useState('landing');
+  const [currentView, setCurrentView] = useState(() => {
+    return localStorage.getItem('prosur_current_view') || 'landing';
+  });
   const [portalCategory, setPortalCategory] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<any>(null);
   const [showEnrollModal, setShowEnrollModal] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  const handleSetView = (view: string) => {
+    localStorage.setItem('prosur_current_view', view);
+    setCurrentView(view);
+  };
+
   if (currentView === 'course') {
-    return <CourseView setView={setCurrentView} />;
+    return <CourseView setView={handleSetView} />;
   }
 
   if (currentView === 'futuro-mundial') {
-    return <FuturoMundial setView={setCurrentView} />;
+    return <FuturoMundial setView={handleSetView} />;
   }
 
   if (currentView === 'portal') {
-    return <ProjectPortal onBack={() => setCurrentView('landing')} initialCategory={portalCategory} />;
+    return <ProjectPortal onBack={() => handleSetView('landing')} initialCategory={portalCategory} />;
   }
 
   return (
@@ -560,7 +567,7 @@ export default function App() {
           {/* Opciones directas para celular (< lg) - Diseño elegante, limpio y sin contaminar */}
           <div className="flex lg:hidden items-center gap-1.5 sm:gap-2">
             <button 
-              onClick={() => { setCurrentView('futuro-mundial'); setMobileMenuOpen(false); }}
+              onClick={() => { handleSetView('futuro-mundial'); setMobileMenuOpen(false); }}
               className="group flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-full text-[10px] sm:text-[11px] font-bold tracking-[0.12em] uppercase text-gray-700 hover:text-[#E30613] bg-gray-50/90 hover:bg-white border border-gray-200/90 hover:border-[#E30613]/40 shadow-xs active:scale-95 transition-all cursor-pointer"
               title="Futuro Mundial"
             >
@@ -570,7 +577,7 @@ export default function App() {
             </button>
             
             <button 
-              onClick={() => { setCurrentView('course'); setMobileMenuOpen(false); }}
+              onClick={() => { handleSetView('course'); setMobileMenuOpen(false); }}
               className="flex items-center gap-1.5 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-[10px] sm:text-[11px] font-bold tracking-[0.12em] uppercase text-white bg-[#E30613] hover:bg-[#b80510] shadow-sm active:scale-95 transition-all cursor-pointer"
               title="Academia Prosur"
             >
@@ -592,12 +599,13 @@ export default function App() {
             <a href="#proposito" className="hover:text-[#E30613] transition-colors">Propósito</a>
             <a href="#categorias" className="hover:text-[#E30613] transition-colors">Categorías</a>
             <a href="#scorecard" className="hover:text-[#E30613] transition-colors">Scorecard</a>
+            <a href="#premios" className="hover:text-[#E30613] transition-colors text-[#CC2027] font-black">Premios</a>
             <a href="#etapas" className="hover:text-[#E30613] transition-colors">Etapas</a>
 
             <div className="h-4 w-[1px] bg-gray-200 hidden xl:block"></div>
 
             <button 
-              onClick={() => setCurrentView('futuro-mundial')}
+              onClick={() => handleSetView('futuro-mundial')}
               className="hover:text-[#E30613] transition-colors cursor-pointer flex items-center gap-1.5"
             >
               <Globe className="w-3.5 h-3.5 text-gray-400" />
@@ -605,7 +613,7 @@ export default function App() {
             </button>
 
             <button 
-              onClick={() => setCurrentView('course')}
+              onClick={() => handleSetView('course')}
               className="hover:text-[#E30613] transition-colors cursor-pointer flex items-center gap-1.5"
             >
               <BookOpen className="w-3.5 h-3.5 text-gray-400" />
@@ -613,7 +621,7 @@ export default function App() {
             </button>
 
             <button 
-              onClick={() => { setPortalCategory(null); setCurrentView('portal'); }}
+              onClick={() => { setPortalCategory(null); handleSetView('portal'); }}
               className="flex items-center gap-2 px-5 py-2.5 rounded-full text-[11px] font-black tracking-[0.12em] uppercase text-white bg-[#CC2027] hover:bg-[#b01b21] shadow-xs hover:shadow-md active:scale-95 transition-all cursor-pointer ml-1"
               title="Registrar Proyecto / Iniciar Sesión"
             >
@@ -652,6 +660,14 @@ export default function App() {
                 <span className="text-gray-300 text-xs">→</span>
               </a>
               <a 
+                href="#premios" 
+                onClick={() => setMobileMenuOpen(false)}
+                className="py-2 hover:text-[#E30613] transition-colors border-b border-gray-50 flex items-center justify-between text-[#CC2027] font-black"
+              >
+                <span>Premios e Incentivos</span>
+                <span className="text-red-400 text-xs font-bold">★</span>
+              </a>
+              <a 
                 href="#etapas" 
                 onClick={() => setMobileMenuOpen(false)}
                 className="py-2 hover:text-[#E30613] transition-colors border-b border-gray-50 flex items-center justify-between"
@@ -662,7 +678,7 @@ export default function App() {
 
               {/* Botón Destacado Móvil: Portal de Proyectos */}
               <button 
-                onClick={() => { setPortalCategory(null); setCurrentView('portal'); setMobileMenuOpen(false); }}
+                onClick={() => { setPortalCategory(null); handleSetView('portal'); setMobileMenuOpen(false); }}
                 className="w-full mt-2 py-3 px-4 rounded-xl bg-gray-900 text-white font-black text-xs uppercase tracking-wider flex items-center justify-between shadow-sm cursor-pointer"
               >
                 <div className="flex items-center gap-2">
@@ -777,9 +793,9 @@ export default function App() {
               },
               {
                 id: "E",
-                title: "Tecnología e Innovación",
-                desc: "Integración de APIs, gobierno de datos, ciberseguridad, infraestructura corporativa y soluciones transversales.",
-                longDesc: "Categoría técnica. Se premian soluciones de arquitectura profunda: RAG empresarial transversal, protocolos de ciberseguridad asistidos, y agentes autónomos para monitoreo de infraestructura (DevOps).",
+                title: "Tecnología, Sistemas e Innovación",
+                desc: "Categoría exclusiva para personal de Sistemas, TI e Ingeniería donde pueden juntarse, hacer equipo inter-empresas y construir soluciones transversales.",
+                longDesc: "Categoría técnica diseñada especialmente para el equipo de Sistemas, TI e Ingeniería de todas las empresas del Grupo. Aquí pueden unirse, formar equipos multidisciplinarios o inter-empresas, y desarrollar arquitecturas profundas: integración de APIs corporativas, RAG transversal, automatización de infraestructura (DevOps), gobierno de datos y ciberseguridad asistida.",
                 img: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop"
               }
             ].map(cat => (
@@ -820,7 +836,7 @@ export default function App() {
                   onClick={() => {
                     setPortalCategory(selectedCategory?.id || 'A');
                     setSelectedCategory(null);
-                    setCurrentView('portal');
+                    handleSetView('portal');
                   }}
                   className="bg-[#E30613] text-white px-8 py-4 font-black tracking-widest uppercase text-sm hover:bg-red-700 transition-colors flex-1 text-center cursor-pointer shadow-md"
                 >
@@ -918,6 +934,109 @@ export default function App() {
         </div>
       </section>
 
+      {/* Premios e Incentivos Section */}
+      <section id="premios" className="py-24 max-w-[1600px] mx-auto px-6 border-b border-gray-100">
+        <div className="flex flex-col lg:flex-row gap-16">
+          
+          <div className="lg:w-1/3">
+            <span className="text-[#E30613] text-[11px] font-bold tracking-[0.15em] uppercase block mb-3">
+              Reconocimiento Oficial
+            </span>
+            <h2 className="text-3xl md:text-5xl font-bold tracking-tight mb-6 uppercase">
+              Bolsa de<br/>Premios
+            </h2>
+            <p className="text-gray-500 text-sm leading-relaxed mb-8">
+              En Grupo PROSUR reconocemos el impacto comprobable en dos momentos clave: al superar la auditoría de validación y en la gran final por categorías.
+            </p>
+
+            <div className="bg-emerald-50 p-6 border-l-4 border-emerald-600">
+              <span className="text-emerald-800 text-[10px] font-bold tracking-[0.15em] uppercase block mb-2">
+                Incentivo Asegurado de Fase 2
+              </span>
+              <div className="text-3xl font-light text-emerald-900 mb-1">
+                $5,000 <span className="text-sm font-bold text-emerald-700">MXN</span>
+              </div>
+              <p className="text-emerald-900 text-xs leading-relaxed font-medium mt-2">
+                Por cada equipo que apruebe la validación operativa en proceso real antes del 15 de Diciembre de 2026.
+              </p>
+            </div>
+          </div>
+
+          <div className="lg:w-2/3">
+            <div className="mb-8 pb-4 border-b border-gray-200 flex items-center justify-between">
+              <div>
+                <span className="text-xs font-bold uppercase tracking-wider text-gray-400 block">
+                  Fase 3 · Gran Concurso (Viernes 15 de Enero 2027)
+                </span>
+                <h3 className="text-xl font-bold text-gray-900 mt-1">
+                  Premios Finales por Categoría (A, B, C, D y E)
+                </h3>
+              </div>
+              <span className="text-xs text-gray-400 font-mono hidden sm:inline">
+                Acumulable con Fase 2
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              
+              <div className="border-t border-gray-200 pt-6">
+                <div className="flex items-end justify-between mb-2">
+                  <div>
+                    <span className="text-[#E30613] text-[11px] font-bold tracking-widest uppercase block mb-1">01</span>
+                    <h4 className="text-lg font-bold text-gray-900">1er Lugar</h4>
+                  </div>
+                  <span className="text-3xl font-light text-gray-900 font-mono">$15,000</span>
+                </div>
+                <p className="text-gray-500 text-xs leading-relaxed mt-3">
+                  Premio económico directo al proyecto mejor evaluado de cada una de las 5 categorías oficiales.
+                </p>
+              </div>
+
+              <div className="border-t border-gray-200 pt-6">
+                <div className="flex items-end justify-between mb-2">
+                  <div>
+                    <span className="text-gray-400 text-[11px] font-bold tracking-widest uppercase block mb-1">02</span>
+                    <h4 className="text-lg font-bold text-gray-900">2do Lugar</h4>
+                  </div>
+                  <span className="text-3xl font-light text-gray-900 font-mono">$10,000</span>
+                </div>
+                <p className="text-gray-500 text-xs leading-relaxed mt-3">
+                  Reconocimiento al segundo lugar con métricas probadas de eficiencia y escalabilidad.
+                </p>
+              </div>
+
+              <div className="border-t border-gray-200 pt-6">
+                <div className="flex items-end justify-between mb-2">
+                  <div>
+                    <span className="text-gray-400 text-[11px] font-bold tracking-widest uppercase block mb-1">03</span>
+                    <h4 className="text-lg font-bold text-gray-900">3er Lugar</h4>
+                  </div>
+                  <span className="text-3xl font-light text-gray-900 font-mono">$5,000</span>
+                </div>
+                <p className="text-gray-500 text-xs leading-relaxed mt-3">
+                  Distinción al tercer lugar con adopción en proceso operativo real.
+                </p>
+              </div>
+
+            </div>
+
+            <div className="mt-12 pt-6 border-t border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-xs text-gray-500">
+              <p>
+                * Cada equipo acreedor al pase de Fase 2 conserva sus $5,000 MXN garantizados independientemente del resultado de la final.
+              </p>
+              <button 
+                onClick={() => { setPortalCategory(null); handleSetView('portal'); }}
+                className="text-[#E30613] hover:text-red-700 font-bold uppercase tracking-wider flex items-center gap-1.5 cursor-pointer shrink-0"
+              >
+                <span>Registrar Proyecto</span>
+                <span>→</span>
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
       {/* Profile/Timeline Section */}
       <section id="etapas" className="pt-24 bg-white">
         <div className="max-w-[1600px] mx-auto px-6 mb-16">
@@ -956,7 +1075,7 @@ export default function App() {
               <p className="text-gray-500 text-sm leading-relaxed mb-6">Admisibilidad, mentoría y auditoría de la evidencia en operación real.</p>
               <div className="pt-4 border-t border-gray-200/80 flex items-center gap-2 text-xs font-bold text-gray-900">
                 <Calendar className="w-4 h-4 text-[#E30613]" />
-                <span className="uppercase tracking-wider">Hasta el 1 de Diciembre 2026</span>
+                <span className="uppercase tracking-wider">Hasta el 15 de Diciembre 2026</span>
               </div>
             </div>
 
@@ -969,7 +1088,7 @@ export default function App() {
               <p className="text-gray-500 text-sm leading-relaxed mb-6">Presentación final (Pitch), jurado calificador y ceremonia de premiación.</p>
               <div className="pt-4 border-t border-gray-200/80 flex items-center gap-2 text-xs font-bold text-gray-900">
                 <Calendar className="w-4 h-4 text-[#E30613]" />
-                <span className="uppercase tracking-wider">12 de Enero 2027</span>
+                <span className="uppercase tracking-wider">Viernes 15 de Enero 2027</span>
               </div>
             </div>
           </div>
@@ -1016,8 +1135,8 @@ export default function App() {
             <ul className="space-y-3">
               <li><a href="/Base_IA_Grupo_Prosur.pdf" target="_blank" rel="noopener noreferrer" className="text-sm text-gray-400 hover:text-white transition-colors">Bases Oficiales</a></li>
               <li><a href="#" className="text-sm text-gray-400 hover:text-white transition-colors">Inscripciones</a></li>
-              <li><button onClick={() => setCurrentView('course')} className="text-sm text-gray-400 hover:text-white transition-colors cursor-pointer">Academia Prosur</button></li>
-              <li><button onClick={() => setCurrentView('futuro-mundial')} className="text-sm text-teal-400 hover:text-teal-300 font-semibold transition-colors cursor-pointer">Futuro Mundial (WEF)</button></li>
+              <li><button onClick={() => handleSetView('course')} className="text-sm text-gray-400 hover:text-white transition-colors cursor-pointer">Academia Prosur</button></li>
+              <li><button onClick={() => handleSetView('futuro-mundial')} className="text-sm text-teal-400 hover:text-teal-300 font-semibold transition-colors cursor-pointer">Futuro Mundial (WEF)</button></li>
             </ul>
           </div>
           

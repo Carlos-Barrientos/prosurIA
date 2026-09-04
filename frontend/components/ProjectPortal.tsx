@@ -29,7 +29,9 @@ import {
   Upload,
   Play,
   CheckSquare,
-  Square
+  Square,
+  Edit,
+  X
 } from 'lucide-react';
 
 const GithubIcon = ({ className = "w-4 h-4" }: { className?: string }) => (
@@ -47,15 +49,20 @@ export interface Company {
 }
 
 export const PARTICIPATING_COMPANIES: Company[] = [
+  // Fila 1: Prosur, Chesa, CAFI
   { id: 'prosur', name: 'Grupo Prosur', logo: '/companies/prosur.png', subtitle: 'Desarrollo para todas las empresas', badgeColor: 'border-red-200 bg-red-50 text-red-700' },
   { id: 'chesa', name: 'Chesa', logo: '/companies/chesa.png', subtitle: 'Grupo Automotríz', badgeColor: 'border-gray-200 bg-gray-50 text-gray-800' },
-  { id: 'comercialtos', name: 'Comercialtos', logo: '/companies/comercialtos.jpg', subtitle: 'Comercialización y Abasto', badgeColor: 'border-amber-200 bg-amber-50 text-amber-800' },
-  { id: 'cincopinos', name: 'Cinco Pinos', logo: '/companies/cincopinos.png', subtitle: 'Inmobiliaria y Proyectos', badgeColor: 'border-emerald-200 bg-emerald-50 text-emerald-800' },
-  { id: 'cai', name: 'CAI', logo: '/companies/cai.png', subtitle: 'Futuro Activo A.C.', badgeColor: 'border-blue-200 bg-blue-50 text-blue-800' },
   { id: 'cafi', name: 'CAFI', logo: '/companies/cafi.png', subtitle: 'Tu Casa Financiera', badgeColor: 'border-orange-200 bg-orange-50 text-orange-800' },
-  { id: 'riovinyl', name: 'Rio Vinyl', logo: '/companies/riovinyl.png', subtitle: 'Rio Vinyl de México', badgeColor: 'border-teal-200 bg-teal-50 text-teal-800' },
+  // Fila 2: Calzamoda, Rio Vinyl, Cinco Pinos
   { id: 'calzamoda', name: 'Calzamoda', logo: '/companies/calzamoda.png', subtitle: 'Calzado y Retail', badgeColor: 'border-lime-200 bg-lime-50 text-lime-800' },
+  { id: 'riovinyl', name: 'Rio Vinyl', logo: '/companies/riovinyl.png', subtitle: 'Rio Vinyl de México', badgeColor: 'border-teal-200 bg-teal-50 text-teal-800' },
+  { id: 'cincopinos', name: 'Cinco Pinos', logo: '/companies/cincopinos.png', subtitle: 'Inmobiliaria y Proyectos', badgeColor: 'border-emerald-200 bg-emerald-50 text-emerald-800' },
+  // Fila 3: Comercialtos, CAI, Insumos del Sureste
+  { id: 'comercialtos', name: 'Comercialtos', logo: '/companies/comercialtos.jpg', subtitle: 'Comercialización y Abasto', badgeColor: 'border-amber-200 bg-amber-50 text-amber-800' },
+  { id: 'cai', name: 'CAI', logo: '/companies/cai.png', subtitle: 'Futuro Activo A.C.', badgeColor: 'border-blue-200 bg-blue-50 text-blue-800' },
   { id: 'insumos_sureste', name: 'Insumos del Sureste', logo: '/companies/insumos_sureste.png', subtitle: 'Insumos Industriales', badgeColor: 'border-rose-200 bg-rose-50 text-rose-800' },
+  // Opciones Colaborativas y Especiales
+  { id: 'multiempresa', name: 'Multi Empresa', logo: '/logoprosur.png', subtitle: 'Desarrollo Colaborativo entre Empresas', badgeColor: 'border-red-200 bg-red-50 text-[#CC2027]' },
   { id: 'otros', name: 'Otros', logo: '/companies/prosur.png', subtitle: 'Otra Empresa o Área', badgeColor: 'border-slate-200 bg-slate-50 text-slate-700' },
 ];
 
@@ -64,7 +71,7 @@ export const CATEGORIES = [
   { id: 'B', name: 'Operaciones, Taller y Logística' },
   { id: 'C', name: 'Ventas y Marketing' },
   { id: 'D', name: 'Capital Humano y Compliance' },
-  { id: 'E', name: 'Tecnología e Innovación' },
+  { id: 'E', name: 'Tecnología, Sistemas e Innovación' },
 ];
 
 export interface TeamMember {
@@ -73,6 +80,7 @@ export interface TeamMember {
   role: string;
   email: string;
   phone: string;
+  company?: string;
 }
 
 export interface Milestone {
@@ -89,6 +97,7 @@ export interface ProjectData {
   title: string;
   companyId: string;
   categoryId: string;
+  targetCompanies?: string[];
   scope: string;
   problem: string;
   solution: string;
@@ -103,6 +112,17 @@ export interface ProjectData {
   complianceChecks: { [key: string]: boolean };
   securityChecks: { [key: string]: boolean };
   updatedAt: string;
+}
+
+export interface RegisteredUser {
+  id: string;
+  email: string;
+  name: string;
+  role: 'participant' | 'admin';
+  companyId: string;
+  targetCompanies?: string[];
+  categoryId?: string;
+  registeredAt?: string;
 }
 
 interface ProjectPortalProps {
@@ -145,7 +165,11 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
   const [authPassword, setAuthPassword] = useState('');
   const [authName, setAuthName] = useState('');
   const [authCompany, setAuthCompany] = useState('prosur');
+  const [authTargetCompanies, setAuthTargetCompanies] = useState<string[]>([]);
   const [authCategory, setAuthCategory] = useState(initialCategory || 'A');
+
+  // Modal para edición de proyecto por parte del Administrador
+  const [editingProject, setEditingProject] = useState<ProjectData | null>(null);
 
   const [activeTab, setActiveTab] = useState<'project' | 'team' | 'checklists' | 'milestones' | 'demo'>('project');
   const [project, setProject] = useState<ProjectData>(() => {
@@ -177,8 +201,8 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
       milestones: [
         { id: 'm1', title: 'Registro y Definición del Alcance', date: '7 Septiembre 2026', description: 'Presentación formal del problema operativo, alcance y equipo de trabajo.', completed: false },
         { id: 'm2', title: 'Prototipo Funcional en Entorno de Pruebas', date: '15 Octubre 2026', description: 'Primer piloto con usuarios operativos de la empresa seleccionada.', completed: false },
-        { id: 'm3', title: 'Auditoría de Seguridad y Demo de Validación', date: '20 Noviembre 2026', description: 'Revisión técnica de métricas antes vs después y verificación de seguridad.', completed: false },
-        { id: 'm4', title: 'Pitch Final y Gran Concurso', date: '12 Enero 2027', description: 'Presentación ejecutiva final ante directores y jurado evaluador.', completed: false }
+        { id: 'm3', title: 'Auditoría de Seguridad y Demo de Validación', date: '15 Diciembre 2026', description: 'Revisión técnica de métricas antes vs después y verificación de seguridad.', completed: false },
+        { id: 'm4', title: 'Pitch Final y Gran Concurso', date: 'Viernes 15 Enero 2027', description: 'Presentación ejecutiva final ante directores y jurado evaluador.', completed: false }
       ],
       demoStatus: 'pending',
       complianceChecks: {
@@ -201,7 +225,20 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
   const [adminCompanyFilter, setAdminCompanyFilter] = useState<string>('all');
   const [adminCategoryFilter, setAdminCategoryFilter] = useState<string>('all');
   const [adminSearch, setAdminSearch] = useState('');
+  const [adminActiveTab, setAdminActiveTab] = useState<'projects' | 'users'>('projects');
   
+  const [allUsers, setAllUsers] = useState<RegisteredUser[]>(() => {
+    const saved = localStorage.getItem('prosur_all_users_db');
+    if (saved) {
+      try {
+        return JSON.parse(saved) || [];
+      } catch (e) {
+        return [];
+      }
+    }
+    return [];
+  });
+
   const [allProjects, setAllProjects] = useState<ProjectData[]>(() => {
     const saved = localStorage.getItem('prosur_all_projects_db');
     if (saved) {
@@ -217,38 +254,39 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
   });
 
   useEffect(() => {
-    // Limpieza de datos dummy anteriores en localStorage
-    const saved = localStorage.getItem('prosur_all_projects_db');
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        const real = parsed.filter((p: any) => !['p1', 'p2', 'p3', 'p4'].includes(p.id));
-        if (real.length !== parsed.length) {
-          localStorage.setItem('prosur_all_projects_db', JSON.stringify(real));
-          setAllProjects(real);
+    async function loadProjectsAndUsers() {
+      // 1. Obtener proyectos de localStorage
+      let localDb: ProjectData[] = [];
+      const saved = localStorage.getItem('prosur_all_projects_db');
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          localDb = (parsed || []).filter((p: any) => !['p1', 'p2', 'p3', 'p4'].includes(p.id));
+        } catch {
+          localDb = [];
         }
-      } catch {
-        localStorage.removeItem('prosur_all_projects_db');
       }
-    }
 
-    const currentSaved = localStorage.getItem('prosur_current_project');
-    if (currentSaved) {
+      // 2. Intentar cargar desde el backend de Node (/api/projects)
+      let backendProjects: ProjectData[] = [];
       try {
-        const parsed = JSON.parse(currentSaved);
-        if (parsed?.title === 'Automatización Inteligente de Procesos Operativos') {
-          localStorage.removeItem('prosur_current_project');
+        const res = await fetch('/api/projects');
+        if (res.ok) {
+          const data = await res.json();
+          if (Array.isArray(data)) {
+            backendProjects = data.filter((p: any) => !['p1', 'p2', 'p3', 'p4'].includes(p.id));
+          }
         }
-      } catch {
-        localStorage.removeItem('prosur_current_project');
+      } catch (e) {
+        console.log('Backend /api/projects not reached:', e);
       }
-    }
 
-    async function loadFromSupabase() {
+      // 3. Intentar cargar desde Supabase si hay filas reales
+      let supabaseProjects: ProjectData[] = [];
       try {
         const { data, error } = await supabase.from('projects').select('*, team_members(*), project_milestones(*)');
-        if (!error && data) {
-          const mapped: ProjectData[] = data.map((p: any) => ({
+        if (!error && data && data.length > 0) {
+          supabaseProjects = data.map((p: any) => ({
             id: p.id,
             userId: p.user_id,
             title: p.title || '',
@@ -281,45 +319,171 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
             securityChecks: p.security_checks || {},
             updatedAt: p.updated_at
           }));
-          setAllProjects(mapped);
-          localStorage.setItem('prosur_all_projects_db', JSON.stringify(mapped));
         }
       } catch (err) {
         console.log('Supabase sync info:', err);
       }
+
+      // 4. Fusionar proyectos sin perder ninguno (Backend > Supabase > Local)
+      const projectMap = new Map<string, ProjectData>();
+      localDb.forEach(p => { if (p && p.id) projectMap.set(p.id, p); });
+      supabaseProjects.forEach(p => { if (p && p.id) projectMap.set(p.id, p); });
+      backendProjects.forEach(p => { if (p && p.id) projectMap.set(p.id, p); });
+
+      const merged = Array.from(projectMap.values());
+      setAllProjects(merged);
+      localStorage.setItem('prosur_all_projects_db', JSON.stringify(merged));
+
+      // Sincronizar proyectos al backend si no estaban guardados en disco
+      merged.forEach(p => {
+        if (!backendProjects.some(bp => bp.id === p.id)) {
+          fetch('/api/projects', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(p)
+          }).catch(() => {});
+        }
+      });
+
+      // 5. Vincular el proyecto activo del usuario actual
+      if (currentUser && currentUser.role === 'participant') {
+        const userProj = merged.find(p => p.userId === currentUser.email) || merged.find(p => p.id === project.id);
+        if (userProj) {
+          setProject(userProj);
+          localStorage.setItem('prosur_current_project', JSON.stringify(userProj));
+        }
+      }
+
+      // 6. Cargar y sincronizar usuarios registrados
+      let localUsers: RegisteredUser[] = [];
+      const savedUsers = localStorage.getItem('prosur_all_users_db');
+      if (savedUsers) {
+        try {
+          localUsers = JSON.parse(savedUsers) || [];
+        } catch {
+          localUsers = [];
+        }
+      }
+
+      let backendUsers: RegisteredUser[] = [];
+      try {
+        const uRes = await fetch('/api/users');
+        if (uRes.ok) {
+          const uData = await uRes.json();
+          if (Array.isArray(uData)) backendUsers = uData;
+        }
+      } catch (e) {
+        console.log('Backend /api/users info:', e);
+      }
+
+      const userMap = new Map<string, RegisteredUser>();
+      localUsers.forEach(u => { if (u && u.email) userMap.set(u.email.toLowerCase().trim(), u); });
+      backendUsers.forEach(u => { if (u && u.email) userMap.set(u.email.toLowerCase().trim(), u); });
+
+      // Si el usuario actual está en sesión, registrarlo si no está
+      if (currentUser && currentUser.email) {
+        const cEmail = currentUser.email.toLowerCase().trim();
+        if (!userMap.has(cEmail)) {
+          userMap.set(cEmail, {
+            id: 'user-' + cEmail.replace(/[^a-zA-Z0-9]/g, '_'),
+            email: cEmail,
+            name: currentUser.name || cEmail.split('@')[0],
+            role: currentUser.role,
+            companyId: currentUser.companyId || 'prosur',
+            registeredAt: new Date().toISOString()
+          });
+        }
+      }
+
+      // Extraer usuarios de los proyectos guardados si no existen en la lista
+      merged.forEach(p => {
+        if (p.userId && p.userId.includes('@')) {
+          const cleanEmail = p.userId.toLowerCase().trim();
+          if (!userMap.has(cleanEmail)) {
+            userMap.set(cleanEmail, {
+              id: 'user-' + cleanEmail.replace(/[^a-zA-Z0-9]/g, '_'),
+              email: cleanEmail,
+              name: p.members[0]?.name || p.title || cleanEmail.split('@')[0],
+              role: 'participant',
+              companyId: p.companyId,
+              categoryId: p.categoryId,
+              targetCompanies: p.targetCompanies,
+              registeredAt: p.updatedAt
+            });
+          }
+        }
+      });
+
+      const mergedUsers = Array.from(userMap.values());
+      setAllUsers(mergedUsers);
+      localStorage.setItem('prosur_all_users_db', JSON.stringify(mergedUsers));
+
+      // Sincronizar usuarios al backend si no estaban guardados en disco
+      mergedUsers.forEach(u => {
+        if (!backendUsers.some(bu => bu.email?.toLowerCase() === u.email?.toLowerCase())) {
+          fetch('/api/users', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(u)
+          }).catch(() => {});
+        }
+      });
     }
-    loadFromSupabase();
-  }, []);
+
+    loadProjectsAndUsers();
+  }, [currentUser?.email]);
 
   const handleSaveProject = async () => {
-    localStorage.setItem('prosur_current_project', JSON.stringify(project));
+    const projectToSave: ProjectData = {
+      ...project,
+      userId: currentUser?.email || project.userId || 'usuario-local',
+      updatedAt: new Date().toISOString()
+    };
+
+    setProject(projectToSave);
+    localStorage.setItem('prosur_current_project', JSON.stringify(projectToSave));
+
     setAllProjects(prev => {
-      const idx = prev.findIndex(p => p.id === project.id);
-      const updated = idx >= 0 ? prev.map(p => p.id === project.id ? project : p) : [project, ...prev];
+      const idx = prev.findIndex(p => p.id === projectToSave.id);
+      const updated = idx >= 0 ? prev.map(p => p.id === projectToSave.id ? projectToSave : p) : [projectToSave, ...prev];
       localStorage.setItem('prosur_all_projects_db', JSON.stringify(updated));
       return updated;
     });
 
+    // Guardar en backend (persistencia en archivo projects.json del servidor)
+    try {
+      await fetch('/api/projects', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(projectToSave)
+      });
+    } catch (e) {
+      console.log('Error saving to /api/projects:', e);
+    }
+
+    // Intentar sincronizar con Supabase
     try {
       await supabase.from('projects').upsert({
-        title: project.title,
-        company_id: project.companyId,
-        category_id: project.categoryId,
-        scope: project.scope,
-        problem: project.problem,
-        solution: project.solution,
-        verifiable_metrics: project.verifiableMetrics,
-        github_url: project.githubUrl,
-        youtube_url: project.youtubeUrl,
-        compliance_checks: project.complianceChecks,
-        security_checks: project.securityChecks,
-        updated_at: new Date().toISOString()
+        id: projectToSave.id,
+        user_id: projectToSave.userId,
+        title: projectToSave.title,
+        company_id: projectToSave.companyId,
+        category_id: projectToSave.categoryId,
+        scope: projectToSave.scope,
+        problem: projectToSave.problem,
+        solution: projectToSave.solution,
+        verifiable_metrics: projectToSave.verifiableMetrics,
+        github_url: projectToSave.githubUrl,
+        youtube_url: projectToSave.youtubeUrl,
+        compliance_checks: projectToSave.complianceChecks,
+        security_checks: projectToSave.securityChecks,
+        updated_at: projectToSave.updatedAt
       });
     } catch (e) {
       console.log('Cloud sync saved', e);
     }
 
-    alert('¡Proyecto guardado con éxito y sincronizado con Supabase!');
+    alert('¡Proyecto guardado con éxito!');
   };
 
   const handleLogin = (e: React.FormEvent) => {
@@ -374,15 +538,82 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
       companyId: authCompany || 'prosur'
     };
     setCurrentUser(participantUser);
-    localStorage.setItem('prosur_portal_user', JSON.stringify(participantUser));
+    // 1. Guardar o actualizar registro en la lista de usuarios
+    const userRecord: RegisteredUser = {
+      id: 'user-' + Date.now(),
+      email: email,
+      name: cleanName,
+      role: 'participant',
+      companyId: authCompany || 'prosur',
+      targetCompanies: authCompany === 'multiempresa' ? authTargetCompanies : undefined,
+      categoryId: authCategory,
+      registeredAt: new Date().toISOString()
+    };
+
+    setAllUsers(prev => {
+      const idx = prev.findIndex(u => u.email.toLowerCase() === email.toLowerCase());
+      const updated = idx >= 0 ? prev.map(u => u.email.toLowerCase() === email.toLowerCase() ? { ...u, ...userRecord } : u) : [userRecord, ...prev];
+      localStorage.setItem('prosur_all_users_db', JSON.stringify(updated));
+      return updated;
+    });
+
+    fetch('/api/users', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(userRecord)
+    }).catch(err => console.log('Error saving user to backend:', err));
 
     if (authMode === 'register') {
-      setProject(prev => ({
-        ...prev,
+      const newProj: ProjectData = {
+        ...project,
+        id: 'proj-' + Date.now(),
+        title: project.title || `Proyecto ${cleanName}`,
         companyId: authCompany,
         categoryId: authCategory,
-        userId: email
-      }));
+        targetCompanies: authCompany === 'multiempresa' ? authTargetCompanies : undefined,
+        userId: email,
+        members: project.members.length > 0 ? project.members : [
+          {
+            id: 'm-' + Date.now(),
+            name: cleanName,
+            role: 'Líder de Proyecto',
+            email: email,
+            phone: '',
+            company: authCompany
+          }
+        ],
+        updatedAt: new Date().toISOString()
+      };
+      setProject(newProj);
+      localStorage.setItem('prosur_current_project', JSON.stringify(newProj));
+      setAllProjects(prev => {
+        const updated = [newProj, ...prev.filter(p => p.id !== newProj.id)];
+        localStorage.setItem('prosur_all_projects_db', JSON.stringify(updated));
+        return updated;
+      });
+      fetch('/api/projects', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newProj)
+      }).catch(err => console.log('Error saving new project to backend:', err));
+    } else {
+      const existing = allProjects.find(p => p.userId === email);
+      if (existing) {
+        setProject(existing);
+        localStorage.setItem('prosur_current_project', JSON.stringify(existing));
+      }
+    }
+  };
+
+  const handleDeleteUser = async (userEmailOrId: string) => {
+    if (!confirm('¿Estás seguro de que deseas eliminar este usuario registrado?')) return;
+    const updated = allUsers.filter(u => u.id !== userEmailOrId && u.email.toLowerCase() !== userEmailOrId.toLowerCase());
+    setAllUsers(updated);
+    localStorage.setItem('prosur_all_users_db', JSON.stringify(updated));
+    try {
+      await fetch(`/api/users/${encodeURIComponent(userEmailOrId)}`, { method: 'DELETE' });
+    } catch (e) {
+      console.log('Error deleting user:', e);
     }
   };
 
@@ -395,6 +626,7 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
   const [newMemberRole, setNewMemberRole] = useState('');
   const [newMemberEmail, setNewMemberEmail] = useState('');
   const [newMemberPhone, setNewMemberPhone] = useState('');
+  const [newMemberCompany, setNewMemberCompany] = useState('prosur');
 
   const handleAddMember = (e: React.FormEvent) => {
     e.preventDefault();
@@ -404,7 +636,8 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
       name: newMemberName,
       role: newMemberRole || 'Colaborador',
       email: newMemberEmail,
-      phone: newMemberPhone
+      phone: newMemberPhone,
+      company: newMemberCompany
     };
     setProject(prev => ({
       ...prev,
@@ -414,6 +647,69 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
     setNewMemberRole('');
     setNewMemberEmail('');
     setNewMemberPhone('');
+  };
+
+  // Funciones de Administrador para Editar y Eliminar Proyectos / Usuarios
+  const handleDeleteProject = async (projectId: string, projectTitle: string) => {
+    if (!window.confirm(`¿Estás seguro de que deseas eliminar permanentemente el proyecto "${projectTitle || 'Sin Título'}"? Esta acción no se puede deshacer.`)) {
+      return;
+    }
+
+    // 1. Eliminar de la lista local
+    const updated = allProjects.filter(p => p.id !== projectId);
+    setAllProjects(updated);
+    localStorage.setItem('prosur_all_projects_db', JSON.stringify(updated));
+
+    // Si el proyecto actual activo es el que se borra, resetearlo
+    if (project.id === projectId) {
+      localStorage.removeItem('prosur_current_project');
+    }
+
+    // 2. Eliminar en Supabase
+    try {
+      const { error } = await supabase.from('projects').delete().eq('id', projectId);
+      if (error) {
+        console.error('Error al eliminar en Supabase:', error);
+      }
+    } catch (e) {
+      console.log('Error de red al borrar en Supabase', e);
+    }
+
+    alert('Proyecto eliminado exitosamente.');
+  };
+
+  const handleUpdateProjectAdmin = async (updatedProj: ProjectData) => {
+    const updatedList = allProjects.map(p => p.id === updatedProj.id ? updatedProj : p);
+    setAllProjects(updatedList);
+    localStorage.setItem('prosur_all_projects_db', JSON.stringify(updatedList));
+
+    if (project.id === updatedProj.id) {
+      setProject(updatedProj);
+      localStorage.setItem('prosur_current_project', JSON.stringify(updatedProj));
+    }
+
+    try {
+      await supabase.from('projects').upsert({
+        id: updatedProj.id,
+        title: updatedProj.title,
+        company_id: updatedProj.companyId,
+        category_id: updatedProj.categoryId,
+        scope: updatedProj.scope,
+        problem: updatedProj.problem,
+        solution: updatedProj.solution,
+        verifiable_metrics: updatedProj.verifiableMetrics,
+        github_url: updatedProj.githubUrl,
+        youtube_url: updatedProj.youtubeUrl,
+        demo_status: updatedProj.demoStatus,
+        demo_date: updatedProj.demoDate,
+        updated_at: new Date().toISOString()
+      });
+    } catch (e) {
+      console.log('Error sincronizando actualización en Supabase', e);
+    }
+
+    setEditingProject(null);
+    alert('Proyecto actualizado correctamente.');
   };
 
   const handleRemoveMember = (id: string) => {
@@ -457,6 +753,15 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
       p.title.toLowerCase().includes(adminSearch.toLowerCase()) || 
       p.members.some(m => m.name.toLowerCase().includes(adminSearch.toLowerCase())) ||
       p.scope.toLowerCase().includes(adminSearch.toLowerCase());
+    return matchCompany && matchCategory && matchSearch;
+  });
+
+  const filteredUsers = allUsers.filter(u => {
+    const matchCompany = adminCompanyFilter === 'all' || u.companyId === adminCompanyFilter;
+    const matchCategory = adminCategoryFilter === 'all' || !u.categoryId || u.categoryId === adminCategoryFilter;
+    const matchSearch = adminSearch === '' || 
+      u.name.toLowerCase().includes(adminSearch.toLowerCase()) || 
+      u.email.toLowerCase().includes(adminSearch.toLowerCase());
     return matchCompany && matchCategory && matchSearch;
   });
 
@@ -510,19 +815,23 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
         </div>
       </header>
 
-      <div className="bg-gradient-to-r from-gray-900 via-gray-850 to-[#1e1e1e] text-white border-b border-gray-800">
-        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 py-4 flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="flex flex-wrap items-center gap-3 sm:gap-6 text-xs sm:text-sm">
-            <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
-              <span className="text-gray-400 font-bold uppercase text-[10px] tracking-wider">Apertura de Registros:</span>
-              <span className="font-bold text-emerald-300">Lunes 7 de Septiembre</span>
+      {/* Subheader Institucional / Cronograma Oficial Prosur */}
+      <div className="bg-white border-b border-gray-200/90 shadow-2xs">
+        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 py-3 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div className="flex flex-wrap items-center gap-3 sm:gap-6 text-xs">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-50 text-[#CC2027] border border-red-200/80 text-[10px] font-black uppercase tracking-wider">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#CC2027] animate-pulse"></span>
+              Convocatoria Oficial
             </div>
-            <div className="h-4 w-[1px] bg-gray-700 hidden sm:block"></div>
             <div className="flex items-center gap-2">
-              <Calendar className="w-4 h-4 text-[#CC2027]" />
-              <span className="text-gray-400 font-bold uppercase text-[10px] tracking-wider">Gran Concurso & Pitch:</span>
-              <span className="font-black text-red-400">12 de Enero</span>
+              <span className="text-gray-400 font-bold uppercase text-[10px] tracking-widest">Apertura:</span>
+              <span className="font-bold text-gray-900">Lunes 7 de Septiembre</span>
+            </div>
+            <div className="h-3.5 w-[1px] bg-gray-200 hidden sm:block"></div>
+            <div className="flex items-center gap-2">
+              <Calendar className="w-3.5 h-3.5 text-[#CC2027]" />
+              <span className="text-gray-400 font-bold uppercase text-[10px] tracking-widest">Gran Concurso & Pitch:</span>
+              <span className="font-black text-[#CC2027]">Viernes 15 de Enero</span>
             </div>
           </div>
 
@@ -531,10 +840,10 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
               href="/Base_IA_Grupo_Prosur.pdf" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 border border-white/15 text-white text-xs font-bold uppercase tracking-wider transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white hover:bg-red-50 text-gray-800 hover:text-[#CC2027] border border-gray-200 hover:border-red-200 text-xs font-bold uppercase tracking-wider shadow-2xs transition-all cursor-pointer"
             >
-              <FileText className="w-3.5 h-3.5 text-red-400" />
-              <span>Bases Oficiales</span>
+              <FileText className="w-3.5 h-3.5 text-[#CC2027]" />
+              <span>Bases Oficiales (PDF)</span>
             </a>
           </div>
         </div>
@@ -555,15 +864,30 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
                   </p>
 
                   <div className="space-y-3 pt-6 border-t border-gray-800">
-                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-2">
-                      Empresas Convocadas ({PARTICIPATING_COMPANIES.filter(c => c.id !== 'otros').length})
-                    </span>
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block">
+                        Empresas Convocadas
+                      </span>
+                    </div>
                     <div className="grid grid-cols-3 gap-2">
-                      {PARTICIPATING_COMPANIES.filter(c => c.id !== 'otros').map(c => (
+                      {PARTICIPATING_COMPANIES.filter(c => !['otros', 'multiempresa'].includes(c.id)).map(c => (
                         <div key={c.id} className="bg-white p-1.5 rounded-lg border border-white/20 shadow-xs flex items-center justify-center h-12 hover:scale-[1.03] transition-all" title={c.name}>
                           <img src={c.logo} alt={c.name} className="max-h-8 max-w-full object-contain" />
                         </div>
                       ))}
+                    </div>
+
+                    {/* Multi Empresa en cuadro blanco hasta abajo */}
+                    <div className="bg-white p-2.5 rounded-xl border border-white/20 shadow-xs flex items-center justify-between hover:scale-[1.01] transition-all mt-2.5">
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-8 h-8 rounded-lg bg-red-50 border border-red-100 flex items-center justify-center shrink-0">
+                          <img src="/logoprosur.png" alt="Multi Empresa" className="h-4 object-contain" />
+                        </div>
+                        <div>
+                          <div className="text-xs font-black text-gray-900 leading-tight">Multi Empresa</div>
+                          <div className="text-[10px] text-gray-500 font-medium">Equipos transversales inter-empresas</div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -660,6 +984,56 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
                         </select>
                       </div>
 
+                      {authCompany === 'multiempresa' && (
+                        <div className="p-5 rounded-2xl bg-gray-50/90 border border-gray-200/90 space-y-4 animate-in fade-in duration-200">
+                          <div className="flex items-center justify-between pb-2.5 border-b border-gray-200/60">
+                            <div className="flex items-center gap-2.5">
+                              <span className="w-2 h-2 rounded-full bg-[#CC2027]"></span>
+                              <span className="text-xs font-bold uppercase tracking-wider text-gray-900">
+                                Empresas que integran tu desarrollo Multi Empresa
+                              </span>
+                            </div>
+                            <span className="text-[10px] font-bold text-gray-500 bg-white px-2.5 py-0.5 rounded-full border border-gray-200">
+                              {authTargetCompanies.length} seleccionadas
+                            </span>
+                          </div>
+                          
+                          <p className="text-xs text-gray-500 leading-relaxed font-normal">
+                            Fomentamos la colaboración transversal. Marca las empresas de donde son los integrantes o donde impactará la solución:
+                          </p>
+
+                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 pt-1">
+                            {PARTICIPATING_COMPANIES.filter(c => !['otros', 'multiempresa'].includes(c.id)).map(c => {
+                              const checked = authTargetCompanies.includes(c.id);
+                              return (
+                                <label 
+                                  key={c.id} 
+                                  className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl border text-xs cursor-pointer transition-all duration-200 ${
+                                    checked 
+                                      ? 'bg-white border-[#CC2027] ring-1 ring-[#CC2027]/20 shadow-xs text-gray-900 font-bold' 
+                                      : 'bg-white/80 hover:bg-white border-gray-200 text-gray-700 hover:border-gray-300'
+                                  }`}
+                                >
+                                  <input 
+                                    type="checkbox"
+                                    checked={checked}
+                                    onChange={(e) => {
+                                      if (e.target.checked) {
+                                        setAuthTargetCompanies([...authTargetCompanies, c.id]);
+                                      } else {
+                                        setAuthTargetCompanies(authTargetCompanies.filter(id => id !== c.id));
+                                      }
+                                    }}
+                                    className="w-4 h-4 rounded text-[#CC2027] focus:ring-[#CC2027] border-gray-300 cursor-pointer"
+                                  />
+                                  <span className="whitespace-nowrap font-medium text-xs text-gray-900">{c.name}</span>
+                                </label>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
+
                       <div>
                         <label className="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-2">
                           Categoría Oficial de Registro *
@@ -691,180 +1065,465 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
       ) : currentUser.role === 'admin' ? (
         <div className="max-w-[1600px] mx-auto px-4 sm:px-6 py-10 space-y-8">
           
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-gray-200">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-gray-200">
             <div>
-              <h1 className="text-3xl font-black uppercase tracking-tight text-gray-900">
-                Supervisión por Empresa Participante
+              <h1 className="text-2xl font-black uppercase tracking-tight text-gray-900">
+                Supervisión General
               </h1>
-              <p className="text-sm text-gray-500 mt-1">
-                Filtra, revisa avances comprobables, verifica listas de seguridad y audita los demos agendados.
+              <p className="text-xs text-gray-500 mt-0.5">
+                Seguimiento de proyectos y colaboradores registrados por empresa filial.
               </p>
             </div>
 
-            <div className="flex items-center gap-3">
-              <div className="px-4 py-2 bg-white rounded-xl border border-gray-200 shadow-xs text-right">
-                <div className="text-[10px] uppercase font-bold text-gray-400">Total Proyectos</div>
-                <div className="text-xl font-black text-gray-900">{allProjects.length}</div>
+            <div className="flex items-center gap-2">
+              <div className="px-3.5 py-1.5 bg-white rounded-lg border border-gray-200 text-right">
+                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Proyectos</span>
+                <span className="text-lg font-black text-gray-900 leading-none">{allProjects.length}</span>
               </div>
-              <div className="px-4 py-2 bg-white rounded-xl border border-gray-200 shadow-xs text-right">
-                <div className="text-[10px] uppercase font-bold text-gray-400">Demos Validadas</div>
-                <div className="text-xl font-black text-emerald-600">
+              <div className="px-3.5 py-1.5 bg-white rounded-lg border border-gray-200 text-right">
+                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Usuarios</span>
+                <span className="text-lg font-black text-gray-900 leading-none">{allUsers.length}</span>
+              </div>
+              <div className="px-3.5 py-1.5 bg-white rounded-lg border border-gray-200 text-right">
+                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Demos Listas</span>
+                <span className="text-lg font-black text-emerald-600 leading-none">
                   {allProjects.filter(p => p.demoStatus === 'approved').length}
-                </div>
+                </span>
               </div>
             </div>
           </div>
 
-          <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-xs space-y-4">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold uppercase tracking-widest text-gray-500 flex items-center gap-2">
-                <Filter className="w-4 h-4 text-[#CC2027]" />
-                Filtrar por Empresa Participante:
-              </span>
-              <span className="text-xs font-mono text-gray-400">
-                Mostrando {filteredProjects.length} de {allProjects.length} proyectos
-              </span>
-            </div>
-
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 lg:grid-cols-11 gap-2.5">
-              <button 
-                onClick={() => setAdminCompanyFilter('all')}
-                className={`p-3 rounded-xl border text-center transition-all cursor-pointer flex flex-col items-center justify-center h-24 ${adminCompanyFilter === 'all' ? 'border-[#CC2027] bg-red-50/40 ring-2 ring-red-600/20' : 'border-gray-200 bg-gray-50 hover:bg-white'}`}
+          {/* Navegación y Búsqueda en una sola fila compacta */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="inline-flex p-1 bg-gray-100 rounded-xl border border-gray-200/80">
+              <button
+                onClick={() => setAdminActiveTab('projects')}
+                className={`flex items-center gap-2 px-4 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                  adminActiveTab === 'projects'
+                    ? 'bg-white text-gray-900 shadow-xs'
+                    : 'text-gray-500 hover:text-gray-900'
+                }`}
               >
-                <Building2 className={`w-6 h-6 mb-1 ${adminCompanyFilter === 'all' ? 'text-[#CC2027]' : 'text-gray-400'}`} />
-                <span className="text-[10px] font-bold uppercase tracking-wider text-gray-800">Todas</span>
-                <span className="text-[9px] text-gray-400 font-mono">({allProjects.length})</span>
+                <FileText className="w-3.5 h-3.5 text-gray-500" />
+                <span>Proyectos</span>
+                <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-bold ${
+                  adminActiveTab === 'projects' ? 'bg-gray-900 text-white' : 'bg-gray-200 text-gray-600'
+                }`}>
+                  {allProjects.length}
+                </span>
               </button>
 
-              {PARTICIPATING_COMPANIES.map(company => {
-                const count = allProjects.filter(p => p.companyId === company.id).length;
-                const isSelected = adminCompanyFilter === company.id;
+              <button
+                onClick={() => setAdminActiveTab('users')}
+                className={`flex items-center gap-2 px-4 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                  adminActiveTab === 'users'
+                    ? 'bg-white text-gray-900 shadow-xs'
+                    : 'text-gray-500 hover:text-gray-900'
+                }`}
+              >
+                <Users className="w-3.5 h-3.5 text-gray-500" />
+                <span>Usuarios</span>
+                <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-bold ${
+                  adminActiveTab === 'users' ? 'bg-gray-900 text-white' : 'bg-gray-200 text-gray-600'
+                }`}>
+                  {allUsers.length}
+                </span>
+              </button>
+            </div>
+
+            <div className="relative w-full sm:w-72">
+              <Search className="w-3.5 h-3.5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                value={adminSearch}
+                onChange={(e) => setAdminSearch(e.target.value)}
+                placeholder={adminActiveTab === 'projects' ? "Buscar proyecto..." : "Buscar usuario..."}
+                className="w-full pl-9 pr-7 py-1.5 bg-white border border-gray-200 rounded-lg text-xs text-gray-800 placeholder-gray-400 focus:outline-hidden focus:ring-1 focus:ring-gray-400"
+              />
+              {adminSearch && (
+                <button 
+                  onClick={() => setAdminSearch('')}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 cursor-pointer"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Filtro por Empresa Elegante y Compacto */}
+          <div className="bg-white px-4 py-2.5 rounded-xl border border-gray-200 shadow-2xs flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-1.5 mr-1">
+                <Filter className="w-3.5 h-3.5 text-gray-400" />
+                Empresa:
+              </span>
+
+              <select
+                value={adminCompanyFilter}
+                onChange={(e) => setAdminCompanyFilter(e.target.value)}
+                className="bg-gray-50 border border-gray-200 rounded-lg px-3 py-1.5 text-xs font-semibold text-gray-800 focus:outline-hidden focus:border-gray-400 cursor-pointer"
+              >
+                <option value="all">Todas las Empresas ({adminActiveTab === 'projects' ? allProjects.length : allUsers.length})</option>
+                {PARTICIPATING_COMPANIES.map(c => {
+                  const count = adminActiveTab === 'projects'
+                    ? allProjects.filter(p => p.companyId === c.id).length
+                    : allUsers.filter(u => u.companyId === c.id).length;
+                  return (
+                    <option key={c.id} value={c.id}>{c.name} ({count})</option>
+                  );
+                })}
+              </select>
+
+              <button
+                onClick={() => setAdminCompanyFilter('all')}
+                className={`px-2.5 py-1 rounded-md text-xs font-semibold transition-all cursor-pointer ${
+                  adminCompanyFilter === 'all'
+                    ? 'bg-gray-900 text-white'
+                    : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+                }`}
+              >
+                Todas
+              </button>
+
+              {PARTICIPATING_COMPANIES.filter(c => {
+                const count = adminActiveTab === 'projects'
+                  ? allProjects.filter(p => p.companyId === c.id).length
+                  : allUsers.filter(u => u.companyId === c.id).length;
+                return count > 0;
+              }).map(c => {
+                const count = adminActiveTab === 'projects'
+                  ? allProjects.filter(p => p.companyId === c.id).length
+                  : allUsers.filter(u => u.companyId === c.id).length;
+                const isSelected = adminCompanyFilter === c.id;
                 return (
-                  <button 
-                    key={company.id}
-                    onClick={() => setAdminCompanyFilter(company.id)}
-                    className={`p-2.5 rounded-xl border transition-all cursor-pointer flex flex-col items-center justify-between h-24 ${isSelected ? 'border-[#CC2027] bg-red-50/30 ring-2 ring-red-600/20 shadow-sm' : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-xs'}`}
-                    title={company.name}
+                  <button
+                    key={c.id}
+                    onClick={() => setAdminCompanyFilter(c.id)}
+                    className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium transition-all cursor-pointer ${
+                      isSelected
+                        ? 'bg-[#CC2027] text-white'
+                        : 'bg-gray-50 hover:bg-gray-100 text-gray-700 border border-gray-200'
+                    }`}
                   >
-                    <div className="h-10 w-full flex items-center justify-center overflow-hidden">
-                      <img src={company.logo} alt={company.name} className="max-h-9 max-w-full object-contain" />
-                    </div>
-                    <div className="text-center w-full mt-1">
-                      <div className="text-[9px] font-bold uppercase tracking-wider text-gray-800 truncate">{company.name}</div>
-                      <div className="text-[9px] text-gray-400 font-mono">({count})</div>
-                    </div>
+                    <img src={c.logo} alt={c.name} className="h-3 max-w-[36px] object-contain" />
+                    <span>{c.name}</span>
+                    <span className={`text-[10px] font-mono ${isSelected ? 'text-white/90' : 'text-gray-400'}`}>({count})</span>
                   </button>
                 );
               })}
             </div>
+
+            <span className="text-xs font-mono text-gray-400 ml-auto">
+              {adminActiveTab === 'projects' ? filteredProjects.length : filteredUsers.length} resultado(s)
+            </span>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredProjects.length === 0 ? (
-              <div className="col-span-full py-16 text-center bg-white rounded-2xl border border-gray-200 p-8">
-                <Building2 className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                <h3 className="text-base font-bold text-gray-700 uppercase tracking-wider mb-1">Sin proyectos en esta empresa</h3>
-                <p className="text-xs text-gray-400">Los participantes de esta empresa aún no han completado su ficha de registro.</p>
-              </div>
-            ) : (
-              filteredProjects.map(p => {
-                const companyObj = PARTICIPATING_COMPANIES.find(c => c.id === p.companyId) || PARTICIPATING_COMPANIES[0];
-                return (
-                  <div key={p.id} className="bg-white rounded-2xl border border-gray-200 shadow-xs hover:shadow-md transition-all overflow-hidden flex flex-col justify-between">
-                    
-                    <div className="p-6 border-b border-gray-100 bg-gray-50/50">
-                      <div className="flex items-center justify-between gap-3 mb-3">
-                        <div className="h-8 flex items-center bg-white px-2 py-1 rounded-md border border-gray-100">
-                          <img src={companyObj.logo} alt={companyObj.name} className="max-h-6 max-w-[120px] object-contain" />
+          {/* VISTA 1: PROYECTOS REGISTRADOS */}
+          {adminActiveTab === 'projects' ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+              {filteredProjects.length === 0 ? (
+                <div className="col-span-full py-16 text-center bg-white rounded-xl border border-gray-200 p-8">
+                  <Building2 className="w-10 h-10 text-gray-300 mx-auto mb-2.5" />
+                  <h3 className="text-sm font-bold text-gray-700 uppercase tracking-wider mb-1">Sin proyectos en esta selección</h3>
+                  <p className="text-xs text-gray-400">Los participantes seleccionados aún no han completado su ficha de registro.</p>
+                </div>
+              ) : (
+                filteredProjects.map(p => {
+                  const companyObj = PARTICIPATING_COMPANIES.find(c => c.id === p.companyId) || PARTICIPATING_COMPANIES[0];
+                  return (
+                    <div key={p.id} className="bg-white rounded-xl border border-gray-200 shadow-2xs hover:shadow-sm transition-all overflow-hidden flex flex-col justify-between">
+                      
+                      <div className="p-5 border-b border-gray-100">
+                        <div className="flex items-center justify-between gap-3 mb-2.5">
+                          <div className="h-7 flex items-center">
+                            <img src={companyObj.logo} alt={companyObj.name} className="max-h-6 max-w-[110px] object-contain" />
+                          </div>
+                          <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded-md bg-gray-100 text-gray-600 border border-gray-200/60">
+                            Cat. {p.categoryId}
+                          </span>
                         </div>
-                        <span className="text-[10px] font-black uppercase px-2.5 py-1 rounded-full bg-red-50 text-[#CC2027] border border-red-200/60">
-                          Cat. {p.categoryId}
-                        </span>
-                      </div>
-                      <h3 className="text-base font-black text-gray-900 leading-snug line-clamp-2">
-                        {p.title}
-                      </h3>
-                    </div>
-
-                    <div className="p-6 space-y-4 flex-1">
-                      <div>
-                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Alcance y Propuesta:</span>
-                        <p className="text-xs text-gray-600 leading-relaxed line-clamp-3 font-normal">
-                          {p.scope}
-                        </p>
+                        <h3 className="text-base font-bold text-gray-900 leading-snug">
+                          {p.title}
+                        </h3>
                       </div>
 
-                      <div className="p-3.5 rounded-xl bg-emerald-50/60 border border-emerald-200/80">
-                        <span className="text-[10px] font-black uppercase tracking-wider text-emerald-800 flex items-center gap-1.5 mb-1">
-                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Datos Comprobables:
-                        </span>
-                        <p className="text-xs text-emerald-900 font-medium leading-relaxed">
-                          {p.verifiableMetrics}
-                        </p>
-                      </div>
+                      <div className="p-5 space-y-3 flex-1">
+                        {p.scope && (
+                          <p className="text-xs text-gray-600 leading-relaxed line-clamp-3">
+                            {p.scope}
+                          </p>
+                        )}
 
-                      <div>
-                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1.5">
-                          Equipo ({p.members.length} integrantes):
-                        </span>
-                        <div className="flex flex-wrap gap-1.5">
-                          {p.members.map(m => (
-                            <span key={m.id} className="text-[10px] font-semibold bg-gray-100 px-2 py-0.5 rounded text-gray-700">
-                              {m.name} ({m.role})
+                        {/* Solo mostrar si tiene datos comprobables reales */}
+                        {p.verifiableMetrics && p.verifiableMetrics.trim().length > 0 && (
+                          <div className="p-2.5 rounded-lg bg-emerald-50/50 border border-emerald-100 text-xs">
+                            <span className="text-[10px] font-bold uppercase text-emerald-800 flex items-center gap-1 mb-0.5">
+                              <CheckCircle2 className="w-3 h-3 text-emerald-600" /> Datos Comprobables
                             </span>
-                          ))}
+                            <p className="text-emerald-950 text-xs font-normal leading-relaxed">
+                              {p.verifiableMetrics}
+                            </p>
+                          </div>
+                        )}
+
+                        {/* Solo mostrar integrantes si existen */}
+                        {p.members && p.members.length > 0 && (
+                          <div>
+                            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1">
+                              Equipo:
+                            </span>
+                            <div className="flex flex-wrap gap-1">
+                              {p.members.map(m => (
+                                <span key={m.id} className="text-[10px] bg-gray-100 px-2 py-0.5 rounded text-gray-700">
+                                  {m.name}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        <div className="pt-2 flex items-center justify-between text-xs text-gray-500 border-t border-gray-100">
+                          <span className="text-[10px] uppercase font-bold text-gray-400">Demo:</span>
+                          <span className={`text-[11px] font-semibold ${
+                            p.demoStatus === 'approved' ? 'text-emerald-600' :
+                            p.demoStatus === 'scheduled' ? 'text-blue-600' :
+                            'text-gray-400'
+                          }`}>
+                            {p.demoStatus === 'approved' ? '✓ Aprobado 15 Ene' :
+                             p.demoStatus === 'scheduled' ? `Agendada: ${p.demoDate || 'Pendiente'}` :
+                             'Por Agendar'}
+                          </span>
                         </div>
                       </div>
 
-                      <div className="pt-2 flex items-center justify-between text-xs">
-                        <span className="text-gray-400 font-bold uppercase text-[10px]">Demo de Validación:</span>
-                        <span className={`font-bold px-2 py-0.5 rounded text-[11px] ${
-                          p.demoStatus === 'approved' ? 'bg-green-100 text-green-800' :
-                          p.demoStatus === 'scheduled' ? `Agendada: ${p.demoDate || 'Pendiente'}` :
-                          'Por Agendar'
-                        }`}>
-                          {p.demoStatus === 'approved' ? '✓ Aprobado 12 Enero' :
-                           p.demoStatus === 'scheduled' ? `Agendada: ${p.demoDate || 'Pendiente'}` :
-                           'Por Agendar'}
-                        </span>
+                      <div className="p-3.5 bg-gray-50 border-t border-gray-100 flex items-center justify-between text-xs">
+                        <div className="flex items-center gap-1.5">
+                          {p.githubUrl && (
+                            <a href={p.githubUrl} target="_blank" rel="noopener noreferrer" className="p-1.5 text-gray-500 hover:text-gray-900 bg-white rounded-md border border-gray-200 transition-colors" title="Ver GitHub">
+                              <GithubIcon className="w-3.5 h-3.5" />
+                            </a>
+                          )}
+                          {p.youtubeUrl && (
+                            <a href={p.youtubeUrl} target="_blank" rel="noopener noreferrer" className="p-1.5 text-gray-500 hover:text-red-600 bg-white rounded-md border border-gray-200 transition-colors" title="Ver Video Demo">
+                              <Video className="w-3.5 h-3.5" />
+                            </a>
+                          )}
+                        </div>
+
+                        <div className="flex items-center gap-1.5">
+                          <button 
+                            onClick={() => setEditingProject(p)}
+                            className="px-2.5 py-1 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 text-xs font-semibold transition-colors cursor-pointer"
+                            title="Editar información"
+                          >
+                            Editar
+                          </button>
+
+                          <button 
+                            onClick={() => handleDeleteProject(p.id, p.title)}
+                            className="p-1.5 rounded-md text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
+                            title="Eliminar proyecto"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+
+                          <button 
+                            onClick={() => {
+                              setProject(p);
+                              setCurrentUser({
+                                email: 'participante@' + p.companyId + '.com',
+                                name: p.members[0]?.name || 'Participante',
+                                role: 'participant',
+                                companyId: p.companyId
+                              });
+                            }}
+                            className="px-3 py-1.5 rounded-lg bg-gray-900 hover:bg-black text-white text-xs font-bold transition-colors cursor-pointer"
+                          >
+                            Ver Ficha
+                          </button>
+                        </div>
                       </div>
+
                     </div>
+                  );
+                })
+              )}
+            </div>
+          ) : (
+            /* VISTA 2: USUARIOS REGISTRADOS */
+            <div className="space-y-4">
+              {filteredUsers.length === 0 ? (
+                <div className="py-16 text-center bg-white rounded-xl border border-gray-200 p-8">
+                  <Users className="w-10 h-10 text-gray-300 mx-auto mb-2.5" />
+                  <h3 className="text-sm font-bold text-gray-700 uppercase tracking-wider mb-1">
+                    Sin usuarios en este filtro
+                  </h3>
+                  <p className="text-xs text-gray-400">
+                    Los colaboradores registrados aparecerán automáticamente en esta lista.
+                  </p>
+                </div>
+              ) : (
+                <div className="bg-white rounded-xl border border-gray-200 shadow-2xs overflow-hidden">
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left border-collapse">
+                      <thead>
+                        <tr className="border-b border-gray-200 bg-gray-50/80 text-[10px] font-bold uppercase tracking-wider text-gray-500">
+                          <th className="py-4 px-6">Usuario / Participante</th>
+                          <th className="py-4 px-6">Correo Electrónico</th>
+                          <th className="py-4 px-6">Empresa</th>
+                          <th className="py-4 px-6">Categoría</th>
+                          <th className="py-4 px-6">Ficha de Proyecto</th>
+                          <th className="py-4 px-6">Registro</th>
+                          <th className="py-4 px-6 text-right">Acciones</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-100 text-xs">
+                        {filteredUsers.map(u => {
+                          const companyObj = PARTICIPATING_COMPANIES.find(c => c.id === u.companyId) || PARTICIPATING_COMPANIES[0];
+                          const userProject = allProjects.find(
+                            p => (p.userId && p.userId.toLowerCase().trim() === u.email.toLowerCase().trim()) || p.id === u.id
+                          );
+                          const initials = (u.name || u.email || 'U')
+                            .split(' ')
+                            .map(n => n[0])
+                            .slice(0, 2)
+                            .join('')
+                            .toUpperCase();
 
-                    <div className="p-4 bg-gray-50 border-t border-gray-100 flex items-center justify-between text-xs">
-                      <div className="flex items-center gap-2">
-                        {p.githubUrl && (
-                          <a href={p.githubUrl} target="_blank" rel="noopener noreferrer" className="p-2 text-gray-600 hover:text-gray-900 bg-white rounded-lg border border-gray-200 hover:shadow-xs transition-all" title="Ver GitHub">
-                            <GithubIcon className="w-3.5 h-3.5" />
-                          </a>
-                        )}
-                        {p.youtubeUrl && (
-                          <a href={p.youtubeUrl} target="_blank" rel="noopener noreferrer" className="p-2 text-red-600 hover:text-red-700 bg-white rounded-lg border border-gray-200 hover:shadow-xs transition-all" title="Ver Video Demo en YouTube">
-                            <Video className="w-3.5 h-3.5" />
-                          </a>
-                        )}
-                      </div>
+                          return (
+                            <tr key={u.id || u.email} className="hover:bg-gray-50/70 transition-colors">
+                              
+                              {/* Nombre y Rol */}
+                              <td className="py-4 px-6">
+                                <div className="flex items-center gap-3">
+                                  <div className="w-9 h-9 rounded-xl bg-gray-900 text-white font-black text-xs flex items-center justify-center shrink-0 shadow-xs">
+                                    {initials}
+                                  </div>
+                                  <div>
+                                    <div className="font-bold text-gray-900 text-sm">{u.name}</div>
+                                    <span className={`inline-block mt-0.5 text-[9px] font-black uppercase px-2 py-0.5 rounded-full ${
+                                      u.role === 'admin' 
+                                        ? 'bg-red-50 text-[#CC2027] border border-red-200' 
+                                        : 'bg-gray-100 text-gray-600'
+                                    }`}>
+                                      {u.role === 'admin' ? 'Administrador' : 'Participante'}
+                                    </span>
+                                  </div>
+                                </div>
+                              </td>
 
-                      <button 
-                        onClick={() => {
-                          setProject(p);
-                          setCurrentUser({
-                            email: 'participante@' + p.companyId + '.com',
-                            name: p.members[0]?.name || 'Participante',
-                            role: 'participant',
-                            companyId: p.companyId
-                          });
-                        }}
-                        className="px-3 py-1.5 rounded-lg bg-gray-900 hover:bg-black text-white text-[11px] font-bold uppercase tracking-wider transition-colors cursor-pointer"
-                      >
-                        Ver Ficha Completa
-                      </button>
-                    </div>
+                              {/* Correo */}
+                              <td className="py-4 px-6">
+                                <a 
+                                  href={`mailto:${u.email}`} 
+                                  className="text-gray-600 hover:text-[#CC2027] flex items-center gap-1.5 font-mono text-[11px] transition-colors"
+                                >
+                                  <Mail className="w-3.5 h-3.5 text-gray-400 shrink-0" />
+                                  <span>{u.email}</span>
+                                </a>
+                              </td>
 
+                              {/* Empresa */}
+                              <td className="py-4 px-6">
+                                <div className="flex items-center gap-2.5">
+                                  <div className="h-7 w-12 bg-white rounded border border-gray-200 p-0.5 flex items-center justify-center shrink-0">
+                                    <img src={companyObj.logo} alt={companyObj.name} className="max-h-5 max-w-full object-contain" />
+                                  </div>
+                                  <div>
+                                    <span className="font-bold text-gray-800 block text-xs">{companyObj.name}</span>
+                                    {u.companyId === 'multiempresa' && u.targetCompanies && u.targetCompanies.length > 0 && (
+                                      <span className="text-[10px] text-gray-400 font-mono">
+                                        ({u.targetCompanies.length} empresas)
+                                      </span>
+                                    )}
+                                  </div>
+                                </div>
+                              </td>
+
+                              {/* Categoría */}
+                              <td className="py-4 px-6">
+                                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase bg-gray-100 text-gray-800 border border-gray-200">
+                                  Cat. {u.categoryId || '1'}
+                                </span>
+                              </td>
+
+                              {/* Estado del Proyecto */}
+                              <td className="py-4 px-6">
+                                {userProject ? (
+                                  <div className="space-y-1">
+                                    <div className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                      <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                                      <span>Registrado</span>
+                                    </div>
+                                    <div className="font-semibold text-gray-900 truncate max-w-[220px]" title={userProject.title}>
+                                      {userProject.title}
+                                    </div>
+                                    <div className="text-[10px] text-gray-400 font-mono">
+                                      {userProject.milestones?.filter(m => m.completed).length || 0} de {userProject.milestones?.length || 4} hitos listos
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase bg-amber-50 text-amber-700 border border-amber-200">
+                                    <Clock className="w-3 h-3 text-amber-500" />
+                                    <span>Ficha en proceso</span>
+                                  </div>
+                                )}
+                              </td>
+
+                              {/* Fecha de Registro */}
+                              <td className="py-4 px-6 text-gray-500 font-mono text-[11px]">
+                                {u.registeredAt ? (
+                                  new Date(u.registeredAt).toLocaleDateString('es-MX', {
+                                    day: '2-digit',
+                                    month: 'short',
+                                    year: 'numeric'
+                                  })
+                                ) : (
+                                  'Reciente'
+                                )}
+                              </td>
+
+                              {/* Acciones */}
+                              <td className="py-4 px-6 text-right">
+                                <div className="flex items-center justify-end gap-2">
+                                  {userProject && (
+                                    <button
+                                      onClick={() => {
+                                        setProject(userProject);
+                                        setCurrentUser({
+                                          email: u.email,
+                                          name: u.name,
+                                          role: 'participant',
+                                          companyId: u.companyId
+                                        });
+                                      }}
+                                      className="px-2.5 py-1.5 rounded-lg bg-gray-900 hover:bg-black text-white text-[10px] font-bold uppercase tracking-wider transition-colors cursor-pointer"
+                                      title="Ver y editar ficha del participante"
+                                    >
+                                      Ver Ficha
+                                    </button>
+                                  )}
+                                  <button
+                                    onClick={() => handleDeleteUser(u.id || u.email)}
+                                    className="p-1.5 rounded-lg bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 text-xs transition-colors cursor-pointer"
+                                    title="Eliminar usuario registrado"
+                                  >
+                                    <Trash2 className="w-3.5 h-3.5" />
+                                  </button>
+                                </div>
+                              </td>
+
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
                   </div>
-                );
-              })
-            )}
-          </div>
+                </div>
+              )}
+            </div>
+          )}
 
         </div>
       ) : (
@@ -880,15 +1539,21 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
                 />
               </div>
               <div>
-                <div className="flex flex-wrap items-center gap-2 mb-1.5">
-                  <span className="text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full bg-red-50 text-[#CC2027] border border-red-200">
+                <div className="flex flex-wrap items-center gap-2.5 mb-2">
+                  <span className="text-[10px] font-black uppercase px-3 py-1 rounded-full bg-red-50 text-[#CC2027] border border-red-200 shadow-2xs">
                     Categoría {project.categoryId} · {CATEGORIES.find(c => c.id === project.categoryId)?.name}
                   </span>
-                  <span className="text-xs text-gray-400 font-bold uppercase tracking-widest">
-                    Empresa: {PARTICIPATING_COMPANIES.find(c => c.id === project.companyId)?.name}
+                  <span className="text-xs text-gray-500 font-bold uppercase tracking-widest flex items-center gap-1.5">
+                    <span className="text-gray-400">Empresa:</span>
+                    <span className="text-gray-900">{PARTICIPATING_COMPANIES.find(c => c.id === project.companyId)?.name}</span>
                     {project.companyId === 'prosur' && (
-                      <span className="ml-2 text-[10px] font-black text-[#CC2027] bg-red-50 px-2 py-0.5 rounded border border-red-200">
-                        Transversal · Todas las empresas
+                      <span className="ml-1 text-[10px] font-bold text-[#CC2027] bg-red-50 px-2 py-0.5 rounded-full border border-red-200">
+                        Transversal
+                      </span>
+                    )}
+                    {project.companyId === 'multiempresa' && (
+                      <span className="ml-1 text-[10px] font-bold text-gray-700 bg-gray-100 px-2.5 py-0.5 rounded-full border border-gray-200">
+                        Colaborativo
                       </span>
                     )}
                   </span>
@@ -978,6 +1643,57 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
                     </select>
                   </div>
                 </div>
+
+                {project.companyId === 'multiempresa' && (
+                  <div className="p-5 rounded-2xl bg-gray-50/90 border border-gray-200/90 space-y-4 animate-in fade-in duration-200">
+                    <div className="flex items-center justify-between pb-2.5 border-b border-gray-200/60">
+                      <div className="flex items-center gap-2.5">
+                        <span className="w-2 h-2 rounded-full bg-[#CC2027]"></span>
+                        <span className="text-xs font-bold uppercase tracking-wider text-gray-900">
+                          Empresas que integran tu solución Multi Empresa
+                        </span>
+                      </div>
+                      <span className="text-[10px] font-bold text-gray-500 bg-white px-2.5 py-0.5 rounded-full border border-gray-200">
+                        {(project.targetCompanies || []).length} seleccionadas
+                      </span>
+                    </div>
+
+                    <p className="text-xs text-gray-500 leading-relaxed font-normal">
+                      Selecciona las empresas participantes en este desarrollo colaborativo:
+                    </p>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 pt-1">
+                      {PARTICIPATING_COMPANIES.filter(c => !['otros', 'multiempresa'].includes(c.id)).map(c => {
+                        const currentTargets = project.targetCompanies || [];
+                        const checked = currentTargets.includes(c.id);
+                        return (
+                          <label 
+                            key={c.id} 
+                            className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl border text-xs cursor-pointer transition-all duration-200 ${
+                              checked 
+                                ? 'bg-white border-[#CC2027] ring-1 ring-[#CC2027]/20 shadow-xs text-gray-900 font-bold' 
+                                : 'bg-white/80 hover:bg-white border-gray-200 text-gray-700 hover:border-gray-300'
+                            }`}
+                          >
+                            <input 
+                              type="checkbox"
+                              checked={checked}
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  setProject({ ...project, targetCompanies: [...currentTargets, c.id] });
+                                } else {
+                                  setProject({ ...project, targetCompanies: currentTargets.filter(id => id !== c.id) });
+                                }
+                              }}
+                              className="w-4 h-4 rounded text-[#CC2027] focus:ring-[#CC2027] border-gray-300 cursor-pointer"
+                            />
+                            <span className="whitespace-nowrap font-medium text-xs text-gray-900">{c.name}</span>
+                          </label>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
 
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-2">
@@ -1101,7 +1817,7 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
                     Integrantes Registrados ({project.members.length})
                   </h2>
                   <p className="text-xs text-gray-500 mt-0.5">
-                    Todos los integrantes listados recibirán acreditación y diploma oficial en el concurso del 12 de Enero.
+                    Todos los integrantes listados recibirán acreditación y diploma oficial en el concurso del Viernes 15 de Enero.
                   </p>
                 </div>
               </div>
@@ -1127,7 +1843,12 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
                           </button>
                         )}
                       </div>
-                      <div className="text-xs text-gray-600 font-medium mb-2">{member.role}</div>
+                      <div className="text-xs text-gray-600 font-medium mb-1">{member.role}</div>
+                      {member.company && (
+                        <span className="inline-block text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-purple-50 text-purple-700 border border-purple-200 mb-2">
+                          Empresa: {PARTICIPATING_COMPANIES.find(c => c.id === member.company)?.name || member.company}
+                        </span>
+                      )}
                     </div>
                     <div className="pt-3 border-t border-gray-200/70 text-[11px] text-gray-500 space-y-1">
                       <div>📧 {member.email || 'Sin correo'}</div>
@@ -1141,7 +1862,7 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
                 <h3 className="text-xs font-bold uppercase tracking-widest text-gray-700 flex items-center gap-2">
                   <Plus className="w-4 h-4 text-[#CC2027]" /> Agregar un Nuevo Integrante
                 </h3>
-                <form onSubmit={handleAddMember} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <form onSubmit={handleAddMember} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
                   <div>
                     <input 
                       type="text" 
@@ -1155,16 +1876,28 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
                   <div>
                     <input 
                       type="text" 
-                      placeholder="Rol en el proyecto (ej: Analista, Dev)"
+                      placeholder="Rol (ej: Analista, Dev TI)"
                       value={newMemberRole} 
                       onChange={(e) => setNewMemberRole(e.target.value)}
                       className="w-full p-2.5 bg-white border border-gray-200 rounded-xl text-xs focus:outline-none focus:border-[#CC2027]"
                     />
                   </div>
                   <div>
+                    <select
+                      value={newMemberCompany}
+                      onChange={(e) => setNewMemberCompany(e.target.value)}
+                      className="w-full p-2.5 bg-white border border-gray-200 rounded-xl text-xs font-medium focus:outline-none focus:border-[#CC2027]"
+                      title="Empresa a la que pertenece este integrante"
+                    >
+                      {PARTICIPATING_COMPANIES.filter(c => c.id !== 'multiempresa').map(c => (
+                        <option key={c.id} value={c.id}>{c.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
                     <input 
                       type="email" 
-                      placeholder="Correo Electrónico"
+                      placeholder="Correo Institucional"
                       value={newMemberEmail} 
                       onChange={(e) => setNewMemberEmail(e.target.value)}
                       className="w-full p-2.5 bg-white border border-gray-200 rounded-xl text-xs focus:outline-none focus:border-[#CC2027]"
@@ -1173,7 +1906,7 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
                   <div className="flex gap-2">
                     <input 
                       type="tel" 
-                      placeholder="Teléfono / WhatsApp"
+                      placeholder="Teléfono / Cel"
                       value={newMemberPhone} 
                       onChange={(e) => setNewMemberPhone(e.target.value)}
                       className="w-full p-2.5 bg-white border border-gray-200 rounded-xl text-xs focus:outline-none focus:border-[#CC2027]"
@@ -1199,18 +1932,18 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
                     <CheckSquare className="w-5 h-5" />
                   </div>
                   <div>
-                    <h3 className="text-base font-black text-gray-900 uppercase tracking-tight">Checklist de Cumplimiento</h3>
-                    <p className="text-xs text-gray-500">Requisitos indispensables para calificar a la fase final.</p>
+                    <h3 className="text-base font-black text-gray-900 uppercase tracking-tight">Checklist de Calidad y Alcance</h3>
+                    <p className="text-xs text-gray-500">Criterios mínimos que deben cumplirse antes de agendar la demo.</p>
                   </div>
                 </div>
 
                 <div className="space-y-4">
                   {[
-                    { key: 'problem_defined', label: 'Problema Operativo Real', desc: 'Identificado claramente dentro de la empresa participante.' },
-                    { key: 'functional_solution', label: 'Solución con IA ya Funcionando', desc: 'No se permiten presentaciones ni mockups teóricos sin código/flujo.' },
-                    { key: 'verifiable_metrics', label: 'Métrica de Ahorro Verificable', desc: 'Comparativa Antes vs. Después comprobable por la gerencia.' },
-                    { key: 'company_endorsed', label: 'Respaldo de la Empresa', desc: 'El área receptora valida la utilidad de la implementación.' },
-                    { key: 'repo_available', label: 'Código y Documentación', desc: 'Repositorio de GitHub o documentación técnica disponible.' }
+                    { key: 'problem_defined', label: 'Problema Operativo Definido', desc: 'Identifica con precisión el área, dolor operativo y usuarios afectados.' },
+                    { key: 'functional_solution', label: 'Solución Funcional Comprobada', desc: 'No es una idea teórica; el modelo o software ya procesa datos en un entorno real o piloto.' },
+                    { key: 'verifiable_metrics', label: 'Datos Comprobables (Antes vs. Después)', desc: 'Existe medición cuantificable de ahorro de tiempo, reducción de error o beneficio económico.' },
+                    { key: 'company_endorsed', label: 'Validado por la Empresa Participante', desc: 'Cuenta con la aprobación y respaldo de los líderes del proceso en la empresa.' },
+                    { key: 'repo_available', label: 'Código y Documentación Lista', desc: 'Repositorio de GitHub o documentación técnica disponible para auditoría del jurado.' }
                   ].map(item => {
                     const isChecked = project.complianceChecks[item.key] || false;
                     return (
@@ -1291,27 +2024,42 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
 
           {activeTab === 'milestones' && (
             <div className="bg-white p-6 sm:p-8 rounded-2xl border border-gray-200 shadow-xs space-y-8">
-              <div>
-                <h2 className="text-xl font-black uppercase tracking-tight text-gray-900">
-                  Bitácora de Avances y Entregas
-                </h2>
-                <p className="text-xs text-gray-500 mt-0.5">
-                  Registra los hitos clave alcanzados para que el comité organizador audite tu progreso.
-                </p>
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-gray-100">
+                <div>
+                  <h2 className="text-xl font-black uppercase tracking-tight text-gray-900">
+                    Cronograma de Avances y Bitácora
+                  </h2>
+                  <p className="text-xs text-gray-500 mt-0.5">
+                    Hitos oficiales del reto y registro de avances técnicos de tu equipo.
+                  </p>
+                </div>
               </div>
 
-              <div className="space-y-4">
-                {project.milestones.map((m, i) => (
-                  <div key={m.id} className="p-5 rounded-xl border border-gray-200 bg-gray-50/40 flex items-start gap-4">
-                    <div className="w-8 h-8 rounded-full bg-red-100 text-[#CC2027] font-bold text-xs flex items-center justify-center shrink-0">
-                      {i + 1}
+              <div className="relative border-l-2 border-gray-200 ml-4 pl-6 space-y-8">
+                {project.milestones.map((m) => (
+                  <div key={m.id} className="relative group">
+                    <div 
+                      onClick={() => {
+                        setProject({
+                          ...project,
+                          milestones: project.milestones.map(item => 
+                            item.id === m.id ? { ...item, completed: !item.completed } : item
+                          )
+                        });
+                      }}
+                      className={`absolute -left-[35px] top-0 w-6 h-6 rounded-full border-2 flex items-center justify-center cursor-pointer transition-all ${m.completed ? 'bg-[#CC2027] border-[#CC2027] text-white' : 'bg-white border-gray-300 text-transparent group-hover:border-[#CC2027]'}`}
+                    >
+                      <CheckCircle2 className="w-3.5 h-3.5" />
                     </div>
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between gap-2">
+
+                    <div className="bg-gray-50/70 p-5 rounded-2xl border border-gray-200/80">
+                      <div className="flex flex-wrap items-center justify-between gap-2 mb-1.5">
                         <h4 className="text-sm font-black text-gray-900">{m.title}</h4>
-                        <span className="text-[10px] font-mono text-gray-400 bg-white px-2 py-0.5 rounded border border-gray-200">{m.date}</span>
+                        <span className="text-[10px] font-bold text-[#CC2027] bg-red-50 px-2.5 py-0.5 rounded-full border border-red-200/60">
+                          {m.date}
+                        </span>
                       </div>
-                      <p className="text-xs text-gray-600 mt-1">{m.description}</p>
+                      <p className="text-xs text-gray-600 leading-relaxed font-normal">{m.description}</p>
                     </div>
                   </div>
                 ))}
@@ -1319,30 +2067,32 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
 
               <div className="p-6 rounded-2xl bg-gray-50 border border-gray-200 space-y-4">
                 <h3 className="text-xs font-bold uppercase tracking-widest text-gray-700 flex items-center gap-2">
-                  <Plus className="w-4 h-4 text-[#CC2027]" /> Registrar Nuevo Avance
+                  <Plus className="w-4 h-4 text-[#CC2027]" /> Registrar Avance o Hito Adicional
                 </h3>
                 <form onSubmit={handleAddMilestone} className="space-y-3">
                   <input 
                     type="text" 
-                    placeholder="Título del avance (ej: Despliegue de versión beta en taller)..."
+                    placeholder="Título del Hito (Ej: Integración con base de datos de sucursales) *"
                     required
-                    value={newMilestoneTitle}
+                    value={newMilestoneTitle} 
                     onChange={(e) => setNewMilestoneTitle(e.target.value)}
                     className="w-full p-2.5 bg-white border border-gray-200 rounded-xl text-xs focus:outline-none focus:border-[#CC2027]"
                   />
                   <textarea 
                     rows={2}
-                    placeholder="Describe los resultados obtenidos, retroalimentación del usuario y métricas preliminares..."
-                    value={newMilestoneDesc}
+                    placeholder="Detalles del avance técnico o pruebas realizadas..."
+                    value={newMilestoneDesc} 
                     onChange={(e) => setNewMilestoneDesc(e.target.value)}
                     className="w-full p-2.5 bg-white border border-gray-200 rounded-xl text-xs focus:outline-none focus:border-[#CC2027]"
                   />
-                  <button 
-                    type="submit"
-                    className="px-6 py-2.5 bg-gray-900 hover:bg-black text-white text-xs font-bold uppercase tracking-wider rounded-xl transition-colors cursor-pointer"
-                  >
-                    Publicar Avance en Bitácora
-                  </button>
+                  <div className="flex justify-end">
+                    <button 
+                      type="submit"
+                      className="px-5 py-2.5 bg-[#CC2027] hover:bg-[#b01b21] text-white text-xs font-bold uppercase tracking-wider rounded-xl transition-colors cursor-pointer"
+                    >
+                      Añadir Avance a la Bitácora
+                    </button>
+                  </div>
                 </form>
               </div>
             </div>
@@ -1350,16 +2100,16 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
 
           {activeTab === 'demo' && (
             <div className="bg-white p-6 sm:p-8 rounded-2xl border border-gray-200 shadow-xs space-y-8">
-              <div className="max-w-3xl">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-red-50 text-red-700 text-xs font-bold uppercase tracking-wider mb-2">
-                  <Video className="w-3.5 h-3.5" />
+              <div>
+                <div className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-[#CC2027] mb-2">
+                  <Video className="w-4 h-4" />
                   <span>Fase de Validación y Admisibilidad</span>
                 </div>
                 <h2 className="text-2xl font-black uppercase tracking-tight text-gray-900">
                   Agenda tu Demo de Validación Operativa
                 </h2>
                 <p className="text-xs sm:text-sm text-gray-600 mt-2 leading-relaxed">
-                  Para que tu proyecto clasifique formalmente a la presentación final del <strong>12 de Enero</strong>, deberás mostrar tu solución funcionando en vivo (30 minutos) ante el equipo de Mejora Continua de Grupo Prosur.
+                  Para que tu proyecto clasifique formalmente a la presentación final del <strong>Viernes 15 de Enero</strong>, deberás mostrar tu solución funcionando en vivo (30 minutos) ante el equipo de Mejora Continua de Grupo Prosur.
                 </p>
               </div>
 
@@ -1369,7 +2119,7 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
                   <div className="flex items-center gap-3">
                     <span className="w-3 h-3 rounded-full bg-amber-500 animate-ping"></span>
                     <span className="text-sm font-black text-gray-900">
-                      {project.demoStatus === 'approved' ? '¡Proyecto Aprobado para el Concurso del 12 de Enero!' :
+                      {project.demoStatus === 'approved' ? '¡Proyecto Aprobado para el Concurso del Viernes 15 de Enero!' :
                        project.demoStatus === 'scheduled' ? `Demo Confirmada: ${project.demoDate}` :
                        'Pendiente de agendar sesión de validación'}
                     </span>
@@ -1402,6 +2152,151 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
             </div>
           )}
 
+        </div>
+      )}
+
+      {/* Modal de Edición de Proyecto / Usuario para Administrador */}
+      {editingProject && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200" onClick={() => setEditingProject(null)}>
+          <div className="bg-white rounded-2xl max-w-2xl w-full p-6 sm:p-8 max-h-[90vh] overflow-y-auto shadow-2xl relative border-t-4 border-[#CC2027]" onClick={e => e.stopPropagation()}>
+            <button 
+              onClick={() => setEditingProject(null)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-900 p-2 rounded-full hover:bg-gray-100 transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="flex items-center gap-3 mb-6 pb-4 border-b border-gray-100">
+              <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
+                <Edit className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="text-lg font-black text-gray-900 uppercase tracking-tight">Editar Proyecto / Registro</h3>
+                <p className="text-xs text-gray-500">Panel de Administración Exclusivo</p>
+              </div>
+            </div>
+
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              handleUpdateProjectAdmin(editingProject);
+            }} className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5">
+                  Título del Proyecto *
+                </label>
+                <input 
+                  type="text"
+                  required
+                  value={editingProject.title}
+                  onChange={(e) => setEditingProject({ ...editingProject, title: e.target.value })}
+                  className="w-full p-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-[#CC2027]"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5">
+                    Empresa Asignada *
+                  </label>
+                  <select 
+                    value={editingProject.companyId}
+                    onChange={(e) => setEditingProject({ ...editingProject, companyId: e.target.value })}
+                    className="w-full p-2.5 rounded-xl border border-gray-200 text-xs font-semibold focus:outline-none focus:border-[#CC2027]"
+                  >
+                    {PARTICIPATING_COMPANIES.map(c => (
+                      <option key={c.id} value={c.id}>{c.name}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5">
+                    Categoría *
+                  </label>
+                  <select 
+                    value={editingProject.categoryId}
+                    onChange={(e) => setEditingProject({ ...editingProject, categoryId: e.target.value })}
+                    className="w-full p-2.5 rounded-xl border border-gray-200 text-xs font-semibold focus:outline-none focus:border-[#CC2027]"
+                  >
+                    {CATEGORIES.map(c => (
+                      <option key={c.id} value={c.id}>Cat. {c.id}: {c.name}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5">
+                  Alcance y Propuesta
+                </label>
+                <textarea 
+                  rows={3}
+                  value={editingProject.scope}
+                  onChange={(e) => setEditingProject({ ...editingProject, scope: e.target.value })}
+                  className="w-full p-2.5 rounded-xl border border-gray-200 text-xs focus:outline-none focus:border-[#CC2027]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5">
+                  Métricas Comprobables (Antes vs. Después)
+                </label>
+                <textarea 
+                  rows={2}
+                  value={editingProject.verifiableMetrics}
+                  onChange={(e) => setEditingProject({ ...editingProject, verifiableMetrics: e.target.value })}
+                  className="w-full p-2.5 rounded-xl border border-gray-200 text-xs focus:outline-none focus:border-[#CC2027]"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5">
+                    Estado Demo
+                  </label>
+                  <select 
+                    value={editingProject.demoStatus}
+                    onChange={(e) => setEditingProject({ ...editingProject, demoStatus: e.target.value as any })}
+                    className="w-full p-2.5 rounded-xl border border-gray-200 text-xs font-medium focus:outline-none focus:border-[#CC2027]"
+                  >
+                    <option value="pending">Por Agendar</option>
+                    <option value="scheduled">Agendada</option>
+                    <option value="approved">Aprobado Viernes 15 de Enero</option>
+                    <option value="adjustments">Requiere Ajustes</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5">
+                    Fecha Demo
+                  </label>
+                  <input 
+                    type="text"
+                    value={editingProject.demoDate || ''}
+                    onChange={(e) => setEditingProject({ ...editingProject, demoDate: e.target.value })}
+                    placeholder="Ej: 25 de Noviembre 11:00 AM"
+                    className="w-full p-2.5 rounded-xl border border-gray-200 text-xs focus:outline-none focus:border-[#CC2027]"
+                  />
+                </div>
+              </div>
+
+              <div className="pt-4 border-t border-gray-100 flex items-center justify-end gap-3">
+                <button 
+                  type="button"
+                  onClick={() => setEditingProject(null)}
+                  className="px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider text-gray-500 hover:text-gray-800 transition-colors"
+                >
+                  Cancelar
+                </button>
+                <button 
+                  type="submit"
+                  className="px-6 py-2.5 rounded-xl bg-[#CC2027] hover:bg-[#b01b21] text-white text-xs font-bold uppercase tracking-wider shadow-md transition-all cursor-pointer"
+                >
+                  Guardar Cambios
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
 
