@@ -220,10 +220,9 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
       imageUrls: [],
       members: [],
       milestones: [
-        { id: 'm1', title: 'Registro y Definición del Alcance', date: '7 Septiembre 2026', description: 'Presentación formal del problema operativo, alcance y equipo de trabajo.', completed: false },
-        { id: 'm2', title: 'Prototipo Funcional en Entorno de Pruebas', date: '15 Octubre 2026', description: 'Primer piloto con usuarios operativos de la empresa seleccionada.', completed: false },
-        { id: 'm3', title: 'Auditoría de Seguridad y Demo de Validación', date: '15 Diciembre 2026', description: 'Revisión técnica de métricas antes vs después y verificación de seguridad.', completed: false },
-        { id: 'm4', title: 'Pitch Final y Gran Concurso', date: 'Viernes 15 Enero 2027', description: 'Presentación ejecutiva final ante directores y jurado evaluador.', completed: false }
+        { id: 'm1', title: 'Fase 1: Convocatoria y Registro', date: 'Lunes 7 de Septiembre 2026', description: 'Registro del problema operativo, equipo de trabajo y alcance del proyecto.', completed: false },
+        { id: 'm2', title: 'Fase 2: Auditoría y Demo de Validación', date: 'Hasta el 15 de Diciembre 2026', description: 'Revisión técnica de métricas antes vs después y validación en proceso real.', completed: false },
+        { id: 'm3', title: 'Fase 3: Pitch Final y Gran Concurso', date: 'Viernes 15 de Enero 2027', description: 'Presentación ejecutiva final ante directores y jurado evaluador.', completed: false }
       ],
       demoStatus: 'pending',
       complianceChecks: {
