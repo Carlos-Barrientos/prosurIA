@@ -120,6 +120,7 @@ export interface RegisteredUser {
   name: string;
   role: 'participant' | 'admin';
   companyId: string;
+  password?: string;
   targetCompanies?: string[];
   categoryId?: string;
   registeredAt?: string;
@@ -548,9 +549,10 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
       console.log('Error saving to /api/projects:', e);
     }
 
-    // Intentar sincronizar con Supabase
+    // Guardar directamente en Supabase con confirmación real
+    let supabaseSuccess = false;
     try {
-      await supabase.from('projects').upsert({
+      const { error: pErr } = await supabase.from('projects').upsert({
         id: projectToSave.id,
         user_id: projectToSave.userId,
         title: projectToSave.title,
@@ -567,43 +569,51 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
         updated_at: projectToSave.updatedAt
       });
 
-      // Sincronizar integrantes del equipo a Supabase
-      if (projectToSave.members && projectToSave.members.length > 0) {
-        await supabase.from('team_members').delete().eq('project_id', projectToSave.id);
-        await supabase.from('team_members').insert(
-          projectToSave.members.map(m => ({
-            id: m.id || ('m-' + Date.now() + '-' + Math.random().toString(36).substring(2, 6)),
-            project_id: projectToSave.id,
-            name: m.name || '',
-            role: m.role || '',
-            email: m.email || '',
-            phone: m.phone || ''
-          }))
-        );
-      }
+      if (pErr) {
+        console.error('Supabase projects save error:', pErr);
+        alert('Aviso: Se guardó en tu navegador, pero hubo un error al sincronizar con la nube: ' + pErr.message);
+      } else {
+        supabaseSuccess = true;
 
-      // Sincronizar avances y bitácora a Supabase
-      if (projectToSave.milestones && projectToSave.milestones.length > 0) {
-        await supabase.from('project_milestones').delete().eq('project_id', projectToSave.id);
-        await supabase.from('project_milestones').insert(
-          projectToSave.milestones.map(ms => ({
-            id: ms.id || ('ms-' + Date.now() + '-' + Math.random().toString(36).substring(2, 6)),
-            project_id: projectToSave.id,
-            title: ms.title || '',
-            date: ms.date || '',
-            description: ms.description || '',
-            completed: Boolean(ms.completed)
-          }))
-        );
+        // Sincronizar integrantes del equipo a Supabase
+        if (projectToSave.members && projectToSave.members.length > 0) {
+          await supabase.from('team_members').delete().eq('project_id', projectToSave.id);
+          await supabase.from('team_members').insert(
+            projectToSave.members.map(m => ({
+              id: m.id || ('m-' + Date.now() + '-' + Math.random().toString(36).substring(2, 6)),
+              project_id: projectToSave.id,
+              name: m.name || '',
+              role: m.role || '',
+              email: m.email || '',
+              phone: m.phone || ''
+            }))
+          );
+        }
+
+        // Sincronizar avances y bitácora a Supabase
+        if (projectToSave.milestones && projectToSave.milestones.length > 0) {
+          await supabase.from('project_milestones').delete().eq('project_id', projectToSave.id);
+          await supabase.from('project_milestones').insert(
+            projectToSave.milestones.map(ms => ({
+              id: ms.id || ('ms-' + Date.now() + '-' + Math.random().toString(36).substring(2, 6)),
+              project_id: projectToSave.id,
+              title: ms.title || '',
+              date: ms.date || '',
+              description: ms.description || '',
+              completed: Boolean(ms.completed)
+            }))
+          );
+        }
+
+        alert('¡Proyecto guardado con éxito en la nube de Grupo Prosur!');
       }
-    } catch (e) {
-      console.log('Cloud sync saved', e);
+    } catch (e: any) {
+      console.error('Cloud sync error:', e);
+      alert('¡Proyecto guardado localmente! (Error de conexión con la nube: ' + (e?.message || e) + ')');
     }
-
-    alert('¡Proyecto guardado con éxito!');
   };
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     const email = authEmail.trim();
     if (!email) return;
@@ -613,7 +623,7 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
     const isCarlos = isProsur && (normalizedEmail.includes('carlos') || normalizedEmail.includes('gerencia.mejoracontinua'));
     const isDario = isProsur && normalizedEmail.includes('dario');
 
-    // Administradores exclusivos: Carlos Barrientos y Dario Gonzalez
+    // 1. Administradores exclusivos con validación estricta de contraseña maestra
     if (isCarlos) {
       if (authPassword !== 'CarloZ369++--') {
         alert('Contraseña incorrecta para el acceso de Administrador.');
@@ -646,7 +656,38 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
       return;
     }
 
-    // Todos los demás usuarios son estrictamente Participantes
+    // 2. Participantes: Validar o registrar según authMode
+    const existingUser = allUsers.find(u => u.email.toLowerCase() === normalizedEmail);
+
+    if (authMode === 'login') {
+      if (!existingUser) {
+        alert('No se encontró ningún usuario registrado con el correo ' + email + '.\nPor favor ve a la pestaña "Crear Nuevo Usuario / Equipo" para inscribirte.');
+        return;
+      }
+      if (existingUser.password && existingUser.password !== authPassword) {
+        alert('Contraseña incorrecta para el usuario ' + email + '. Por favor verifica tus datos.');
+        return;
+      }
+
+      const participantUser = {
+        email: existingUser.email,
+        name: existingUser.name,
+        role: 'participant' as const,
+        companyId: existingUser.companyId || 'prosur'
+      };
+      setCurrentUser(participantUser);
+      localStorage.setItem('prosur_portal_user', JSON.stringify(participantUser));
+
+      // Cargar proyecto existente si lo tiene
+      const existingProj = allProjects.find(p => p.userId === existingUser.email);
+      if (existingProj) {
+        setProject(existingProj);
+        localStorage.setItem('prosur_current_project', JSON.stringify(existingProj));
+      }
+      return;
+    }
+
+    // Modo REGISTRO (authMode === 'register')
     const cleanName = (authName.trim() || email.split('@')[0]).replace(/\s*\(.*?\)/g, '').trim();
     const participantUser = {
       email: email,
@@ -655,13 +696,14 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
       companyId: authCompany || 'prosur'
     };
     setCurrentUser(participantUser);
-    // 1. Guardar o actualizar registro en la lista de usuarios
+
     const userRecord: RegisteredUser = {
       id: 'user-' + Date.now(),
       email: email,
       name: cleanName,
       role: 'participant',
       companyId: authCompany || 'prosur',
+      password: authPassword,
       targetCompanies: authCompany === 'multiempresa' ? authTargetCompanies : undefined,
       categoryId: authCategory,
       registeredAt: new Date().toISOString()
@@ -680,8 +722,8 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
       body: JSON.stringify(userRecord)
     }).catch(err => console.log('Error saving user to backend:', err));
 
-    // Guardar también directamente en Supabase para sincronización en la nube entre filiales
-    supabase.from('registered_users').upsert({
+    // Guardar usuario en Supabase
+    await supabase.from('registered_users').upsert({
       id: userRecord.id,
       email: userRecord.email,
       name: userRecord.name,
@@ -690,49 +732,73 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
       category_id: userRecord.categoryId,
       target_companies: userRecord.targetCompanies || [],
       registered_at: userRecord.registeredAt || new Date().toISOString()
-    }).then(({ error }) => {
-      if (error) console.log('Supabase user save error:', error.message);
     });
 
-    if (authMode === 'register') {
-      const newProj: ProjectData = {
-        ...project,
-        id: 'proj-' + Date.now(),
-        title: project.title || `Proyecto ${cleanName}`,
-        companyId: authCompany,
-        categoryId: authCategory,
-        targetCompanies: authCompany === 'multiempresa' ? authTargetCompanies : undefined,
-        userId: email,
-        members: project.members.length > 0 ? project.members : [
-          {
-            id: 'm-' + Date.now(),
-            name: cleanName,
-            role: 'Líder de Proyecto',
-            email: email,
-            phone: '',
-            company: authCompany
-          }
-        ],
-        updatedAt: new Date().toISOString()
-      };
-      setProject(newProj);
-      localStorage.setItem('prosur_current_project', JSON.stringify(newProj));
-      setAllProjects(prev => {
-        const updated = [newProj, ...prev.filter(p => p.id !== newProj.id)];
-        localStorage.setItem('prosur_all_projects_db', JSON.stringify(updated));
-        return updated;
-      });
-      fetch('/api/projects', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newProj)
-      }).catch(err => console.log('Error saving new project to backend:', err));
-    } else {
-      const existing = allProjects.find(p => p.userId === email);
-      if (existing) {
-        setProject(existing);
-        localStorage.setItem('prosur_current_project', JSON.stringify(existing));
-      }
+    // Crear y guardar el proyecto inicial de inmediato en Supabase y local
+    const newProj: ProjectData = {
+      ...project,
+      id: 'proj-' + Date.now(),
+      title: project.title || `Proyecto ${cleanName}`,
+      companyId: authCompany,
+      categoryId: authCategory,
+      targetCompanies: authCompany === 'multiempresa' ? authTargetCompanies : undefined,
+      userId: email,
+      members: project.members.length > 0 ? project.members : [
+        {
+          id: 'm-' + Date.now(),
+          name: cleanName,
+          role: 'Líder de Proyecto',
+          email: email,
+          phone: '',
+          company: authCompany
+        }
+      ],
+      updatedAt: new Date().toISOString()
+    };
+
+    setProject(newProj);
+    localStorage.setItem('prosur_current_project', JSON.stringify(newProj));
+    setAllProjects(prev => {
+      const updated = [newProj, ...prev.filter(p => p.id !== newProj.id)];
+      localStorage.setItem('prosur_all_projects_db', JSON.stringify(updated));
+      return updated;
+    });
+
+    fetch('/api/projects', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newProj)
+    }).catch(err => console.log('Error saving new project to backend:', err));
+
+    // Persistir de inmediato el nuevo proyecto en Supabase
+    await supabase.from('projects').upsert({
+      id: newProj.id,
+      user_id: newProj.userId,
+      title: newProj.title,
+      company_id: newProj.companyId,
+      category_id: newProj.categoryId,
+      scope: newProj.scope,
+      problem: newProj.problem,
+      solution: newProj.solution,
+      verifiable_metrics: newProj.verifiableMetrics,
+      github_url: newProj.githubUrl,
+      youtube_url: newProj.youtubeUrl,
+      compliance_checks: newProj.complianceChecks,
+      security_checks: newProj.securityChecks,
+      updated_at: newProj.updatedAt
+    });
+
+    if (newProj.members && newProj.members.length > 0) {
+      await supabase.from('team_members').upsert(
+        newProj.members.map(m => ({
+          id: m.id,
+          project_id: newProj.id,
+          name: m.name || '',
+          role: m.role || '',
+          email: m.email || '',
+          phone: m.phone || ''
+        }))
+      );
     }
   };
 
