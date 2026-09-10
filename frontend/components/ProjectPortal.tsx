@@ -411,8 +411,8 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
 
       // 3. Intentar sincronizar usuarios de Supabase si la tabla existe
       try {
-        const { data: sUsers } = await supabase.from('registered_users').select('*');
-        if (sUsers && Array.isArray(sUsers)) {
+        const { data: sUsers, error: sErr } = await supabase.from('registered_users').select('*');
+        if (!sErr && sUsers && Array.isArray(sUsers)) {
           sUsers.forEach((su: any) => {
             if (su && su.email) {
               userMap.set(su.email.toLowerCase().trim(), {
@@ -427,6 +427,25 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
               });
             }
           });
+
+          // Si hay usuarios en localStorage o backend que no están en Supabase, subirlos automáticamente
+          const missingInSupabase = [...localUsers, ...backendUsers].filter(lu => 
+            lu && lu.email && !sUsers.some((su: any) => su.email?.toLowerCase().trim() === lu.email.toLowerCase().trim())
+          );
+          if (missingInSupabase.length > 0) {
+            for (const u of missingInSupabase) {
+              await supabase.from('registered_users').upsert({
+                id: u.id || ('user-' + u.email.replace(/[^a-zA-Z0-9]/g, '_')),
+                email: u.email,
+                name: u.name,
+                role: u.role || 'participant',
+                company_id: u.companyId,
+                category_id: u.categoryId,
+                target_companies: u.targetCompanies || [],
+                registered_at: u.registeredAt || new Date().toISOString()
+              });
+            }
+          }
         }
       } catch (e) {
         // Supabase registered_users opcional
@@ -630,6 +649,20 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(userRecord)
     }).catch(err => console.log('Error saving user to backend:', err));
+
+    // Guardar también directamente en Supabase para sincronización en la nube entre filiales
+    supabase.from('registered_users').upsert({
+      id: userRecord.id,
+      email: userRecord.email,
+      name: userRecord.name,
+      role: userRecord.role || 'participant',
+      company_id: userRecord.companyId,
+      category_id: userRecord.categoryId,
+      target_companies: userRecord.targetCompanies || [],
+      registered_at: userRecord.registeredAt || new Date().toISOString()
+    }).then(({ error }) => {
+      if (error) console.log('Supabase user save error:', error.message);
+    });
 
     if (authMode === 'register') {
       const newProj: ProjectData = {
