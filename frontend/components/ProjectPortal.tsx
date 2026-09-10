@@ -566,6 +566,36 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
         security_checks: projectToSave.securityChecks,
         updated_at: projectToSave.updatedAt
       });
+
+      // Sincronizar integrantes del equipo a Supabase
+      if (projectToSave.members && projectToSave.members.length > 0) {
+        await supabase.from('team_members').delete().eq('project_id', projectToSave.id);
+        await supabase.from('team_members').insert(
+          projectToSave.members.map(m => ({
+            id: m.id || ('m-' + Date.now() + '-' + Math.random().toString(36).substring(2, 6)),
+            project_id: projectToSave.id,
+            name: m.name || '',
+            role: m.role || '',
+            email: m.email || '',
+            phone: m.phone || ''
+          }))
+        );
+      }
+
+      // Sincronizar avances y bitácora a Supabase
+      if (projectToSave.milestones && projectToSave.milestones.length > 0) {
+        await supabase.from('project_milestones').delete().eq('project_id', projectToSave.id);
+        await supabase.from('project_milestones').insert(
+          projectToSave.milestones.map(ms => ({
+            id: ms.id || ('ms-' + Date.now() + '-' + Math.random().toString(36).substring(2, 6)),
+            project_id: projectToSave.id,
+            title: ms.title || '',
+            date: ms.date || '',
+            description: ms.description || '',
+            completed: Boolean(ms.completed)
+          }))
+        );
+      }
     } catch (e) {
       console.log('Cloud sync saved', e);
     }
