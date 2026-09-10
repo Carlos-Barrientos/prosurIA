@@ -147,6 +147,42 @@ export const DEFAULT_ADMIN_USERS: RegisteredUser[] = [
   }
 ];
 
+export const createEmptyProject = (userId: string = 'local-user', categoryId: string = 'A', companyId: string = 'prosur'): ProjectData => ({
+  id: 'proj-' + Date.now(),
+  userId,
+  title: '',
+  companyId,
+  categoryId,
+  scope: '',
+  problem: '',
+  solution: '',
+  verifiableMetrics: '',
+  githubUrl: '',
+  youtubeUrl: '',
+  imageUrls: [],
+  members: [],
+  milestones: [
+    { id: 'm1', title: 'Fase 1: Convocatoria y Registro', date: 'Lunes 7 de Septiembre 2026', description: 'Registro del problema operativo, equipo de trabajo y alcance del proyecto.', completed: false },
+    { id: 'm2', title: 'Fase 2: Auditoría y Demo de Validación', date: 'Hasta el 15 de Diciembre 2026', description: 'Revisión técnica de métricas antes vs después y validación en proceso real.', completed: false },
+    { id: 'm3', title: 'Fase 3: Pitch Final y Gran Concurso', date: 'Viernes 15 de Enero 2027', description: 'Presentación ejecutiva final ante directores y jurado evaluador.', completed: false }
+  ],
+  demoStatus: 'pending',
+  complianceChecks: {
+    problem_defined: false,
+    functional_solution: false,
+    verifiable_metrics: false,
+    company_endorsed: false,
+    repo_available: false
+  },
+  securityChecks: {
+    no_hardcoded_keys: false,
+    no_pii_public_models: false,
+    human_in_the_loop: false,
+    ip_compliance: false
+  },
+  updatedAt: new Date().toISOString()
+});
+
 interface ProjectPortalProps {
   onBack: () => void;
   initialCategory?: string | null;
@@ -206,47 +242,19 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
         // ignore
       }
     }
-    return {
-      id: 'proj-' + Date.now(),
-      userId: 'local-user',
-      title: '',
-      companyId: 'prosur',
-      categoryId: initialCategory || 'A',
-      scope: '',
-      problem: '',
-      solution: '',
-      verifiableMetrics: '',
-      githubUrl: '',
-      youtubeUrl: '',
-      imageUrls: [],
-      members: [],
-      milestones: [
-        { id: 'm1', title: 'Fase 1: Convocatoria y Registro', date: 'Lunes 7 de Septiembre 2026', description: 'Registro del problema operativo, equipo de trabajo y alcance del proyecto.', completed: false },
-        { id: 'm2', title: 'Fase 2: Auditoría y Demo de Validación', date: 'Hasta el 15 de Diciembre 2026', description: 'Revisión técnica de métricas antes vs después y validación en proceso real.', completed: false },
-        { id: 'm3', title: 'Fase 3: Pitch Final y Gran Concurso', date: 'Viernes 15 de Enero 2027', description: 'Presentación ejecutiva final ante directores y jurado evaluador.', completed: false }
-      ],
-      demoStatus: 'pending',
-      complianceChecks: {
-        problem_defined: false,
-        functional_solution: false,
-        verifiable_metrics: false,
-        company_endorsed: false,
-        repo_available: false
-      },
-      securityChecks: {
-        no_hardcoded_keys: false,
-        no_pii_public_models: false,
-        human_in_the_loop: false,
-        ip_compliance: false
-      },
-      updatedAt: new Date().toISOString()
-    };
+    return createEmptyProject('local-user', initialCategory || 'A', 'prosur');
   });
 
   const [adminCompanyFilter, setAdminCompanyFilter] = useState<string>('all');
   const [adminCategoryFilter, setAdminCategoryFilter] = useState<string>('all');
   const [adminSearch, setAdminSearch] = useState('');
   const [adminActiveTab, setAdminActiveTab] = useState<'projects' | 'users'>('projects');
+  
+  // Control de cambios no guardados en el proyecto
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState<boolean>(false);
+
+  // Modal para edición de un integrante específico
+  const [editingMember, setEditingMember] = useState<TeamMember | null>(null);
   
   const [allUsers, setAllUsers] = useState<RegisteredUser[]>(() => {
     const userMap = new Map<string, RegisteredUser>();
@@ -605,6 +613,7 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
           );
         }
 
+        setHasUnsavedChanges(false);
         alert('¡Proyecto guardado con éxito en la nube de Grupo Prosur!');
       }
     } catch (e: any) {
@@ -683,7 +692,12 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
       if (existingProj) {
         setProject(existingProj);
         localStorage.setItem('prosur_current_project', JSON.stringify(existingProj));
+      } else {
+        const freshProj = createEmptyProject(existingUser.email, existingUser.categoryId || 'A', existingUser.companyId || 'prosur');
+        setProject(freshProj);
+        localStorage.setItem('prosur_current_project', JSON.stringify(freshProj));
       }
+      setHasUnsavedChanges(false);
       return;
     }
 
@@ -734,16 +748,17 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
       registered_at: userRecord.registeredAt || new Date().toISOString()
     });
 
-    // Crear y guardar el proyecto inicial de inmediato en Supabase y local
+    // Crear y guardar el proyecto inicial de inmediato en Supabase y local desde base limpia
+    const blank = createEmptyProject(email, authCategory, authCompany);
     const newProj: ProjectData = {
-      ...project,
+      ...blank,
       id: 'proj-' + Date.now(),
-      title: project.title || `Proyecto ${cleanName}`,
+      title: `Proyecto ${cleanName}`,
       companyId: authCompany,
       categoryId: authCategory,
       targetCompanies: authCompany === 'multiempresa' ? authTargetCompanies : undefined,
       userId: email,
-      members: project.members.length > 0 ? project.members : [
+      members: [
         {
           id: 'm-' + Date.now(),
           name: cleanName,
@@ -757,6 +772,7 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
     };
 
     setProject(newProj);
+    setHasUnsavedChanges(false);
     localStorage.setItem('prosur_current_project', JSON.stringify(newProj));
     setAllProjects(prev => {
       const updated = [newProj, ...prev.filter(p => p.id !== newProj.id)];
@@ -817,6 +833,9 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
   const handleLogout = () => {
     setCurrentUser(null);
     localStorage.removeItem('prosur_portal_user');
+    localStorage.removeItem('prosur_current_project');
+    setProject(createEmptyProject('local-user', initialCategory || 'A', 'prosur'));
+    setHasUnsavedChanges(false);
   };
 
   const [newMemberName, setNewMemberName] = useState('');
@@ -827,23 +846,41 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
 
   const handleAddMember = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newMemberName) return;
+    if (!newMemberName.trim()) return;
     const newMember: TeamMember = {
-      id: Date.now().toString(),
-      name: newMemberName,
-      role: newMemberRole || 'Colaborador',
-      email: newMemberEmail,
-      phone: newMemberPhone,
+      id: 'm-' + Date.now(),
+      name: newMemberName.trim(),
+      role: newMemberRole.trim() || 'Colaborador',
+      email: newMemberEmail.trim(),
+      phone: newMemberPhone.trim(),
       company: newMemberCompany
     };
     setProject(prev => ({
       ...prev,
       members: [...prev.members, newMember]
     }));
+    setHasUnsavedChanges(true);
     setNewMemberName('');
     setNewMemberRole('');
     setNewMemberEmail('');
     setNewMemberPhone('');
+  };
+
+  const handleRemoveMember = (memberId: string) => {
+    setProject(prev => ({
+      ...prev,
+      members: prev.members.filter(m => m.id !== memberId)
+    }));
+    setHasUnsavedChanges(true);
+  };
+
+  const handleUpdateMember = (updatedMember: TeamMember) => {
+    setProject(prev => ({
+      ...prev,
+      members: prev.members.map(m => m.id === updatedMember.id ? updatedMember : m)
+    }));
+    setHasUnsavedChanges(true);
+    setEditingMember(null);
   };
 
   // Funciones de Administrador para Editar y Eliminar Proyectos / Usuarios
@@ -909,13 +946,6 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
     alert('Proyecto actualizado correctamente.');
   };
 
-  const handleRemoveMember = (id: string) => {
-    setProject(prev => ({
-      ...prev,
-      members: prev.members.filter(m => m.id !== id)
-    }));
-  };
-
   const [newMilestoneTitle, setNewMilestoneTitle] = useState('');
   const [newMilestoneDesc, setNewMilestoneDesc] = useState('');
   const handleAddMilestone = (e: React.FormEvent) => {
@@ -932,6 +962,7 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
       ...prev,
       milestones: [...prev.milestones, newM]
     }));
+    setHasUnsavedChanges(true);
     setNewMilestoneTitle('');
     setNewMilestoneDesc('');
   };
@@ -1762,12 +1793,20 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
             </div>
 
             <div className="flex items-center gap-3">
-              <button 
-                onClick={handleSaveProject}
-                className="px-6 py-3 rounded-xl bg-[#CC2027] hover:bg-[#b01b21] text-white font-bold text-xs uppercase tracking-widest shadow-sm hover:shadow-md transition-all cursor-pointer"
-              >
-                Guardar Proyecto
-              </button>
+              {hasUnsavedChanges ? (
+                <button 
+                  onClick={handleSaveProject}
+                  className="px-6 py-3 rounded-xl bg-[#CC2027] hover:bg-[#b01b21] text-white font-bold text-xs uppercase tracking-widest shadow-md hover:shadow-lg transition-all animate-pulse cursor-pointer flex items-center gap-2"
+                >
+                  <Save className="w-4 h-4" />
+                  <span>Guardar Cambios</span>
+                </button>
+              ) : (
+                <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-bold uppercase tracking-wider shadow-2xs">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                  <span>Proyecto Guardado</span>
+                </div>
+              )}
             </div>
           </div>
 
@@ -1804,7 +1843,10 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
                   <input 
                     type="text" 
                     value={project.title}
-                    onChange={(e) => setProject({ ...project, title: e.target.value })}
+                    onChange={(e) => {
+                      setProject({ ...project, title: e.target.value });
+                      setHasUnsavedChanges(true);
+                    }}
                     className="w-full text-base font-bold p-3.5 border border-gray-200 rounded-xl focus:outline-none focus:border-[#CC2027]"
                   />
                 </div>
@@ -1816,7 +1858,10 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
                     </label>
                     <select 
                       value={project.companyId}
-                      onChange={(e) => setProject({ ...project, companyId: e.target.value })}
+                      onChange={(e) => {
+                        setProject({ ...project, companyId: e.target.value });
+                        setHasUnsavedChanges(true);
+                      }}
                       className="w-full p-3 border border-gray-200 rounded-xl text-sm font-semibold"
                     >
                       {PARTICIPATING_COMPANIES.map(c => (
@@ -1831,7 +1876,10 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
                     </label>
                     <select 
                       value={project.categoryId}
-                      onChange={(e) => setProject({ ...project, categoryId: e.target.value })}
+                      onChange={(e) => {
+                        setProject({ ...project, categoryId: e.target.value });
+                        setHasUnsavedChanges(true);
+                      }}
                       className="w-full p-3 border border-gray-200 rounded-xl text-sm font-semibold"
                     >
                       {CATEGORIES.map(c => (
@@ -1876,6 +1924,7 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
                               type="checkbox"
                               checked={checked}
                               onChange={(e) => {
+                                setHasUnsavedChanges(true);
                                 if (e.target.checked) {
                                   setProject({ ...project, targetCompanies: [...currentTargets, c.id] });
                                 } else {
@@ -1899,7 +1948,10 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
                   <textarea 
                     rows={3}
                     value={project.scope}
-                    onChange={(e) => setProject({ ...project, scope: e.target.value })}
+                    onChange={(e) => {
+                      setProject({ ...project, scope: e.target.value });
+                      setHasUnsavedChanges(true);
+                    }}
                     className="w-full p-3.5 border border-gray-200 rounded-xl text-sm leading-relaxed focus:outline-none focus:border-[#CC2027]"
                     placeholder="Describe qué departamentos, procesos y personas abarca esta solución..."
                   />
@@ -1916,7 +1968,10 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
                   <textarea 
                     rows={3}
                     value={project.verifiableMetrics}
-                    onChange={(e) => setProject({ ...project, verifiableMetrics: e.target.value })}
+                    onChange={(e) => {
+                      setProject({ ...project, verifiableMetrics: e.target.value });
+                      setHasUnsavedChanges(true);
+                    }}
                     className="w-full p-3 border border-emerald-300 rounded-xl bg-white text-sm text-emerald-950 font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
                     placeholder="Ej: Antes consumía 12 horas-persona semanales y un 8% de error. Con el modelo el tiempo bajó a 15 minutos y 0% de error en 300 casos auditados."
                   />
@@ -1930,7 +1985,10 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
                     <input 
                       type="url" 
                       value={project.githubUrl}
-                      onChange={(e) => setProject({ ...project, githubUrl: e.target.value })}
+                      onChange={(e) => {
+                        setProject({ ...project, githubUrl: e.target.value });
+                        setHasUnsavedChanges(true);
+                      }}
                       placeholder="https://github.com/usuario/proyecto"
                       className="w-full p-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#CC2027]"
                     />
@@ -1943,7 +2001,10 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
                     <input 
                       type="url" 
                       value={project.youtubeUrl}
-                      onChange={(e) => setProject({ ...project, youtubeUrl: e.target.value })}
+                      onChange={(e) => {
+                        setProject({ ...project, youtubeUrl: e.target.value });
+                        setHasUnsavedChanges(true);
+                      }}
                       placeholder="https://www.youtube.com/watch?v=..."
                       className="w-full p-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#CC2027]"
                     />
@@ -2030,15 +2091,27 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
                           </span>
                           <h4 className="text-sm font-black text-gray-900">{member.name}</h4>
                         </div>
-                        {project.members.length > 1 && (
+                        <div className="flex items-center gap-1">
                           <button 
-                            onClick={() => handleRemoveMember(member.id)}
-                            className="text-gray-400 hover:text-red-600 p-1 cursor-pointer"
-                            title="Eliminar"
+                            onClick={() => setEditingMember(member)}
+                            className="text-gray-400 hover:text-blue-600 p-1 cursor-pointer transition-colors"
+                            title="Editar datos de este integrante"
                           >
-                            <Trash2 className="w-4 h-4" />
+                            <Edit className="w-4 h-4" />
                           </button>
-                        )}
+                          {project.members.length > 1 && (
+                            <button 
+                              onClick={() => {
+                                handleRemoveMember(member.id);
+                                setHasUnsavedChanges(true);
+                              }}
+                              className="text-gray-400 hover:text-red-600 p-1 cursor-pointer transition-colors"
+                              title="Eliminar"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          )}
+                        </div>
                       </div>
                       <div className="text-xs text-gray-600 font-medium mb-1">{member.role}</div>
                       {member.company && (
@@ -2154,6 +2227,7 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
                               [item.key]: !isChecked
                             }
                           });
+                          setHasUnsavedChanges(true);
                         }}
                         className={`p-4 rounded-xl border transition-all cursor-pointer flex items-start gap-3.5 ${isChecked ? 'bg-blue-50/40 border-blue-200' : 'bg-gray-50 border-gray-200'}`}
                       >
@@ -2200,6 +2274,7 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
                               [item.key]: !isChecked
                             }
                           });
+                          setHasUnsavedChanges(true);
                         }}
                         className={`p-4 rounded-xl border transition-all cursor-pointer flex items-start gap-3.5 ${isChecked ? 'bg-red-50/40 border-red-200' : 'bg-gray-50 border-gray-200'}`}
                       >
@@ -2243,6 +2318,7 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
                             item.id === m.id ? { ...item, completed: !item.completed } : item
                           )
                         });
+                        setHasUnsavedChanges(true);
                       }}
                       className={`absolute -left-[35px] top-0 w-6 h-6 rounded-full border-2 flex items-center justify-center cursor-pointer transition-all ${m.completed ? 'bg-[#CC2027] border-[#CC2027] text-white' : 'bg-white border-gray-300 text-transparent group-hover:border-[#CC2027]'}`}
                     >
@@ -2490,6 +2566,130 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
                   className="px-6 py-2.5 rounded-xl bg-[#CC2027] hover:bg-[#b01b21] text-white text-xs font-bold uppercase tracking-wider shadow-md transition-all cursor-pointer"
                 >
                   Guardar Cambios
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL PARA EDICIÓN DE INTEGRANTE */}
+      {editingMember && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-gray-100 animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between pb-4 border-b border-gray-100 mb-5">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-lg bg-red-50 text-[#CC2027] flex items-center justify-center">
+                  <Users className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-black uppercase tracking-wider text-gray-900">
+                    Editar Datos del Integrante
+                  </h3>
+                  <p className="text-[11px] text-gray-500">Actualiza la información para la acreditación oficial</p>
+                </div>
+              </div>
+              <button 
+                onClick={() => setEditingMember(null)}
+                className="text-gray-400 hover:text-gray-600 p-1 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form 
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleUpdateMember(editingMember);
+              }}
+              className="space-y-4"
+            >
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5">
+                  Nombre Completo *
+                </label>
+                <input 
+                  type="text" 
+                  required
+                  value={editingMember.name}
+                  onChange={(e) => setEditingMember({ ...editingMember, name: e.target.value })}
+                  className="w-full p-2.5 rounded-xl border border-gray-200 text-xs focus:outline-none focus:border-[#CC2027]"
+                  placeholder="Nombre y Apellidos"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5">
+                    Rol en el Proyecto *
+                  </label>
+                  <input 
+                    type="text" 
+                    required
+                    value={editingMember.role}
+                    onChange={(e) => setEditingMember({ ...editingMember, role: e.target.value })}
+                    className="w-full p-2.5 rounded-xl border border-gray-200 text-xs focus:outline-none focus:border-[#CC2027]"
+                    placeholder="Ej: Líder, Desarrollador, Analista"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5">
+                    Empresa
+                  </label>
+                  <select 
+                    value={editingMember.company || 'prosur'}
+                    onChange={(e) => setEditingMember({ ...editingMember, company: e.target.value })}
+                    className="w-full p-2.5 rounded-xl border border-gray-200 text-xs font-medium focus:outline-none focus:border-[#CC2027]"
+                  >
+                    {PARTICIPATING_COMPANIES.filter(c => c.id !== 'multiempresa').map(c => (
+                      <option key={c.id} value={c.id}>{c.name}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5">
+                    Correo Institucional
+                  </label>
+                  <input 
+                    type="email" 
+                    value={editingMember.email || ''}
+                    onChange={(e) => setEditingMember({ ...editingMember, email: e.target.value })}
+                    className="w-full p-2.5 rounded-xl border border-gray-200 text-xs focus:outline-none focus:border-[#CC2027]"
+                    placeholder="correo@empresa.com"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5">
+                    Teléfono / WhatsApp *
+                  </label>
+                  <input 
+                    type="tel" 
+                    value={editingMember.phone || ''}
+                    onChange={(e) => setEditingMember({ ...editingMember, phone: e.target.value })}
+                    className="w-full p-2.5 rounded-xl border border-gray-200 text-xs focus:outline-none focus:border-[#CC2027]"
+                    placeholder="Ej: 999 123 4567"
+                  />
+                </div>
+              </div>
+
+              <div className="pt-4 border-t border-gray-100 flex items-center justify-end gap-3">
+                <button 
+                  type="button"
+                  onClick={() => setEditingMember(null)}
+                  className="px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider text-gray-500 hover:text-gray-800 transition-colors cursor-pointer"
+                >
+                  Cancelar
+                </button>
+                <button 
+                  type="submit"
+                  className="px-6 py-2.5 rounded-xl bg-[#CC2027] hover:bg-[#b01b21] text-white text-xs font-bold uppercase tracking-wider shadow-md transition-all cursor-pointer"
+                >
+                  Actualizar Integrante
                 </button>
               </div>
             </form>
