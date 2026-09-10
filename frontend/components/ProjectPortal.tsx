@@ -1049,7 +1049,7 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
     };
     setProject(prev => ({
       ...prev,
-      members: [...prev.members, newMember]
+      members: [...(prev?.members || []), newMember]
     }));
     setHasUnsavedChanges(true);
     setNewMemberName('');
@@ -1061,7 +1061,7 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
   const handleRemoveMember = (memberId: string) => {
     setProject(prev => ({
       ...prev,
-      members: prev.members.filter(m => m.id !== memberId)
+      members: (prev?.members || []).filter(m => m && m.id !== memberId)
     }));
     setHasUnsavedChanges(true);
   };
@@ -1069,7 +1069,7 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
   const handleUpdateMember = (updatedMember: TeamMember) => {
     setProject(prev => ({
       ...prev,
-      members: prev.members.map(m => m.id === updatedMember.id ? updatedMember : m)
+      members: (prev?.members || []).map(m => m && m.id === updatedMember.id ? updatedMember : m)
     }));
     setHasUnsavedChanges(true);
     setEditingMember(null);
@@ -1082,12 +1082,12 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
     }
 
     // 1. Eliminar de la lista local
-    const updated = allProjects.filter(p => p.id !== projectId);
+    const updated = (allProjects || []).filter(p => p && p.id !== projectId);
     setAllProjects(updated);
     localStorage.setItem('prosur_all_projects_db', JSON.stringify(updated));
 
     // Si el proyecto actual activo es el que se borra, resetearlo
-    if (project.id === projectId) {
+    if (project?.id === projectId) {
       localStorage.removeItem('prosur_current_project');
       setProject(createEmptyProject(currentUser?.email || 'local-user', initialCategory || 'A', currentUser?.companyId || 'prosur'));
     }
@@ -1120,15 +1120,27 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
       updatedAt: new Date().toISOString()
     });
 
-    const updatedList = allProjects.map(p => p.id === safeProj.id ? safeProj : p);
+    const updatedList = (allProjects || []).filter(Boolean).map(p => p.id === safeProj.id ? safeProj : p);
     setAllProjects(updatedList);
     localStorage.setItem('prosur_all_projects_db', JSON.stringify(updatedList));
 
-    if (project.id === safeProj.id) {
+    if (project?.id === safeProj.id) {
       setProject(safeProj);
       localStorage.setItem('prosur_current_project', JSON.stringify(safeProj));
     }
 
+    // Sincronizar en backend de Node
+    try {
+      await fetch('/api/projects', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(safeProj)
+      });
+    } catch (e) {
+      console.log('Error sincronizando actualización en backend:', e);
+    }
+
+    // Sincronizar en Supabase
     try {
       await supabase.from('projects').upsert({
         id: safeProj.id,
@@ -1170,7 +1182,7 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
     };
     setProject(prev => ({
       ...prev,
-      milestones: [...(prev.milestones || []), newM]
+      milestones: [...(prev?.milestones || []), newM]
     }));
     setHasUnsavedChanges(true);
     setNewMilestoneTitle('');
@@ -1239,7 +1251,7 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
               <div className="flex items-center gap-3">
                 <div className="text-right hidden sm:block">
                   <div className="text-xs font-black text-gray-900 leading-tight">
-                    {currentUser.name.replace(/\s*\(.*?\)/g, '').trim()}
+                    {(currentUser?.name || currentUser?.email || 'Usuario').replace(/\s*\(.*?\)/g, '').trim()}
                   </div>
                   <div className="text-[10px] font-bold uppercase tracking-wider text-gray-500">
                     {currentUser.role === 'admin' ? 'Administrador' : 'Participante'}
@@ -1789,12 +1801,14 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
 
                           <button 
                             onClick={() => {
-                              setProject(p);
+                              const safeP = sanitizeProject(p);
+                              setProject(safeP);
+                              const projectOwner = (allUsers || []).find(u => u && u.email && safeP.userId && u.email.toLowerCase().trim() === safeP.userId.toLowerCase().trim());
                               setCurrentUser({
-                                email: 'participante@' + p.companyId + '.com',
-                                name: p.members[0]?.name || 'Participante',
+                                email: safeP.userId || ('participante@' + safeP.companyId + '.com'),
+                                name: projectOwner?.name || safeP.members?.[0]?.name || safeP.title || 'Participante',
                                 role: 'participant',
-                                companyId: p.companyId
+                                companyId: safeP.companyId || 'prosur'
                               });
                             }}
                             className="px-3 py-1.5 rounded-lg bg-gray-900 hover:bg-black text-white text-xs font-bold transition-colors cursor-pointer"
@@ -1840,15 +1854,16 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
                       <tbody className="divide-y divide-gray-100 text-xs">
                         {filteredUsers.map(u => {
                           const companyObj = PARTICIPATING_COMPANIES.find(c => c.id === u.companyId) || PARTICIPATING_COMPANIES[0];
-                          const userProject = allProjects.find(
-                            p => (p.userId && p.userId.toLowerCase().trim() === u.email.toLowerCase().trim()) || p.id === u.id
+                          const userProject = (allProjects || []).find(
+                            p => p && ((p.userId && p.userId.toLowerCase().trim() === (u?.email || '').toLowerCase().trim()) || p.id === u?.id)
                           );
-                          const initials = (u.name || u.email || 'U')
+                          const initials = ((u?.name || u?.email || 'U'))
                             .split(' ')
+                            .filter(Boolean)
                             .map(n => n[0])
                             .slice(0, 2)
                             .join('')
-                            .toUpperCase();
+                            .toUpperCase() || 'U';
 
                           return (
                             <tr key={u.id || u.email} className="hover:bg-gray-50/70 transition-colors">
@@ -1949,12 +1964,12 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
                                   {userProject && (
                                     <button
                                       onClick={() => {
-                                        setProject(userProject);
+                                        setProject(sanitizeProject(userProject));
                                         setCurrentUser({
                                           email: u.email,
-                                          name: u.name,
+                                          name: u.name || u.email.split('@')[0],
                                           role: 'participant',
-                                          companyId: u.companyId
+                                          companyId: u.companyId || userProject.companyId || 'prosur'
                                         });
                                       }}
                                       className="px-2.5 py-1.5 rounded-lg bg-gray-900 hover:bg-black text-white text-[10px] font-bold uppercase tracking-wider transition-colors cursor-pointer"

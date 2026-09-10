@@ -543,21 +543,26 @@ class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { has
       return (
         <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6 text-center">
           <div className="bg-white p-8 sm:p-10 rounded-2xl border border-gray-200 shadow-xl max-w-md w-full animate-in fade-in zoom-in-95 duration-200">
-            <div className="w-14 h-14 rounded-2xl bg-red-50 text-[#CC2027] border border-red-200 flex items-center justify-center mx-auto mb-5 font-black text-2xl shadow-xs">
+            <div className="w-14 h-14 rounded-2xl bg-amber-50 text-amber-600 border border-amber-200 flex items-center justify-center mx-auto mb-5 font-black text-2xl shadow-xs">
               !
             </div>
-            <h2 className="text-xl font-black text-gray-900 mb-2 uppercase tracking-tight">Portal en Actualización</h2>
-            <p className="text-xs text-gray-500 mb-6 leading-relaxed">
-              Los datos del proyecto se actualizaron. Haz clic en el botón para recargar la vista de forma segura.
+            <h2 className="text-xl font-black text-gray-900 mb-2 uppercase tracking-tight">Recuperación de Vista</h2>
+            <p className="text-xs text-gray-500 mb-4 leading-relaxed">
+              Ocurrió un inconveniente temporal con la información en pantalla. Haz clic en el botón para continuar navegando normalmente.
             </p>
+            {this.state.error?.message && (
+              <div className="text-[11px] font-mono text-gray-500 bg-gray-50 p-2.5 rounded-lg border border-gray-200 mb-6 text-left break-all max-h-24 overflow-y-auto">
+                {this.state.error.message}
+              </div>
+            )}
             <button
               onClick={() => {
-                localStorage.removeItem('prosur_current_project');
+                this.setState({ hasError: false, error: null });
                 window.location.reload();
               }}
               className="w-full py-3.5 bg-[#CC2027] hover:bg-[#b01b21] text-white font-bold text-xs uppercase tracking-wider rounded-xl transition-all cursor-pointer shadow-md active:scale-95"
             >
-              Recargar Proyecto
+              Continuar al Portal
             </button>
           </div>
         </div>
