@@ -425,14 +425,22 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
         if (!sErr && sUsers && Array.isArray(sUsers)) {
           sUsers.forEach((su: any) => {
             if (su && su.email) {
-              userMap.set(su.email.toLowerCase().trim(), {
+              const suEmail = su.email.toLowerCase().trim();
+              const rawTargets: string[] = Array.isArray(su.target_companies) ? su.target_companies : [];
+              const pwEntry = rawTargets.find(t => typeof t === 'string' && t.startsWith('__pw__:'));
+              const cleanTargets = rawTargets.filter(t => typeof t === 'string' && !t.startsWith('__pw__:'));
+              const existingCached = userMap.get(suEmail);
+              const finalPassword = pwEntry ? pwEntry.replace('__pw__:', '') : (existingCached?.password || '');
+
+              userMap.set(suEmail, {
                 id: su.id,
                 email: su.email,
                 name: su.name,
                 role: su.role,
                 companyId: su.company_id,
                 categoryId: su.category_id,
-                targetCompanies: su.target_companies,
+                targetCompanies: cleanTargets,
+                password: finalPassword,
                 registeredAt: su.registered_at
               });
             }
@@ -444,6 +452,10 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
           );
           if (missingInSupabase.length > 0) {
             for (const u of missingInSupabase) {
+              const targetsWithPw = [...(u.targetCompanies || [])].filter(t => !t.startsWith('__pw__:'));
+              if (u.password) {
+                targetsWithPw.push(`__pw__:${u.password}`);
+              }
               await supabase.from('registered_users').upsert({
                 id: u.id || ('user-' + u.email.replace(/[^a-zA-Z0-9]/g, '_')),
                 email: u.email,
@@ -451,7 +463,7 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
                 role: u.role || 'participant',
                 company_id: u.companyId,
                 category_id: u.categoryId,
-                target_companies: u.targetCompanies || [],
+                target_companies: targetsWithPw,
                 registered_at: u.registeredAt || new Date().toISOString()
               });
             }
@@ -667,155 +679,209 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
     }
 
     // 2. Participantes: Validar o registrar según authMode
-    const existingUser = allUsers.find(u => u.email.toLowerCase() === normalizedEmail);
+    const existingUser = allUsers.find(u => u.email.toLowerCase().trim() === normalizedEmail);
+    const existingProj = allProjects.find(p => p.userId?.toLowerCase().trim() === normalizedEmail);
 
-    if (authMode === 'login') {
-      if (!existingUser) {
-        alert('No se encontró ningún usuario registrado con el correo ' + email + '.\nPor favor ve a la pestaña "Crear Nuevo Usuario / Equipo" para inscribirte.');
+    // Modo REGISTRO (authMode === 'register')
+    if (authMode === 'register') {
+      // FILTRO DE SEGURIDAD ESTRICTO:
+      // Si el correo ya tiene una cuenta o un proyecto creado, NO permitir volver a crearlo ni saltar la contraseña
+      if (existingUser || existingProj) {
+        alert(
+          `¡Atención de Seguridad!\n\n` +
+          `El correo "${email}" ya cuenta con una cuenta y proyecto registrados en el Reto IA.\n\n` +
+          `Por la privacidad y seguridad de tu proyecto, no es posible registrar otro proyecto con este mismo correo desde este formulario.\n\n` +
+          `Por favor, haz clic en "Iniciar Sesión" e ingresa tu contraseña para ver y continuar editando tu proyecto.`
+        );
+        setAuthMode('login');
         return;
       }
-      if (existingUser.password && existingUser.password !== authPassword) {
-        alert('Contraseña incorrecta para el usuario ' + email + '. Por favor verifica tus datos.');
+
+      if (!authPassword || authPassword.trim().length < 4) {
+        alert('Por favor ingresa una contraseña de al menos 4 caracteres para proteger tu proyecto.');
         return;
       }
 
+      const cleanName = (authName.trim() || email.split('@')[0]).replace(/\s*\(.*?\)/g, '').trim();
       const participantUser = {
-        email: existingUser.email,
-        name: existingUser.name,
+        email: email,
+        name: cleanName,
         role: 'participant' as const,
-        companyId: existingUser.companyId || 'prosur'
+        companyId: authCompany || 'prosur'
       };
       setCurrentUser(participantUser);
       localStorage.setItem('prosur_portal_user', JSON.stringify(participantUser));
 
-      // Cargar proyecto existente si lo tiene
-      const existingProj = allProjects.find(p => p.userId === existingUser.email);
-      if (existingProj) {
-        setProject(existingProj);
-        localStorage.setItem('prosur_current_project', JSON.stringify(existingProj));
+      const userRecord: RegisteredUser = {
+        id: 'user-' + Date.now(),
+        email: email,
+        name: cleanName,
+        role: 'participant',
+        companyId: authCompany || 'prosur',
+        password: authPassword.trim(),
+        targetCompanies: authCompany === 'multiempresa' ? authTargetCompanies : undefined,
+        categoryId: authCategory,
+        registeredAt: new Date().toISOString()
+      };
+
+      setAllUsers(prev => {
+        const idx = prev.findIndex(u => u.email.toLowerCase().trim() === normalizedEmail);
+        const updated = idx >= 0 ? prev.map(u => u.email.toLowerCase().trim() === normalizedEmail ? { ...u, ...userRecord } : u) : [userRecord, ...prev];
+        localStorage.setItem('prosur_all_users_db', JSON.stringify(updated));
+        return updated;
+      });
+
+      fetch('/api/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(userRecord)
+      }).catch(err => console.log('Error saving user to backend:', err));
+
+      // Guardar usuario en Supabase con contraseña protegida en target_companies
+      const targetsWithPw = [...(userRecord.targetCompanies || [])].filter(t => !t.startsWith('__pw__:'));
+      if (userRecord.password) {
+        targetsWithPw.push(`__pw__:${userRecord.password}`);
+      }
+      await supabase.from('registered_users').upsert({
+        id: userRecord.id,
+        email: userRecord.email,
+        name: userRecord.name,
+        role: userRecord.role || 'participant',
+        company_id: userRecord.companyId,
+        category_id: userRecord.categoryId,
+        target_companies: targetsWithPw,
+        registered_at: userRecord.registeredAt || new Date().toISOString()
+      });
+
+      // Crear y guardar el proyecto inicial de inmediato en Supabase y local desde base limpia
+      const blank = createEmptyProject(email, authCategory, authCompany);
+      const newProj: ProjectData = {
+        ...blank,
+        id: 'proj-' + Date.now(),
+        title: `Proyecto ${cleanName}`,
+        companyId: authCompany,
+        categoryId: authCategory,
+        targetCompanies: authCompany === 'multiempresa' ? authTargetCompanies : undefined,
+        userId: email,
+        members: [
+          {
+            id: 'm-' + Date.now(),
+            name: cleanName,
+            role: 'Líder de Proyecto',
+            email: email,
+            phone: '',
+            company: authCompany
+          }
+        ],
+        updatedAt: new Date().toISOString()
+      };
+
+      setProject(newProj);
+      setHasUnsavedChanges(false);
+      localStorage.setItem('prosur_current_project', JSON.stringify(newProj));
+      setAllProjects(prev => {
+        const updated = [newProj, ...prev.filter(p => p.id !== newProj.id)];
+        localStorage.setItem('prosur_all_projects_db', JSON.stringify(updated));
+        return updated;
+      });
+
+      fetch('/api/projects', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newProj)
+      }).catch(err => console.log('Error saving new project to backend:', err));
+
+      // Persistir de inmediato el nuevo proyecto en Supabase
+      await supabase.from('projects').upsert({
+        id: newProj.id,
+        user_id: newProj.userId,
+        title: newProj.title,
+        company_id: newProj.companyId,
+        category_id: newProj.categoryId,
+        scope: newProj.scope,
+        problem: newProj.problem,
+        solution: newProj.solution,
+        verifiable_metrics: newProj.verifiableMetrics,
+        github_url: newProj.githubUrl,
+        youtube_url: newProj.youtubeUrl,
+        compliance_checks: newProj.complianceChecks,
+        security_checks: newProj.securityChecks,
+        updated_at: newProj.updatedAt
+      });
+
+      if (newProj.members && newProj.members.length > 0) {
+        await supabase.from('team_members').upsert(
+          newProj.members.map(m => ({
+            id: m.id,
+            project_id: newProj.id,
+            name: m.name || '',
+            role: m.role || '',
+            email: m.email || '',
+            phone: m.phone || ''
+          }))
+        );
+      }
+      return;
+    }
+
+    // Modo INICIAR SESIÓN (authMode === 'login')
+    if (authMode === 'login') {
+      if (!existingUser && !existingProj) {
+        alert(`No se encontró ninguna cuenta o proyecto registrado con el correo "${email}".\n\nPor favor ve a la pestaña "Inscribir Proyecto" para registrar a tu equipo.`);
+        return;
+      }
+
+      if (!authPassword || !authPassword.trim()) {
+        alert('Por favor ingresa tu contraseña para acceder a tu proyecto.');
+        return;
+      }
+
+      const storedPassword = existingUser?.password;
+      if (storedPassword) {
+        if (storedPassword !== authPassword.trim()) {
+          alert(`Contraseña incorrecta para el usuario ${email}.\nPor favor verifica tus datos.`);
+          return;
+        }
       } else {
-        const freshProj = createEmptyProject(existingUser.email, existingUser.categoryId || 'A', existingUser.companyId || 'prosur');
+        // Asignar contraseña a cuenta existente sin contraseña previa
+        const fixedPassword = authPassword.trim();
+        if (existingUser) existingUser.password = fixedPassword;
+
+        const targetsWithPw = [...(existingUser?.targetCompanies || existingProj?.targetCompanies || [])].filter(t => !t.startsWith('__pw__:'));
+        targetsWithPw.push(`__pw__:${fixedPassword}`);
+        supabase.from('registered_users').upsert({
+          id: existingUser?.id || ('user-' + normalizedEmail.replace(/[^a-zA-Z0-9]/g, '_')),
+          email: normalizedEmail,
+          name: existingUser?.name || existingProj?.members[0]?.name || email.split('@')[0],
+          role: 'participant',
+          company_id: existingUser?.companyId || existingProj?.companyId || 'prosur',
+          category_id: existingUser?.categoryId || existingProj?.categoryId || 'A',
+          target_companies: targetsWithPw,
+          registered_at: existingUser?.registeredAt || new Date().toISOString()
+        }).then(() => {}).catch(err => console.log('Error updating password in Supabase:', err));
+      }
+
+      const participantUser = {
+        email: existingUser ? existingUser.email : email,
+        name: existingUser ? existingUser.name : (existingProj?.members[0]?.name || email.split('@')[0]),
+        role: 'participant' as const,
+        companyId: existingUser?.companyId || existingProj?.companyId || 'prosur'
+      };
+      setCurrentUser(participantUser);
+      localStorage.setItem('prosur_portal_user', JSON.stringify(participantUser));
+
+      // Cargar proyecto existente
+      const userProj = existingProj || allProjects.find(p => p.userId?.toLowerCase().trim() === normalizedEmail);
+      if (userProj) {
+        setProject(userProj);
+        localStorage.setItem('prosur_current_project', JSON.stringify(userProj));
+      } else {
+        const freshProj = createEmptyProject(participantUser.email, existingUser?.categoryId || 'A', participantUser.companyId);
         setProject(freshProj);
         localStorage.setItem('prosur_current_project', JSON.stringify(freshProj));
       }
       setHasUnsavedChanges(false);
       return;
-    }
-
-    // Modo REGISTRO (authMode === 'register')
-    const cleanName = (authName.trim() || email.split('@')[0]).replace(/\s*\(.*?\)/g, '').trim();
-    const participantUser = {
-      email: email,
-      name: cleanName,
-      role: 'participant' as const,
-      companyId: authCompany || 'prosur'
-    };
-    setCurrentUser(participantUser);
-
-    const userRecord: RegisteredUser = {
-      id: 'user-' + Date.now(),
-      email: email,
-      name: cleanName,
-      role: 'participant',
-      companyId: authCompany || 'prosur',
-      password: authPassword,
-      targetCompanies: authCompany === 'multiempresa' ? authTargetCompanies : undefined,
-      categoryId: authCategory,
-      registeredAt: new Date().toISOString()
-    };
-
-    setAllUsers(prev => {
-      const idx = prev.findIndex(u => u.email.toLowerCase() === email.toLowerCase());
-      const updated = idx >= 0 ? prev.map(u => u.email.toLowerCase() === email.toLowerCase() ? { ...u, ...userRecord } : u) : [userRecord, ...prev];
-      localStorage.setItem('prosur_all_users_db', JSON.stringify(updated));
-      return updated;
-    });
-
-    fetch('/api/users', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(userRecord)
-    }).catch(err => console.log('Error saving user to backend:', err));
-
-    // Guardar usuario en Supabase
-    await supabase.from('registered_users').upsert({
-      id: userRecord.id,
-      email: userRecord.email,
-      name: userRecord.name,
-      role: userRecord.role || 'participant',
-      company_id: userRecord.companyId,
-      category_id: userRecord.categoryId,
-      target_companies: userRecord.targetCompanies || [],
-      registered_at: userRecord.registeredAt || new Date().toISOString()
-    });
-
-    // Crear y guardar el proyecto inicial de inmediato en Supabase y local desde base limpia
-    const blank = createEmptyProject(email, authCategory, authCompany);
-    const newProj: ProjectData = {
-      ...blank,
-      id: 'proj-' + Date.now(),
-      title: `Proyecto ${cleanName}`,
-      companyId: authCompany,
-      categoryId: authCategory,
-      targetCompanies: authCompany === 'multiempresa' ? authTargetCompanies : undefined,
-      userId: email,
-      members: [
-        {
-          id: 'm-' + Date.now(),
-          name: cleanName,
-          role: 'Líder de Proyecto',
-          email: email,
-          phone: '',
-          company: authCompany
-        }
-      ],
-      updatedAt: new Date().toISOString()
-    };
-
-    setProject(newProj);
-    setHasUnsavedChanges(false);
-    localStorage.setItem('prosur_current_project', JSON.stringify(newProj));
-    setAllProjects(prev => {
-      const updated = [newProj, ...prev.filter(p => p.id !== newProj.id)];
-      localStorage.setItem('prosur_all_projects_db', JSON.stringify(updated));
-      return updated;
-    });
-
-    fetch('/api/projects', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(newProj)
-    }).catch(err => console.log('Error saving new project to backend:', err));
-
-    // Persistir de inmediato el nuevo proyecto en Supabase
-    await supabase.from('projects').upsert({
-      id: newProj.id,
-      user_id: newProj.userId,
-      title: newProj.title,
-      company_id: newProj.companyId,
-      category_id: newProj.categoryId,
-      scope: newProj.scope,
-      problem: newProj.problem,
-      solution: newProj.solution,
-      verifiable_metrics: newProj.verifiableMetrics,
-      github_url: newProj.githubUrl,
-      youtube_url: newProj.youtubeUrl,
-      compliance_checks: newProj.complianceChecks,
-      security_checks: newProj.securityChecks,
-      updated_at: newProj.updatedAt
-    });
-
-    if (newProj.members && newProj.members.length > 0) {
-      await supabase.from('team_members').upsert(
-        newProj.members.map(m => ({
-          id: m.id,
-          project_id: newProj.id,
-          name: m.name || '',
-          role: m.role || '',
-          email: m.email || '',
-          phone: m.phone || ''
-        }))
-      );
     }
   };
 
@@ -837,6 +903,10 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
     localStorage.removeItem('prosur_current_project');
     setProject(createEmptyProject('local-user', initialCategory || 'A', 'prosur'));
     setHasUnsavedChanges(false);
+    setAuthEmail('');
+    setAuthPassword('');
+    setAuthName('');
+    setAuthMode('login');
   };
 
   const [newMemberName, setNewMemberName] = useState('');
