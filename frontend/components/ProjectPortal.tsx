@@ -184,6 +184,62 @@ export const createEmptyProject = (userId: string = 'local-user', categoryId: st
   updatedAt: new Date().toISOString()
 });
 
+export const sanitizeProject = (p: any): ProjectData => {
+  if (!p || typeof p !== 'object') {
+    return createEmptyProject('local-user', 'A', 'prosur');
+  }
+  const defaultEmpty = createEmptyProject(p.userId || p.user_id || 'local-user', p.categoryId || p.category_id || 'A', p.companyId || p.company_id || 'prosur');
+  
+  return {
+    ...defaultEmpty,
+    ...p,
+    id: p.id || defaultEmpty.id,
+    userId: p.userId || p.user_id || defaultEmpty.userId,
+    title: p.title || '',
+    companyId: p.companyId || p.company_id || 'prosur',
+    categoryId: p.categoryId || p.category_id || 'A',
+    targetCompanies: Array.isArray(p.targetCompanies) ? p.targetCompanies : (Array.isArray(p.target_companies) ? p.target_companies : []),
+    scope: p.scope || '',
+    problem: p.problem || '',
+    solution: p.solution || '',
+    verifiableMetrics: p.verifiableMetrics || p.verifiable_metrics || '',
+    githubUrl: p.githubUrl || p.github_url || '',
+    youtubeUrl: p.youtubeUrl || p.youtube_url || '',
+    imageUrls: Array.isArray(p.imageUrls) ? p.imageUrls : [],
+    members: Array.isArray(p.members) ? p.members.map((m: any) => ({
+      id: m.id || ('m-' + Math.random().toString(36).substring(2, 8)),
+      name: m.name || '',
+      role: m.role || 'Colaborador',
+      email: m.email || '',
+      phone: m.phone || '',
+      company: m.company || p.companyId || 'prosur'
+    })) : [],
+    milestones: Array.isArray(p.milestones) && p.milestones.length > 0 ? p.milestones.map((ms: any) => ({
+      id: ms.id || ('ms-' + Math.random().toString(36).substring(2, 8)),
+      title: ms.title || '',
+      date: ms.date || '',
+      description: ms.description || '',
+      completed: Boolean(ms.completed)
+    })) : defaultEmpty.milestones,
+    demoStatus: p.demoStatus || p.demo_status || 'pending',
+    demoDate: p.demoDate || p.demo_date || null,
+    complianceChecks: {
+      problem_defined: Boolean(p.complianceChecks?.problem_defined ?? p.compliance_checks?.problem_defined),
+      functional_solution: Boolean(p.complianceChecks?.functional_solution ?? p.compliance_checks?.functional_solution),
+      verifiable_metrics: Boolean(p.complianceChecks?.verifiable_metrics ?? p.compliance_checks?.verifiable_metrics),
+      company_endorsed: Boolean(p.complianceChecks?.company_endorsed ?? p.compliance_checks?.company_endorsed),
+      repo_available: Boolean(p.complianceChecks?.repo_available ?? p.compliance_checks?.repo_available)
+    },
+    securityChecks: {
+      no_hardcoded_keys: Boolean(p.securityChecks?.no_hardcoded_keys ?? p.security_checks?.no_hardcoded_keys),
+      no_pii_public_models: Boolean(p.securityChecks?.no_pii_public_models ?? p.security_checks?.no_pii_public_models),
+      human_in_the_loop: Boolean(p.securityChecks?.human_in_the_loop ?? p.security_checks?.human_in_the_loop),
+      ip_compliance: Boolean(p.securityChecks?.ip_compliance ?? p.security_checks?.ip_compliance)
+    },
+    updatedAt: p.updatedAt || p.updated_at || new Date().toISOString()
+  };
+};
+
 interface ProjectPortalProps {
   onBack: () => void;
   initialCategory?: string | null;
@@ -236,8 +292,8 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        if (parsed && parsed.title && parsed.title !== 'Automatización Inteligente de Procesos Operativos') {
-          return parsed;
+        if (parsed) {
+          return sanitizeProject(parsed);
         }
       } catch (e) {
         // ignore
@@ -277,8 +333,8 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        const real = parsed.filter((p: any) => !['p1', 'p2', 'p3', 'p4'].includes(p.id));
-        return real;
+        const real = (parsed || []).filter((p: any) => !['p1', 'p2', 'p3', 'p4'].includes(p.id));
+        return real.map(sanitizeProject);
       } catch (e) {
         return [];
       }
@@ -294,7 +350,7 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
       if (saved) {
         try {
           const parsed = JSON.parse(saved);
-          localDb = (parsed || []).filter((p: any) => !['p1', 'p2', 'p3', 'p4'].includes(p.id));
+          localDb = (parsed || []).filter((p: any) => !['p1', 'p2', 'p3', 'p4'].includes(p.id)).map(sanitizeProject);
         } catch {
           localDb = [];
         }
@@ -307,51 +363,62 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
         if (res.ok) {
           const data = await res.json();
           if (Array.isArray(data)) {
-            backendProjects = data.filter((p: any) => !['p1', 'p2', 'p3', 'p4'].includes(p.id));
+            backendProjects = data.filter((p: any) => !['p1', 'p2', 'p3', 'p4'].includes(p.id)).map(sanitizeProject);
           }
         }
       } catch (e) {
         console.log('Backend /api/projects not reached:', e);
       }
 
-      // 3. Intentar cargar desde Supabase si hay filas reales
+      // 3. Intentar cargar desde Supabase si hay filas reales (consultas individuales para evitar fallas de foreign keys)
       let supabaseProjects: ProjectData[] = [];
       try {
-        const { data, error } = await supabase.from('projects').select('*, team_members(*), project_milestones(*)');
-        if (!error && data && data.length > 0) {
-          supabaseProjects = data.map((p: any) => ({
-            id: p.id,
-            userId: p.user_id,
-            title: p.title || '',
-            companyId: p.company_id || 'prosur',
-            categoryId: p.category_id || 'A',
-            scope: p.scope || '',
-            problem: p.problem || '',
-            solution: p.solution || '',
-            verifiableMetrics: p.verifiable_metrics || '',
-            githubUrl: p.github_url || '',
-            youtubeUrl: p.youtube_url || '',
-            imageUrls: [],
-            members: (p.team_members || []).map((m: any) => ({
+        const { data: pRows, error: pErr } = await supabase.from('projects').select('*');
+        if (!pErr && pRows && pRows.length > 0) {
+          const { data: mRows } = await supabase.from('team_members').select('*');
+          const { data: msRows } = await supabase.from('project_milestones').select('*');
+
+          const allMembers = mRows || [];
+          const allMilestones = msRows || [];
+
+          supabaseProjects = pRows.map((p: any) => {
+            const projectMembers = allMembers.filter((m: any) => m.project_id === p.id).map((m: any) => ({
               id: m.id,
-              name: m.name,
-              role: m.role || '',
+              name: m.name || '',
+              role: m.role || 'Colaborador',
               email: m.email || '',
               phone: m.phone || ''
-            })),
-            milestones: (p.project_milestones || []).map((ms: any) => ({
+            }));
+
+            const projectMilestones = allMilestones.filter((ms: any) => ms.project_id === p.id).map((ms: any) => ({
               id: ms.id,
-              title: ms.title,
-              date: ms.date,
+              title: ms.title || '',
+              date: ms.date || '',
               description: ms.description || '',
-              completed: ms.completed || false
-            })),
-            demoStatus: p.demo_status || 'pending',
-            demoDate: p.demo_date,
-            complianceChecks: p.compliance_checks || {},
-            securityChecks: p.security_checks || {},
-            updatedAt: p.updated_at
-          }));
+              completed: Boolean(ms.completed)
+            }));
+
+            return sanitizeProject({
+              id: p.id,
+              userId: p.user_id,
+              title: p.title || '',
+              companyId: p.company_id || 'prosur',
+              categoryId: p.category_id || 'A',
+              scope: p.scope || '',
+              problem: p.problem || '',
+              solution: p.solution || '',
+              verifiableMetrics: p.verifiable_metrics || '',
+              githubUrl: p.github_url || '',
+              youtubeUrl: p.youtube_url || '',
+              members: projectMembers,
+              milestones: projectMilestones,
+              demoStatus: p.demo_status || 'pending',
+              demoDate: p.demo_date,
+              complianceChecks: p.compliance_checks,
+              securityChecks: p.security_checks,
+              updatedAt: p.updated_at
+            });
+          });
         }
       } catch (err) {
         console.log('Supabase sync info:', err);
@@ -359,9 +426,9 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
 
       // 4. Fusionar proyectos sin perder ninguno (Backend > Supabase > Local)
       const projectMap = new Map<string, ProjectData>();
-      localDb.forEach(p => { if (p && p.id) projectMap.set(p.id, p); });
-      supabaseProjects.forEach(p => { if (p && p.id) projectMap.set(p.id, p); });
-      backendProjects.forEach(p => { if (p && p.id) projectMap.set(p.id, p); });
+      localDb.forEach(p => { if (p && p.id) projectMap.set(p.id, sanitizeProject(p)); });
+      supabaseProjects.forEach(p => { if (p && p.id) projectMap.set(p.id, sanitizeProject(p)); });
+      backendProjects.forEach(p => { if (p && p.id) projectMap.set(p.id, sanitizeProject(p)); });
 
       const merged = Array.from(projectMap.values());
       setAllProjects(merged);
@@ -380,10 +447,11 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
 
       // 5. Vincular el proyecto activo del usuario actual
       if (currentUser && currentUser.role === 'participant') {
-        const userProj = merged.find(p => p.userId === currentUser.email) || merged.find(p => p.id === project.id);
+        const userProj = merged.find(p => p.userId?.toLowerCase() === currentUser.email.toLowerCase()) || merged.find(p => p.id === project.id);
         if (userProj) {
-          setProject(userProj);
-          localStorage.setItem('prosur_current_project', JSON.stringify(userProj));
+          const safeProj = sanitizeProject(userProj);
+          setProject(safeProj);
+          localStorage.setItem('prosur_current_project', JSON.stringify(safeProj));
         }
       }
 
@@ -543,11 +611,11 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
   }, [currentUser?.email]);
 
   const handleSaveProject = async () => {
-    const projectToSave: ProjectData = {
+    const projectToSave = sanitizeProject({
       ...project,
       userId: currentUser?.email || project.userId || 'usuario-local',
       updatedAt: new Date().toISOString()
-    };
+    });
 
     setProject(projectToSave);
     localStorage.setItem('prosur_current_project', JSON.stringify(projectToSave));
@@ -984,30 +1052,38 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
   };
 
   const handleUpdateProjectAdmin = async (updatedProj: ProjectData) => {
-    const updatedList = allProjects.map(p => p.id === updatedProj.id ? updatedProj : p);
+    const safeProj = sanitizeProject({
+      ...updatedProj,
+      updatedAt: new Date().toISOString()
+    });
+
+    const updatedList = allProjects.map(p => p.id === safeProj.id ? safeProj : p);
     setAllProjects(updatedList);
     localStorage.setItem('prosur_all_projects_db', JSON.stringify(updatedList));
 
-    if (project.id === updatedProj.id) {
-      setProject(updatedProj);
-      localStorage.setItem('prosur_current_project', JSON.stringify(updatedProj));
+    if (project.id === safeProj.id) {
+      setProject(safeProj);
+      localStorage.setItem('prosur_current_project', JSON.stringify(safeProj));
     }
 
     try {
       await supabase.from('projects').upsert({
-        id: updatedProj.id,
-        title: updatedProj.title,
-        company_id: updatedProj.companyId,
-        category_id: updatedProj.categoryId,
-        scope: updatedProj.scope,
-        problem: updatedProj.problem,
-        solution: updatedProj.solution,
-        verifiable_metrics: updatedProj.verifiableMetrics,
-        github_url: updatedProj.githubUrl,
-        youtube_url: updatedProj.youtubeUrl,
-        demo_status: updatedProj.demoStatus,
-        demo_date: updatedProj.demoDate,
-        updated_at: new Date().toISOString()
+        id: safeProj.id,
+        user_id: safeProj.userId,
+        title: safeProj.title,
+        company_id: safeProj.companyId,
+        category_id: safeProj.categoryId,
+        scope: safeProj.scope,
+        problem: safeProj.problem,
+        solution: safeProj.solution,
+        verifiable_metrics: safeProj.verifiableMetrics,
+        github_url: safeProj.githubUrl,
+        youtube_url: safeProj.youtubeUrl,
+        demo_status: safeProj.demoStatus,
+        demo_date: safeProj.demoDate,
+        compliance_checks: safeProj.complianceChecks,
+        security_checks: safeProj.securityChecks,
+        updated_at: safeProj.updatedAt
       });
     } catch (e) {
       console.log('Error sincronizando actualización en Supabase', e);
@@ -1031,7 +1107,7 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
     };
     setProject(prev => ({
       ...prev,
-      milestones: [...prev.milestones, newM]
+      milestones: [...(prev.milestones || []), newM]
     }));
     setHasUnsavedChanges(true);
     setNewMilestoneTitle('');
@@ -1046,22 +1122,28 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
   };
 
   const filteredProjects = allProjects.filter(p => {
+    if (!p) return false;
     const matchCompany = adminCompanyFilter === 'all' || p.companyId === adminCompanyFilter;
     const matchCategory = adminCategoryFilter === 'all' || p.categoryId === adminCategoryFilter;
-    const matchSearch = adminSearch === '' || 
-      p.title.toLowerCase().includes(adminSearch.toLowerCase()) || 
-      p.members.some(m => m.name.toLowerCase().includes(adminSearch.toLowerCase())) ||
-      p.scope.toLowerCase().includes(adminSearch.toLowerCase());
-    return matchCompany && matchCategory && matchSearch;
+    const q = (adminSearch || '').toLowerCase().trim();
+    if (!q) return matchCompany && matchCategory;
+
+    const titleMatch = (p.title || '').toLowerCase().includes(q);
+    const scopeMatch = (p.scope || '').toLowerCase().includes(q);
+    const membersMatch = Array.isArray(p.members) && p.members.some(m => (m?.name || '').toLowerCase().includes(q));
+    return matchCompany && matchCategory && (titleMatch || scopeMatch || membersMatch);
   });
 
   const filteredUsers = allUsers.filter(u => {
+    if (!u) return false;
     const matchCompany = adminCompanyFilter === 'all' || u.companyId === adminCompanyFilter;
     const matchCategory = adminCategoryFilter === 'all' || !u.categoryId || u.categoryId === adminCategoryFilter;
-    const matchSearch = adminSearch === '' || 
-      u.name.toLowerCase().includes(adminSearch.toLowerCase()) || 
-      u.email.toLowerCase().includes(adminSearch.toLowerCase());
-    return matchCompany && matchCategory && matchSearch;
+    const q = (adminSearch || '').toLowerCase().trim();
+    if (!q) return matchCompany && matchCategory;
+
+    const nameMatch = (u.name || '').toLowerCase().includes(q);
+    const emailMatch = (u.email || '').toLowerCase().includes(q);
+    return matchCompany && matchCategory && (nameMatch || emailMatch);
   });
 
   return (
@@ -1899,7 +1981,7 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
           <div className="flex border-b border-gray-200 overflow-x-auto space-x-2">
             {[
               { id: 'project', label: '1. Ficha y Alcance', icon: FileText },
-              { id: 'team', label: `2. Integrantes (${project.members.length})`, icon: Users },
+              { id: 'team', label: `2. Integrantes (${(project?.members || []).length})`, icon: Users },
               { id: 'checklists', label: '3. Checklists de Calidad', icon: ShieldCheck },
               { id: 'milestones', label: '4. Avances & Bitácora', icon: Clock },
               { id: 'demo', label: '5. Demo de Validación', icon: Video }
@@ -2158,7 +2240,7 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-gray-100">
                 <div>
                   <h2 className="text-xl font-black uppercase tracking-tight text-gray-900">
-                    Integrantes Registrados ({project.members.length})
+                    Integrantes Registrados ({(project?.members || []).length})
                   </h2>
                   <p className="text-xs text-gray-500 mt-0.5">
                     Todos los integrantes listados recibirán acreditación y diploma oficial en el concurso del Viernes 15 de Enero.
@@ -2167,7 +2249,7 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {project.members.map((member, idx) => (
+                {(project?.members || []).map((member, idx) => (
                   <div key={member.id} className="p-5 rounded-xl border border-gray-200 bg-gray-50/50 flex flex-col justify-between">
                     <div>
                       <div className="flex items-start justify-between gap-2 mb-2">
@@ -2185,7 +2267,7 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
                           >
                             <Edit className="w-4 h-4" />
                           </button>
-                          {project.members.length > 1 && (
+                          {(project?.members || []).length > 1 && (
                             <button 
                               onClick={() => {
                                 handleRemoveMember(member.id);
@@ -2301,7 +2383,7 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
                     { key: 'company_endorsed', label: 'Validado por la Empresa Participante', desc: 'Cuenta con la aprobación y respaldo de los líderes del proceso en la empresa.' },
                     { key: 'repo_available', label: 'Código y Documentación Lista', desc: 'Repositorio de GitHub o documentación técnica disponible para auditoría del jurado.' }
                   ].map(item => {
-                    const isChecked = project.complianceChecks[item.key] || false;
+                    const isChecked = Boolean(project?.complianceChecks && project.complianceChecks[item.key]);
                     return (
                       <div 
                         key={item.key} 
@@ -2309,7 +2391,7 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
                           setProject({
                             ...project,
                             complianceChecks: {
-                              ...project.complianceChecks,
+                              ...(project?.complianceChecks || {}),
                               [item.key]: !isChecked
                             }
                           });
@@ -2348,7 +2430,7 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
                     { key: 'human_in_the_loop', label: 'Protocolo Human-in-the-Loop', desc: 'Las decisiones sensibles de negocio cuentan con validación y supervisión humana.' },
                     { key: 'ip_compliance', label: 'Uso de Licencias Autorizadas', desc: 'Todas las librerías y modelos cuentan con licencias permisivas comerciales.' }
                   ].map(item => {
-                    const isChecked = project.securityChecks[item.key] || false;
+                    const isChecked = Boolean(project?.securityChecks && project.securityChecks[item.key]);
                     return (
                       <div 
                         key={item.key} 
@@ -2356,7 +2438,7 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
                           setProject({
                             ...project,
                             securityChecks: {
-                              ...project.securityChecks,
+                              ...(project?.securityChecks || {}),
                               [item.key]: !isChecked
                             }
                           });
@@ -2394,13 +2476,13 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
               </div>
 
               <div className="relative border-l-2 border-gray-200 ml-4 pl-6 space-y-8">
-                {project.milestones.map((m) => (
+                {(project?.milestones || []).map((m) => (
                   <div key={m.id} className="relative group">
                     <div 
                       onClick={() => {
                         setProject({
                           ...project,
-                          milestones: project.milestones.map(item => 
+                          milestones: (project?.milestones || []).map(item => 
                             item.id === m.id ? { ...item, completed: !item.completed } : item
                           )
                         });
@@ -2544,9 +2626,9 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
                   Título del Proyecto *
                 </label>
                 <input 
-                  type="text"
+                  type="text" 
                   required
-                  value={editingProject.title}
+                  value={editingProject.title || ''}
                   onChange={(e) => setEditingProject({ ...editingProject, title: e.target.value })}
                   className="w-full p-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-[#CC2027]"
                 />
@@ -2558,7 +2640,7 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
                     Empresa Asignada *
                   </label>
                   <select 
-                    value={editingProject.companyId}
+                    value={editingProject.companyId || 'prosur'}
                     onChange={(e) => setEditingProject({ ...editingProject, companyId: e.target.value })}
                     className="w-full p-2.5 rounded-xl border border-gray-200 text-xs font-semibold focus:outline-none focus:border-[#CC2027]"
                   >
@@ -2573,7 +2655,7 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
                     Categoría *
                   </label>
                   <select 
-                    value={editingProject.categoryId}
+                    value={editingProject.categoryId || 'A'}
                     onChange={(e) => setEditingProject({ ...editingProject, categoryId: e.target.value })}
                     className="w-full p-2.5 rounded-xl border border-gray-200 text-xs font-semibold focus:outline-none focus:border-[#CC2027]"
                   >
@@ -2590,7 +2672,7 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
                 </label>
                 <textarea 
                   rows={3}
-                  value={editingProject.scope}
+                  value={editingProject.scope || ''}
                   onChange={(e) => setEditingProject({ ...editingProject, scope: e.target.value })}
                   className="w-full p-2.5 rounded-xl border border-gray-200 text-xs focus:outline-none focus:border-[#CC2027]"
                 />
@@ -2602,7 +2684,7 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
                 </label>
                 <textarea 
                   rows={2}
-                  value={editingProject.verifiableMetrics}
+                  value={editingProject.verifiableMetrics || ''}
                   onChange={(e) => setEditingProject({ ...editingProject, verifiableMetrics: e.target.value })}
                   className="w-full p-2.5 rounded-xl border border-gray-200 text-xs focus:outline-none focus:border-[#CC2027]"
                 />
@@ -2614,7 +2696,7 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
                     Estado Demo
                   </label>
                   <select 
-                    value={editingProject.demoStatus}
+                    value={editingProject.demoStatus || 'pending'}
                     onChange={(e) => setEditingProject({ ...editingProject, demoStatus: e.target.value as any })}
                     className="w-full p-2.5 rounded-xl border border-gray-200 text-xs font-medium focus:outline-none focus:border-[#CC2027]"
                   >

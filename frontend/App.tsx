@@ -524,6 +524,49 @@ function CourseView({ setView }) {
   );
 }
 
+class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { hasError: boolean; error: any }> {
+  constructor(props: { children: React.ReactNode }) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error: any) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error: any, errorInfo: any) {
+    console.error("ErrorBoundary caught an error:", error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6 text-center">
+          <div className="bg-white p-8 sm:p-10 rounded-2xl border border-gray-200 shadow-xl max-w-md w-full animate-in fade-in zoom-in-95 duration-200">
+            <div className="w-14 h-14 rounded-2xl bg-red-50 text-[#CC2027] border border-red-200 flex items-center justify-center mx-auto mb-5 font-black text-2xl shadow-xs">
+              !
+            </div>
+            <h2 className="text-xl font-black text-gray-900 mb-2 uppercase tracking-tight">Portal en Actualización</h2>
+            <p className="text-xs text-gray-500 mb-6 leading-relaxed">
+              Los datos del proyecto se actualizaron. Haz clic en el botón para recargar la vista de forma segura.
+            </p>
+            <button
+              onClick={() => {
+                localStorage.removeItem('prosur_current_project');
+                window.location.reload();
+              }}
+              className="w-full py-3.5 bg-[#CC2027] hover:bg-[#b01b21] text-white font-bold text-xs uppercase tracking-wider rounded-xl transition-all cursor-pointer shadow-md active:scale-95"
+            >
+              Recargar Proyecto
+            </button>
+          </div>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
 // --- COMPONENTE PRINCIPAL (LANDING) ---
 export default function App() {
   const [currentView, setCurrentView] = useState(() => {
@@ -548,7 +591,11 @@ export default function App() {
   }
 
   if (currentView === 'portal') {
-    return <ProjectPortal onBack={() => handleSetView('landing')} initialCategory={portalCategory} />;
+    return (
+      <ErrorBoundary>
+        <ProjectPortal onBack={() => handleSetView('landing')} initialCategory={portalCategory} />
+      </ErrorBoundary>
+    );
   }
 
   return (
