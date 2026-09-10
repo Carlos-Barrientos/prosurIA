@@ -954,15 +954,68 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
   };
 
   const handleDeleteUser = async (userEmailOrId: string) => {
-    if (!confirm('¿Estás seguro de que deseas eliminar este usuario registrado?')) return;
-    const updated = allUsers.filter(u => u.id !== userEmailOrId && u.email.toLowerCase() !== userEmailOrId.toLowerCase());
-    setAllUsers(updated);
-    localStorage.setItem('prosur_all_users_db', JSON.stringify(updated));
-    try {
-      await fetch(`/api/users/${encodeURIComponent(userEmailOrId)}`, { method: 'DELETE' });
-    } catch (e) {
-      console.log('Error deleting user:', e);
+    const targetUser = allUsers.find(u => u.id === userEmailOrId || u.email?.toLowerCase().trim() === userEmailOrId.toLowerCase().trim());
+    const targetEmail = targetUser?.email?.toLowerCase().trim() || userEmailOrId.toLowerCase().trim();
+
+    // Buscar si este usuario tiene un proyecto asociado
+    const associatedProject = allProjects.find(p => p.userId?.toLowerCase().trim() === targetEmail);
+
+    let confirmMsg = `¿Estás seguro de que deseas eliminar permanentemente al usuario "${targetUser?.name || targetEmail}"?`;
+    if (associatedProject) {
+      confirmMsg = `¿Estás seguro de que deseas eliminar permanentemente al usuario "${targetUser?.name || targetEmail}" y su proyecto asociado "${associatedProject.title || 'Sin Título'}"?\n\nEsta acción eliminará de forma definitiva:\n• La cuenta del usuario\n• Su proyecto registrado\n• Los integrantes del equipo e hitos`;
     }
+
+    if (!window.confirm(confirmMsg)) return;
+
+    // 1. Eliminar usuario de estado y localStorage
+    const updatedUsers = allUsers.filter(u => u.id !== userEmailOrId && u.email?.toLowerCase().trim() !== targetEmail);
+    setAllUsers(updatedUsers);
+    localStorage.setItem('prosur_all_users_db', JSON.stringify(updatedUsers));
+
+    // 2. Si tenía proyecto asociado, eliminarlo de estado y localStorage
+    if (associatedProject) {
+      const updatedProjects = allProjects.filter(p => p.id !== associatedProject.id);
+      setAllProjects(updatedProjects);
+      localStorage.setItem('prosur_all_projects_db', JSON.stringify(updatedProjects));
+
+      if (project.id === associatedProject.id) {
+        localStorage.removeItem('prosur_current_project');
+        setProject(createEmptyProject(currentUser?.email || 'local-user', initialCategory || 'A', currentUser?.companyId || 'prosur'));
+      }
+    }
+
+    // 3. Eliminar de Supabase
+    try {
+      await supabase.from('registered_users').delete().eq('email', targetEmail);
+      if (targetUser?.id) {
+        await supabase.from('registered_users').delete().eq('id', targetUser.id);
+      }
+
+      if (associatedProject) {
+        await supabase.from('team_members').delete().eq('project_id', associatedProject.id);
+        await supabase.from('project_milestones').delete().eq('project_id', associatedProject.id);
+        await supabase.from('projects').delete().eq('id', associatedProject.id);
+      }
+    } catch (e) {
+      console.log('Error eliminando en Supabase:', e);
+    }
+
+    // 4. Eliminar del backend de Node
+    try {
+      await fetch(`/api/users/${encodeURIComponent(targetEmail)}`, { method: 'DELETE' });
+      if (targetUser?.id && targetUser.id !== targetEmail) {
+        await fetch(`/api/users/${encodeURIComponent(targetUser.id)}`, { method: 'DELETE' });
+      }
+      if (associatedProject) {
+        await fetch(`/api/projects/${encodeURIComponent(associatedProject.id)}`, { method: 'DELETE' });
+      }
+    } catch (e) {
+      console.log('Error eliminando en backend:', e);
+    }
+
+    alert(associatedProject 
+      ? 'Usuario y su proyecto asociado eliminados exitosamente.' 
+      : 'Usuario eliminado exitosamente.');
   };
 
   const handleLogout = () => {
@@ -1036,16 +1089,26 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
     // Si el proyecto actual activo es el que se borra, resetearlo
     if (project.id === projectId) {
       localStorage.removeItem('prosur_current_project');
+      setProject(createEmptyProject(currentUser?.email || 'local-user', initialCategory || 'A', currentUser?.companyId || 'prosur'));
     }
 
-    // 2. Eliminar en Supabase
+    // 2. Eliminar en Supabase (limpiar integrantes e hitos primero)
     try {
+      await supabase.from('team_members').delete().eq('project_id', projectId);
+      await supabase.from('project_milestones').delete().eq('project_id', projectId);
       const { error } = await supabase.from('projects').delete().eq('id', projectId);
       if (error) {
         console.error('Error al eliminar en Supabase:', error);
       }
     } catch (e) {
       console.log('Error de red al borrar en Supabase', e);
+    }
+
+    // 3. Eliminar en backend de Node
+    try {
+      await fetch(`/api/projects/${encodeURIComponent(projectId)}`, { method: 'DELETE' });
+    } catch (e) {
+      console.log('Error al eliminar proyecto en backend:', e);
     }
 
     alert('Proyecto eliminado exitosamente.');
