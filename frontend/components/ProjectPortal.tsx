@@ -1126,27 +1126,26 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
                 </div>
               </div>
 
-              <div className="md:col-span-7 p-8 sm:p-10">
-                <div className="flex border-b border-gray-200 mb-8">
-                  <button 
-                    onClick={() => setAuthMode('login')}
-                    className={`pb-3 px-4 text-xs font-bold uppercase tracking-wider transition-colors border-b-2 cursor-pointer ${authMode === 'login' ? 'border-[#CC2027] text-[#CC2027]' : 'border-transparent text-gray-400 hover:text-gray-700'}`}
-                  >
-                    Iniciar Sesión
-                  </button>
-                  <button 
-                    onClick={() => setAuthMode('register')}
-                    className={`pb-3 px-4 text-xs font-bold uppercase tracking-wider transition-colors border-b-2 cursor-pointer ${authMode === 'register' ? 'border-[#CC2027] text-[#CC2027]' : 'border-transparent text-gray-400 hover:text-gray-700'}`}
-                  >
-                    Crear Nuevo Usuario / Equipo
-                  </button>
+              <div className="md:col-span-7 p-8 sm:p-10 flex flex-col justify-center">
+                <div className="mb-6">
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-[#CC2027] block mb-1">
+                    Acceso Oficial
+                  </span>
+                  <h3 className="text-xl font-black text-gray-900 tracking-tight">
+                    {authMode === 'login' ? 'Iniciar Sesión' : 'Inscripción de Proyecto'}
+                  </h3>
+                  <p className="text-xs text-gray-500 mt-1">
+                    {authMode === 'login' 
+                      ? 'Ingresa tus credenciales institucionales para acceder a tu proyecto.' 
+                      : 'Completa los datos para registrar a tu equipo y proyecto en el Reto IA.'}
+                  </p>
                 </div>
 
-                <form onSubmit={handleLogin} className="space-y-5">
+                <form onSubmit={handleLogin} className="space-y-4">
                   {authMode === 'register' && (
                     <div>
-                      <label className="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-2">
-                        Nombre Completo o Nombre del Equipo *
+                      <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-700 mb-1.5">
+                        Nombre del Colaborador o Equipo *
                       </label>
                       <div className="relative">
                         <User className="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -1155,16 +1154,16 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
                           required
                           value={authName} 
                           onChange={(e) => setAuthName(e.target.value)} 
-                          placeholder="Ej: Equipo Optimización Logística"
-                          className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-[#CC2027] focus:ring-2 focus:ring-red-600/10"
+                          placeholder="Ej: Juan Pérez / Equipo Innovación"
+                          className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 text-xs focus:outline-none focus:border-[#CC2027] focus:ring-2 focus:ring-red-600/10"
                         />
                       </div>
                     </div>
                   )}
 
                   <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-2">
-                      Correo Electrónico Institucional *
+                    <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-700 mb-1.5">
+                      Correo Institucional *
                     </label>
                     <div className="relative">
                       <Mail className="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -1174,13 +1173,13 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
                         value={authEmail} 
                         onChange={(e) => setAuthEmail(e.target.value)} 
                         placeholder="tu.correo@empresa.com.mx"
-                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-[#CC2027] focus:ring-2 focus:ring-red-600/10"
+                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 text-xs focus:outline-none focus:border-[#CC2027] focus:ring-2 focus:ring-red-600/10"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-2">
+                    <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-700 mb-1.5">
                       Contraseña *
                     </label>
                     <div className="relative">
@@ -1191,7 +1190,7 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
                         value={authPassword} 
                         onChange={(e) => setAuthPassword(e.target.value)} 
                         placeholder="••••••••"
-                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-[#CC2027] focus:ring-2 focus:ring-red-600/10"
+                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 text-xs focus:outline-none focus:border-[#CC2027] focus:ring-2 focus:ring-red-600/10"
                       />
                     </div>
                   </div>
@@ -1199,13 +1198,13 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
                   {authMode === 'register' && (
                     <>
                       <div>
-                        <label className="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-2">
-                          ¿En qué empresa implementarás la mejora? *
+                        <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-700 mb-1.5">
+                          Empresa donde implementarás la mejora *
                         </label>
                         <select 
                           value={authCompany} 
                           onChange={(e) => setAuthCompany(e.target.value)}
-                          className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm font-medium focus:outline-none focus:border-[#CC2027]"
+                          className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs font-medium focus:outline-none focus:border-[#CC2027]"
                         >
                           {PARTICIPATING_COMPANIES.map(c => (
                             <option key={c.id} value={c.id}>{c.name} - {c.subtitle}</option>
@@ -1214,38 +1213,31 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
                       </div>
 
                       {authCompany === 'multiempresa' && (
-                        <div className="p-5 rounded-2xl bg-gray-50/90 border border-gray-200/90 space-y-4 animate-in fade-in duration-200">
-                          <div className="flex items-center justify-between pb-2.5 border-b border-gray-200/60">
-                            <div className="flex items-center gap-2.5">
-                              <span className="w-2 h-2 rounded-full bg-[#CC2027]"></span>
-                              <span className="text-xs font-bold uppercase tracking-wider text-gray-900">
-                                Empresas que integran tu desarrollo Multi Empresa
-                              </span>
-                            </div>
-                            <span className="text-[10px] font-bold text-gray-500 bg-white px-2.5 py-0.5 rounded-full border border-gray-200">
-                              {authTargetCompanies.length} seleccionadas
+                        <div className="p-4 rounded-xl bg-gray-50 border border-gray-200 space-y-3">
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-bold text-gray-900">
+                              Empresas Participantes
+                            </span>
+                            <span className="text-[10px] font-semibold text-gray-500 bg-white px-2 py-0.5 rounded-md border border-gray-200">
+                              {authTargetCompanies.length} elegidas
                             </span>
                           </div>
-                          
-                          <p className="text-xs text-gray-500 leading-relaxed font-normal">
-                            Fomentamos la colaboración transversal. Marca las empresas de donde son los integrantes o donde impactará la solución:
-                          </p>
 
-                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 pt-1">
+                          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 pt-1">
                             {PARTICIPATING_COMPANIES.filter(c => !['otros', 'multiempresa'].includes(c.id)).map(c => {
                               const checked = authTargetCompanies.includes(c.id);
                               return (
                                 <label 
                                   key={c.id} 
-                                  className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl border text-xs cursor-pointer transition-all duration-200 ${
+                                  className={`flex items-center gap-2 p-2 rounded-lg border text-xs cursor-pointer transition-all ${
                                     checked 
-                                      ? 'bg-white border-[#CC2027] ring-1 ring-[#CC2027]/20 shadow-xs text-gray-900 font-bold' 
-                                      : 'bg-white/80 hover:bg-white border-gray-200 text-gray-700 hover:border-gray-300'
+                                      ? 'bg-white border-[#CC2027] text-gray-900 font-bold shadow-2xs' 
+                                      : 'bg-white/80 hover:bg-white border-gray-200 text-gray-600'
                                   }`}
                                 >
                                   <input 
-                                    type="checkbox"
-                                    checked={checked}
+                                    type="checkbox" 
+                                    checked={checked} 
                                     onChange={(e) => {
                                       if (e.target.checked) {
                                         setAuthTargetCompanies([...authTargetCompanies, c.id]);
@@ -1253,9 +1245,9 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
                                         setAuthTargetCompanies(authTargetCompanies.filter(id => id !== c.id));
                                       }
                                     }}
-                                    className="w-4 h-4 rounded text-[#CC2027] focus:ring-[#CC2027] border-gray-300 cursor-pointer"
+                                    className="w-3.5 h-3.5 rounded text-[#CC2027] focus:ring-[#CC2027] border-gray-300 cursor-pointer"
                                   />
-                                  <span className="whitespace-nowrap font-medium text-xs text-gray-900">{c.name}</span>
+                                  <span className="truncate">{c.name}</span>
                                 </label>
                               );
                             })}
@@ -1264,13 +1256,13 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
                       )}
 
                       <div>
-                        <label className="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-2">
+                        <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-700 mb-1.5">
                           Categoría Oficial de Registro *
                         </label>
                         <select 
                           value={authCategory} 
                           onChange={(e) => setAuthCategory(e.target.value)}
-                          className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm font-medium focus:outline-none focus:border-[#CC2027]"
+                          className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs font-medium focus:outline-none focus:border-[#CC2027]"
                         >
                           {CATEGORIES.map(cat => (
                             <option key={cat.id} value={cat.id}>Categoría {cat.id}: {cat.name}</option>
@@ -1282,44 +1274,31 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
 
                   <button 
                     type="submit"
-                    className="w-full py-3.5 rounded-xl bg-[#CC2027] hover:bg-[#b01b21] text-white font-bold text-xs uppercase tracking-widest shadow-md hover:shadow-lg transition-all cursor-pointer"
+                    className="w-full py-3 rounded-xl bg-[#CC2027] hover:bg-[#b01b21] text-white font-bold text-xs uppercase tracking-wider shadow-sm hover:shadow transition-all cursor-pointer mt-2"
                   >
-                    {authMode === 'login' ? 'Entrar al Portal' : 'Registrar Cuenta & Continuar'}
+                    {authMode === 'login' ? 'Entrar al Portal' : 'Registrar Proyecto'}
                   </button>
 
-                  {/* Acceso directo para alternar entre Iniciar Sesión y Crear Nuevo Usuario */}
-                  <div className="pt-2 text-center">
+                  {/* Acceso limpio y minimalista sin barras ni textos recargados */}
+                  <div className="pt-3 text-center">
                     {authMode === 'login' ? (
-                      <div className="space-y-2">
-                        <div className="relative flex py-1 items-center">
-                          <div className="flex-grow border-t border-gray-200"></div>
-                          <span className="shrink mx-3 text-[11px] text-gray-400 uppercase tracking-wider font-semibold">¿No tienes cuenta?</span>
-                          <div className="flex-grow border-t border-gray-200"></div>
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => setAuthMode('register')}
-                          className="w-full py-3 rounded-xl bg-gray-50 hover:bg-gray-100 text-gray-800 border border-gray-200 hover:border-gray-300 font-bold text-xs uppercase tracking-wider transition-all cursor-pointer flex items-center justify-center gap-2"
-                        >
-                          <UserPlus className="w-4 h-4 text-[#CC2027]" />
-                          <span>Crear Nuevo Usuario / Inscribir Proyecto</span>
-                        </button>
-                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setAuthMode('register')}
+                        className="text-xs text-gray-600 hover:text-[#CC2027] font-medium transition-colors cursor-pointer inline-flex items-center gap-1.5"
+                      >
+                        <span>¿No tienes cuenta?</span>
+                        <span className="font-bold underline decoration-red-200 hover:decoration-[#CC2027]">Inscribir Proyecto</span>
+                      </button>
                     ) : (
-                      <div className="space-y-2">
-                        <div className="relative flex py-1 items-center">
-                          <div className="flex-grow border-t border-gray-200"></div>
-                          <span className="shrink mx-3 text-[11px] text-gray-400 uppercase tracking-wider font-semibold">¿Ya te registraste?</span>
-                          <div className="flex-grow border-t border-gray-200"></div>
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => setAuthMode('login')}
-                          className="w-full py-3 rounded-xl bg-gray-50 hover:bg-gray-100 text-gray-800 border border-gray-200 hover:border-gray-300 font-bold text-xs uppercase tracking-wider transition-all cursor-pointer flex items-center justify-center gap-2"
-                        >
-                          <span>Iniciar Sesión con mi Cuenta</span>
-                        </button>
-                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setAuthMode('login')}
+                        className="text-xs text-gray-600 hover:text-[#CC2027] font-medium transition-colors cursor-pointer inline-flex items-center gap-1.5"
+                      >
+                        <span>¿Ya tienes cuenta?</span>
+                        <span className="font-bold underline decoration-red-200 hover:decoration-[#CC2027]">Iniciar Sesión</span>
+                      </button>
                     )}
                   </div>
                 </form>
