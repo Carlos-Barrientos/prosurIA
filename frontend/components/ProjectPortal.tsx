@@ -31,6 +31,7 @@ import {
   CheckSquare,
   Square,
   Edit,
+  UserPlus,
   X
 } from 'lucide-react';
 
@@ -1285,6 +1286,42 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
                   >
                     {authMode === 'login' ? 'Entrar al Portal' : 'Registrar Cuenta & Continuar'}
                   </button>
+
+                  {/* Acceso directo para alternar entre Iniciar Sesión y Crear Nuevo Usuario */}
+                  <div className="pt-2 text-center">
+                    {authMode === 'login' ? (
+                      <div className="space-y-2">
+                        <div className="relative flex py-1 items-center">
+                          <div className="flex-grow border-t border-gray-200"></div>
+                          <span className="shrink mx-3 text-[11px] text-gray-400 uppercase tracking-wider font-semibold">¿No tienes cuenta?</span>
+                          <div className="flex-grow border-t border-gray-200"></div>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setAuthMode('register')}
+                          className="w-full py-3 rounded-xl bg-gray-50 hover:bg-gray-100 text-gray-800 border border-gray-200 hover:border-gray-300 font-bold text-xs uppercase tracking-wider transition-all cursor-pointer flex items-center justify-center gap-2"
+                        >
+                          <UserPlus className="w-4 h-4 text-[#CC2027]" />
+                          <span>Crear Nuevo Usuario / Inscribir Proyecto</span>
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="space-y-2">
+                        <div className="relative flex py-1 items-center">
+                          <div className="flex-grow border-t border-gray-200"></div>
+                          <span className="shrink mx-3 text-[11px] text-gray-400 uppercase tracking-wider font-semibold">¿Ya te registraste?</span>
+                          <div className="flex-grow border-t border-gray-200"></div>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setAuthMode('login')}
+                          className="w-full py-3 rounded-xl bg-gray-50 hover:bg-gray-100 text-gray-800 border border-gray-200 hover:border-gray-300 font-bold text-xs uppercase tracking-wider transition-all cursor-pointer flex items-center justify-center gap-2"
+                        >
+                          <span>Iniciar Sesión con mi Cuenta</span>
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </form>
               </div>
             </div>
