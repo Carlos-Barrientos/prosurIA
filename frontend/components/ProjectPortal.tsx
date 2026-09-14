@@ -287,6 +287,15 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
   // Modal para edición de proyecto por parte del Administrador
   const [editingProject, setEditingProject] = useState<ProjectData | null>(null);
 
+  // Modal y formulario para registrar proyecto adicional
+  const [showNewProjectModal, setShowNewProjectModal] = useState<boolean>(false);
+  const [newProjTitle, setNewProjTitle] = useState<string>('');
+  const [newProjCategory, setNewProjCategory] = useState<string>('A');
+  const [newProjCompany, setNewProjCompany] = useState<string>('prosur');
+  const [newProjTargetCompanies, setNewProjTargetCompanies] = useState<string[]>([]);
+  const [newProjScope, setNewProjScope] = useState<string>('');
+  const [isCreatingProject, setIsCreatingProject] = useState<boolean>(false);
+
   const [activeTab, setActiveTab] = useState<'project' | 'team' | 'checklists' | 'milestones' | 'demo'>('project');
   const [project, setProject] = useState<ProjectData>(() => {
     const saved = localStorage.getItem('prosur_current_project');
@@ -448,9 +457,15 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
 
       // 5. Vincular el proyecto activo del usuario actual
       if (currentUser && currentUser.role === 'participant') {
-        const userProj = merged.find(p => p.userId?.toLowerCase() === currentUser.email.toLowerCase()) || merged.find(p => p.id === project.id);
-        if (userProj) {
-          const safeProj = sanitizeProject(userProj);
+        const userProjects = merged.filter(p => p.userId?.toLowerCase() === currentUser.email.toLowerCase());
+        const savedCurrent = localStorage.getItem('prosur_current_project');
+        let currentProjId = '';
+        if (savedCurrent) {
+          try { currentProjId = JSON.parse(savedCurrent)?.id; } catch (e) {}
+        }
+        const activeProj = userProjects.find(p => p.id === currentProjId) || userProjects[0] || merged.find(p => p.id === project.id);
+        if (activeProj) {
+          const safeProj = sanitizeProject(activeProj);
           setProject(safeProj);
           localStorage.setItem('prosur_current_project', JSON.stringify(safeProj));
         }
@@ -757,10 +772,11 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
       // Si el correo ya tiene una cuenta o un proyecto creado, NO permitir volver a crearlo ni saltar la contraseña
       if (existingUser || existingProj) {
         alert(
-          `¡Atención de Seguridad!\n\n` +
-          `El correo "${email}" ya cuenta con una cuenta y proyecto registrados en el Reto IA.\n\n` +
-          `Por la privacidad y seguridad de tu proyecto, no es posible registrar otro proyecto con este mismo correo desde este formulario.\n\n` +
-          `Por favor, haz clic en "Iniciar Sesión" e ingresa tu contraseña para ver y continuar editando tu proyecto.`
+          `¡Cuenta ya registrada!\n\n` +
+          `El correo "${email}" ya cuenta con una cuenta registrada en el Reto IA.\n\n` +
+          `Para inscribir otro proyecto adicional con esta misma cuenta:\n` +
+          `1. Haz clic en "Iniciar Sesión" con tu contraseña.\n` +
+          `2. Dentro de tu panel, pulsa el botón "+ Inscribir Otro Proyecto".`
         );
         setAuthMode('login');
         return;
@@ -939,11 +955,18 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
       setCurrentUser(participantUser);
       localStorage.setItem('prosur_portal_user', JSON.stringify(participantUser));
 
-      // Cargar proyecto existente
-      const userProj = existingProj || allProjects.find(p => p.userId?.toLowerCase().trim() === normalizedEmail);
-      if (userProj) {
-        setProject(userProj);
-        localStorage.setItem('prosur_current_project', JSON.stringify(userProj));
+      // Cargar proyecto existente (activo guardado o primero del usuario)
+      const userProjects = allProjects.filter(p => p.userId?.toLowerCase().trim() === normalizedEmail);
+      const savedCurrent = localStorage.getItem('prosur_current_project');
+      let currentProjId = '';
+      if (savedCurrent) {
+        try { currentProjId = JSON.parse(savedCurrent)?.id; } catch (e) {}
+      }
+      const activeProj = userProjects.find(p => p.id === currentProjId) || userProjects[0] || existingProj;
+      if (activeProj) {
+        const safeProj = sanitizeProject(activeProj);
+        setProject(safeProj);
+        localStorage.setItem('prosur_current_project', JSON.stringify(safeProj));
       } else {
         const freshProj = createEmptyProject(participantUser.email, existingUser?.categoryId || 'A', participantUser.companyId);
         setProject(freshProj);
@@ -958,12 +981,13 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
     const targetUser = allUsers.find(u => u.id === userEmailOrId || u.email?.toLowerCase().trim() === userEmailOrId.toLowerCase().trim());
     const targetEmail = targetUser?.email?.toLowerCase().trim() || userEmailOrId.toLowerCase().trim();
 
-    // Buscar si este usuario tiene un proyecto asociado
-    const associatedProject = allProjects.find(p => p.userId?.toLowerCase().trim() === targetEmail);
+    // Buscar todos los proyectos asociados a este usuario
+    const associatedProjects = allProjects.filter(p => p.userId?.toLowerCase().trim() === targetEmail);
 
     let confirmMsg = `¿Estás seguro de que deseas eliminar permanentemente al usuario "${targetUser?.name || targetEmail}"?`;
-    if (associatedProject) {
-      confirmMsg = `¿Estás seguro de que deseas eliminar permanentemente al usuario "${targetUser?.name || targetEmail}" y su proyecto asociado "${associatedProject.title || 'Sin Título'}"?\n\nEsta acción eliminará de forma definitiva:\n• La cuenta del usuario\n• Su proyecto registrado\n• Los integrantes del equipo e hitos`;
+    if (associatedProjects.length > 0) {
+      const titles = associatedProjects.map(p => `"${p.title || 'Sin Título'}"`).join(', ');
+      confirmMsg = `¿Estás seguro de que deseas eliminar permanentemente al usuario "${targetUser?.name || targetEmail}" y sus ${associatedProjects.length} proyecto(s) asociado(s)?\n\nProyectos a eliminar: ${titles}\n\nEsta acción eliminará de forma definitiva:\n• La cuenta del usuario\n• Todos sus proyectos registrados\n• Los integrantes del equipo e hitos`;
     }
 
     if (!window.confirm(confirmMsg)) return;
@@ -973,13 +997,14 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
     setAllUsers(updatedUsers);
     localStorage.setItem('prosur_all_users_db', JSON.stringify(updatedUsers));
 
-    // 2. Si tenía proyecto asociado, eliminarlo de estado y localStorage
-    if (associatedProject) {
-      const updatedProjects = allProjects.filter(p => p.id !== associatedProject.id);
+    // 2. Si tenía proyectos asociados, eliminarlos de estado y localStorage
+    if (associatedProjects.length > 0) {
+      const associatedIds = new Set(associatedProjects.map(p => p.id));
+      const updatedProjects = allProjects.filter(p => !associatedIds.has(p.id));
       setAllProjects(updatedProjects);
       localStorage.setItem('prosur_all_projects_db', JSON.stringify(updatedProjects));
 
-      if (project.id === associatedProject.id) {
+      if (associatedIds.has(project.id)) {
         localStorage.removeItem('prosur_current_project');
         setProject(createEmptyProject(currentUser?.email || 'local-user', initialCategory || 'A', currentUser?.companyId || 'prosur'));
       }
@@ -992,10 +1017,10 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
         await supabase.from('registered_users').delete().eq('id', targetUser.id);
       }
 
-      if (associatedProject) {
-        await supabase.from('team_members').delete().eq('project_id', associatedProject.id);
-        await supabase.from('project_milestones').delete().eq('project_id', associatedProject.id);
-        await supabase.from('projects').delete().eq('id', associatedProject.id);
+      for (const proj of associatedProjects) {
+        await supabase.from('team_members').delete().eq('project_id', proj.id);
+        await supabase.from('project_milestones').delete().eq('project_id', proj.id);
+        await supabase.from('projects').delete().eq('id', proj.id);
       }
     } catch (e) {
       console.log('Error eliminando en Supabase:', e);
@@ -1007,16 +1032,143 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
       if (targetUser?.id && targetUser.id !== targetEmail) {
         await fetch(`/api/users/${encodeURIComponent(targetUser.id)}`, { method: 'DELETE' });
       }
-      if (associatedProject) {
-        await fetch(`/api/projects/${encodeURIComponent(associatedProject.id)}`, { method: 'DELETE' });
+      for (const proj of associatedProjects) {
+        await fetch(`/api/projects/${encodeURIComponent(proj.id)}`, { method: 'DELETE' });
       }
     } catch (e) {
       console.log('Error eliminando en backend:', e);
     }
 
-    alert(associatedProject 
-      ? 'Usuario y su proyecto asociado eliminados exitosamente.' 
+    alert(associatedProjects.length > 0 
+      ? `Usuario y sus ${associatedProjects.length} proyecto(s) asociados eliminados exitosamente.` 
       : 'Usuario eliminado exitosamente.');
+  };
+
+  // Alternar entre proyectos registrados del usuario
+  const handleSwitchProject = (targetProj: ProjectData) => {
+    if (targetProj.id === project.id) return;
+
+    if (hasUnsavedChanges) {
+      const confirmSwitch = window.confirm(
+        'Tienes cambios sin guardar en el proyecto actual. ¿Deseas cambiar de proyecto sin guardar los cambios?'
+      );
+      if (!confirmSwitch) return;
+    }
+
+    const safeProj = sanitizeProject(targetProj);
+    setProject(safeProj);
+    setHasUnsavedChanges(false);
+    localStorage.setItem('prosur_current_project', JSON.stringify(safeProj));
+  };
+
+  // Crear un nuevo proyecto adicional para el usuario en sesión
+  const handleCreateAdditionalProject = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newProjTitle.trim()) {
+      alert('Por favor ingresa un título para el nuevo proyecto.');
+      return;
+    }
+    if (!currentUser?.email) {
+      alert('Debes tener una sesión activa para registrar un proyecto.');
+      return;
+    }
+
+    setIsCreatingProject(true);
+    try {
+      const userEmail = currentUser.email.toLowerCase().trim();
+      const cleanUserName = (currentUser.name || userEmail.split('@')[0]).replace(/\s*\(.*?\)/g, '').trim();
+
+      const blank = createEmptyProject(userEmail, newProjCategory, newProjCompany);
+      const newProj: ProjectData = {
+        ...blank,
+        id: 'proj-' + Date.now(),
+        title: newProjTitle.trim(),
+        companyId: newProjCompany,
+        categoryId: newProjCategory,
+        targetCompanies: newProjCompany === 'multiempresa' ? newProjTargetCompanies : undefined,
+        scope: newProjScope.trim() || blank.scope,
+        userId: userEmail,
+        members: [
+          {
+            id: 'm-' + Date.now(),
+            name: cleanUserName,
+            role: 'Líder de Proyecto',
+            email: userEmail,
+            phone: '',
+            company: newProjCompany
+          }
+        ],
+        updatedAt: new Date().toISOString()
+      };
+
+      // 1. Guardar localmente y cambiar de proyecto activo
+      setProject(newProj);
+      setHasUnsavedChanges(false);
+      localStorage.setItem('prosur_current_project', JSON.stringify(newProj));
+
+      setAllProjects(prev => {
+        const updated = [newProj, ...prev.filter(p => p.id !== newProj.id)];
+        localStorage.setItem('prosur_all_projects_db', JSON.stringify(updated));
+        return updated;
+      });
+
+      // 2. Guardar en Backend Node
+      fetch('/api/projects', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newProj)
+      }).catch(err => console.log('Error saving additional project to backend:', err));
+
+      // 3. Guardar en Supabase
+      try {
+        await supabase.from('projects').upsert({
+          id: newProj.id,
+          user_id: newProj.userId,
+          title: newProj.title,
+          company_id: newProj.companyId,
+          category_id: newProj.categoryId,
+          scope: newProj.scope,
+          problem: newProj.problem,
+          solution: newProj.solution,
+          verifiable_metrics: newProj.verifiableMetrics,
+          github_url: newProj.githubUrl,
+          youtube_url: newProj.youtubeUrl,
+          compliance_checks: newProj.complianceChecks,
+          security_checks: newProj.securityChecks,
+          updated_at: newProj.updatedAt
+        });
+
+        if (newProj.members && newProj.members.length > 0) {
+          await supabase.from('team_members').upsert(
+            newProj.members.map(m => ({
+              id: m.id,
+              project_id: newProj.id,
+              name: m.name || '',
+              role: m.role || '',
+              email: m.email || '',
+              phone: m.phone || ''
+            }))
+          );
+        }
+      } catch (sbErr) {
+        console.log('Error saving additional project to Supabase:', sbErr);
+      }
+
+      // Limpiar formulario y cerrar modal
+      setNewProjTitle('');
+      setNewProjScope('');
+      setNewProjCategory('A');
+      setNewProjCompany(currentUser.companyId || 'prosur');
+      setNewProjTargetCompanies([]);
+      setShowNewProjectModal(false);
+
+      alert(`¡Proyecto "${newProj.title}" creado exitosamente! Ahora puedes comenzar a completar su información e hitos.`);
+    } catch (error) {
+      console.error('Error creating additional project:', error);
+      alert('Ocurrió un error al crear el nuevo proyecto. Intenta nuevamente.');
+    } finally {
+      setIsCreatingProject(false);
+    }
   };
 
   const handleLogout = () => {
@@ -1855,7 +2007,7 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
                       <tbody className="divide-y divide-gray-100 text-xs">
                         {filteredUsers.map(u => {
                           const companyObj = PARTICIPATING_COMPANIES.find(c => c.id === u.companyId) || PARTICIPATING_COMPANIES[0];
-                          const userProject = (allProjects || []).find(
+                          const userProjects = (allProjects || []).filter(
                             p => p && ((p.userId && p.userId.toLowerCase().trim() === (u?.email || '').toLowerCase().trim()) || p.id === u?.id)
                           );
                           const initials = ((u?.name || u?.email || 'U'))
@@ -1923,19 +2075,30 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
                                 </span>
                               </td>
 
-                              {/* Estado del Proyecto */}
+                              {/* Estado y Proyectos Registrados */}
                               <td className="py-4 px-6">
-                                {userProject ? (
-                                  <div className="space-y-1">
+                                {userProjects.length > 0 ? (
+                                  <div className="space-y-2">
                                     <div className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase bg-emerald-50 text-emerald-700 border border-emerald-200">
                                       <CheckCircle2 className="w-3 h-3 text-emerald-600" />
-                                      <span>Registrado</span>
+                                      <span>{userProjects.length} {userProjects.length === 1 ? 'Proyecto' : 'Proyectos'}</span>
                                     </div>
-                                    <div className="font-semibold text-gray-900 truncate max-w-[220px]" title={userProject.title}>
-                                      {userProject.title}
-                                    </div>
-                                    <div className="text-[10px] text-gray-400 font-mono">
-                                      {userProject.milestones?.filter(m => m.completed).length || 0} de {userProject.milestones?.length || 4} hitos listos
+                                    <div className="space-y-1.5 max-w-[260px]">
+                                      {userProjects.map((p, pIdx) => (
+                                        <div key={p.id || pIdx} className="p-2 rounded-lg bg-gray-50 border border-gray-200/80">
+                                          <div className="flex items-center justify-between gap-1 mb-0.5">
+                                            <span className="font-semibold text-gray-900 text-xs truncate" title={p.title}>
+                                              {p.title || 'Sin Título'}
+                                            </span>
+                                            <span className="text-[9px] font-black uppercase px-1.5 py-0.2 rounded bg-white text-gray-700 border border-gray-200 shrink-0">
+                                              Cat. {p.categoryId}
+                                            </span>
+                                          </div>
+                                          <div className="text-[10px] text-gray-400 font-mono">
+                                            {p.milestones?.filter(m => m.completed).length || 0} de {p.milestones?.length || 4} hitos listos
+                                          </div>
+                                        </div>
+                                      ))}
                                     </div>
                                   </div>
                                 ) : (
@@ -1961,28 +2124,30 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
 
                               {/* Acciones */}
                               <td className="py-4 px-6 text-right">
-                                <div className="flex items-center justify-end gap-2">
-                                  {userProject && (
+                                <div className="flex items-center justify-end gap-1.5 flex-wrap">
+                                  {userProjects.map((p, pIdx) => (
                                     <button
+                                      key={p.id || pIdx}
                                       onClick={() => {
-                                        setProject(sanitizeProject(userProject));
+                                        setProject(sanitizeProject(p));
                                         setCurrentUser({
                                           email: u.email,
                                           name: u.name || u.email.split('@')[0],
                                           role: 'participant',
-                                          companyId: u.companyId || userProject.companyId || 'prosur'
+                                          companyId: u.companyId || p.companyId || 'prosur'
                                         });
+                                        localStorage.setItem('prosur_current_project', JSON.stringify(sanitizeProject(p)));
                                       }}
-                                      className="px-2.5 py-1.5 rounded-lg bg-gray-900 hover:bg-black text-white text-[10px] font-bold uppercase tracking-wider transition-colors cursor-pointer"
-                                      title="Ver y editar ficha del participante"
+                                      className="px-2 py-1.5 rounded-lg bg-gray-900 hover:bg-black text-white text-[10px] font-bold uppercase tracking-wider transition-colors cursor-pointer"
+                                      title={`Ver y editar ficha: ${p.title}`}
                                     >
-                                      Ver Ficha
+                                      {userProjects.length > 1 ? `Ver #${pIdx + 1}` : 'Ver Ficha'}
                                     </button>
-                                  )}
+                                  ))}
                                   <button
                                     onClick={() => handleDeleteUser(u.id || u.email)}
                                     className="p-1.5 rounded-lg bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 text-xs transition-colors cursor-pointer"
-                                    title="Eliminar usuario registrado"
+                                    title="Eliminar usuario registrado y todos sus proyectos"
                                   >
                                     <Trash2 className="w-3.5 h-3.5" />
                                   </button>
@@ -2004,6 +2169,64 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
       ) : (
         <div className="max-w-[1600px] mx-auto px-4 sm:px-6 py-10 space-y-8">
           
+          {/* Barra de Navegación de Proyectos del Participante */}
+          {currentUser?.role === 'participant' && (() => {
+            const myProjects = (allProjects || []).filter(
+              p => p && p.userId && p.userId.toLowerCase().trim() === currentUser.email?.toLowerCase().trim()
+            );
+            return (
+              <div className="bg-white rounded-2xl border border-gray-200 shadow-xs p-4 sm:p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-3 w-full md:w-auto">
+                  <div className="flex items-center gap-2 text-gray-900 font-black text-xs uppercase tracking-wider">
+                    <Layers className="w-4 h-4 text-[#CC2027]" />
+                    <span>Mis Proyectos ({myProjects.length})</span>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    {myProjects.map(p => {
+                      const isSelected = p.id === project.id;
+                      return (
+                        <button
+                          key={p.id}
+                          onClick={() => handleSwitchProject(p)}
+                          className={`group flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                            isSelected
+                              ? 'bg-gray-900 text-white shadow-sm border border-gray-900 ring-2 ring-gray-900/10'
+                              : 'bg-gray-50 text-gray-700 hover:bg-gray-100 border border-gray-200'
+                          }`}
+                        >
+                          <span className={`w-2 h-2 rounded-full ${isSelected ? 'bg-red-500 ring-2 ring-white' : 'bg-gray-400'}`} />
+                          <span className="truncate max-w-[200px]" title={p.title || 'Proyecto sin título'}>
+                            {p.title || 'Sin Título'}
+                          </span>
+                          <span className={`text-[9px] font-black uppercase px-1.5 py-0.5 rounded-full ${
+                            isSelected ? 'bg-white/20 text-white' : 'bg-gray-200 text-gray-700'
+                          }`}>
+                            Cat. {p.categoryId}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => {
+                    setNewProjTitle('');
+                    setNewProjScope('');
+                    setNewProjCategory('A');
+                    setNewProjCompany(currentUser.companyId || 'prosur');
+                    setNewProjTargetCompanies([]);
+                    setShowNewProjectModal(true);
+                  }}
+                  className="flex items-center gap-2 px-4 py-2 rounded-xl bg-red-50 hover:bg-red-100 text-[#CC2027] border border-red-200 font-bold text-xs uppercase tracking-wider transition-colors shadow-2xs cursor-pointer shrink-0"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>Inscribir Otro Proyecto</span>
+                </button>
+              </div>
+            );
+          })()}
+
           <div className="bg-white rounded-2xl border border-gray-200 shadow-xs p-6 sm:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="flex items-center gap-5">
               <div className="w-20 h-20 rounded-2xl bg-gray-50 border border-gray-200 p-2 flex items-center justify-center shrink-0">
@@ -2937,6 +3160,162 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
                   className="px-6 py-2.5 rounded-xl bg-[#CC2027] hover:bg-[#b01b21] text-white text-xs font-bold uppercase tracking-wider shadow-md transition-all cursor-pointer"
                 >
                   Actualizar Integrante
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal para Inscribir Nuevo Proyecto Adicional */}
+      {showNewProjectModal && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-gray-100 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-4 mb-4 border-b border-gray-100">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-red-50 border border-red-100 flex items-center justify-center text-[#CC2027]">
+                  <Plus className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-gray-900 text-base">Inscribir Nuevo Proyecto</h3>
+                  <p className="text-xs text-gray-500">Registra un proyecto adicional bajo tu misma cuenta</p>
+                </div>
+              </div>
+              <button 
+                onClick={() => !isCreatingProject && setShowNewProjectModal(false)}
+                className="p-1 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateAdditionalProject} className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5">
+                  Nombre o Título del Proyecto *
+                </label>
+                <input 
+                  type="text" 
+                  required
+                  value={newProjTitle}
+                  onChange={(e) => setNewProjTitle(e.target.value)}
+                  className="w-full p-2.5 rounded-xl border border-gray-200 text-xs focus:outline-none focus:border-[#CC2027]"
+                  placeholder="Ej: Automatización de Conciliación Bancaria con IA"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5">
+                  Categoría del Reto IA *
+                </label>
+                <select 
+                  value={newProjCategory}
+                  onChange={(e) => setNewProjCategory(e.target.value)}
+                  className="w-full p-2.5 rounded-xl border border-gray-200 text-xs font-medium focus:outline-none focus:border-[#CC2027]"
+                >
+                  {CATEGORIES.map(cat => (
+                    <option key={cat.id} value={cat.id}>
+                      Categoría {cat.id}: {cat.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5">
+                  Empresa donde implementarás la mejora *
+                </label>
+                <select 
+                  value={newProjCompany}
+                  onChange={(e) => setNewProjCompany(e.target.value)}
+                  className="w-full p-2.5 rounded-xl border border-gray-200 text-xs font-medium focus:outline-none focus:border-[#CC2027]"
+                >
+                  {PARTICIPATING_COMPANIES.map(c => (
+                    <option key={c.id} value={c.id}>
+                      {c.name} - {c.subtitle}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {newProjCompany === 'multiempresa' && (
+                <div className="p-4 rounded-xl bg-gray-50 border border-gray-200 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-gray-900">
+                      Empresas Participantes
+                    </span>
+                    <span className="text-[10px] font-semibold text-gray-500 bg-white px-2 py-0.5 rounded-md border border-gray-200">
+                      {newProjTargetCompanies.length} elegidas
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2 pt-1">
+                    {PARTICIPATING_COMPANIES.filter(c => !['otros', 'multiempresa'].includes(c.id)).map(c => {
+                      const checked = newProjTargetCompanies.includes(c.id);
+                      return (
+                        <label 
+                          key={c.id} 
+                          className={`flex items-center gap-2 p-2 rounded-lg border text-xs cursor-pointer transition-all ${
+                            checked 
+                              ? 'bg-white border-[#CC2027] text-gray-900 font-bold shadow-2xs' 
+                              : 'bg-white/80 hover:bg-white border-gray-200 text-gray-600'
+                          }`}
+                        >
+                          <input 
+                            type="checkbox" 
+                            checked={checked} 
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setNewProjTargetCompanies([...newProjTargetCompanies, c.id]);
+                              } else {
+                                setNewProjTargetCompanies(newProjTargetCompanies.filter(id => id !== c.id));
+                              }
+                            }}
+                            className="w-3.5 h-3.5 rounded text-[#CC2027] focus:ring-[#CC2027] border-gray-300 cursor-pointer"
+                          />
+                          <span className="truncate">{c.name}</span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5">
+                  Alcance / Objetivo General (Opcional)
+                </label>
+                <textarea 
+                  rows={3}
+                  value={newProjScope}
+                  onChange={(e) => setNewProjScope(e.target.value)}
+                  className="w-full p-2.5 rounded-xl border border-gray-200 text-xs focus:outline-none focus:border-[#CC2027]"
+                  placeholder="Describe brevemente la meta del proyecto..."
+                />
+              </div>
+
+              <div className="pt-4 border-t border-gray-100 flex items-center justify-end gap-3">
+                <button 
+                  type="button"
+                  disabled={isCreatingProject}
+                  onClick={() => setShowNewProjectModal(false)}
+                  className="px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider text-gray-500 hover:text-gray-800 transition-colors cursor-pointer"
+                >
+                  Cancelar
+                </button>
+                <button 
+                  type="submit"
+                  disabled={isCreatingProject}
+                  className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-[#CC2027] hover:bg-[#b01b21] disabled:opacity-50 text-white text-xs font-bold uppercase tracking-wider shadow-md transition-all cursor-pointer"
+                >
+                  {isCreatingProject ? (
+                    <span>Registrando...</span>
+                  ) : (
+                    <>
+                      <Plus className="w-4 h-4" />
+                      <span>Crear Proyecto</span>
+                    </>
+                  )}
                 </button>
               </div>
             </form>
