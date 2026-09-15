@@ -7,7 +7,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node --env-file=.env.local server.js",
-    "dev": "nodemon --env-file=.env.local server.js"
+    "dev": "nodemon --ignore data/ --env-file=.env.local server.js"
   },
   "dependencies": {
     "dotenv": "^17.2.3",

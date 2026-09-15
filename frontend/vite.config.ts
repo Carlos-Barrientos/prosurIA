@@ -12,11 +12,11 @@ export default defineConfig(({ mode }) => {
       server: {
         proxy: {
           //Target your Node.js backend
-          '/api-proxy': 'http://127.0.0.1:5000',
-          '/sheet-proxy': 'http://127.0.0.1:5000',
-          '/api': 'http://127.0.0.1:5000',
-          '/ws-proxy': {target: 'ws://127.0.0.1:5000', ws: true},
-          '/ws-chat': {target: 'ws://127.0.0.1:5000', ws: true},
+          '/api-proxy': 'http://127.0.0.1:5005',
+          '/sheet-proxy': 'http://127.0.0.1:5005',
+          '/api': 'http://127.0.0.1:5005',
+          '/ws-proxy': {target: 'ws://127.0.0.1:5005', ws: true},
+          '/ws-chat': {target: 'ws://127.0.0.1:5005', ws: true},
         },
       },
       build: {
