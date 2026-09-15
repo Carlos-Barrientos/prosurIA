@@ -68,9 +68,9 @@ export default function Header({ currentView, onViewChange }: HeaderProps) {
               <img 
                 src="./logoprosur.png" 
                 alt="Logo Grupo Prosur" 
-                width={225}
-                height={225}
-                className="h-24 w-auto object-contain" 
+                width={180}
+                height={180}
+                className="h-12 sm:h-14 w-auto object-contain" 
               />
             </a>
           </div>

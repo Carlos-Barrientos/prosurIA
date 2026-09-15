@@ -610,7 +610,7 @@ export default function App() {
       <header className="sticky top-0 z-50 bg-white border-b border-gray-100 shadow-sm">
         <div className="max-w-[1600px] mx-auto px-4 sm:px-6 h-20 sm:h-24 flex items-center justify-between">
           <div className="flex items-center gap-3 sm:gap-6">
-            <img src="/logoprosur.png" alt="Grupo PROSUR" className="h-11 sm:h-16 lg:h-20 w-auto object-contain" />
+            <img src="/logoprosur.png" alt="Grupo PROSUR" className="h-9 sm:h-12 lg:h-14 w-auto object-contain" />
             <span className="text-[13px] tracking-widest font-bold text-gray-400 hidden md:block border-l border-gray-200 pl-6">
               RETO DE INTELIGENCIA ARTIFICIAL
             </span>

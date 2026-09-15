@@ -1388,7 +1388,7 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
               <span>Volver a la Landing</span>
             </button>
             <div className="h-6 w-[1px] bg-gray-200 hidden sm:block"></div>
-            <img src="/logoprosur.png" alt="Grupo PROSUR" className="h-10 sm:h-12 w-auto object-contain" />
+            <img src="/logoprosur.png" alt="Grupo PROSUR" className="h-8 sm:h-9 w-auto object-contain" />
             <div className="hidden md:block border-l border-gray-200 pl-4">
               <span className="text-[12px] tracking-widest font-black text-[#111827] uppercase block">
                 PORTAL DE REGISTRO & SEGUIMIENTO
