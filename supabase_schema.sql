@@ -46,6 +46,10 @@ CREATE TABLE IF NOT EXISTS projects (
     demo_date TEXT,
     compliance_checks JSONB DEFAULT '{}'::jsonb,
     security_checks JSONB DEFAULT '{}'::jsonb,
+    -- Fuentes de información que alimentan la plataforma:
+    -- (Nota: Para máxima compatibilidad, la app almacena _dataSources y _dataSourceTypes dentro del JSONB compliance_checks)
+    data_sources TEXT,
+    data_source_types JSONB DEFAULT '[]'::jsonb,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );

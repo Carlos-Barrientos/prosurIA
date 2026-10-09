@@ -33,7 +33,8 @@ import {
   Edit,
   UserPlus,
   Save,
-  X
+  X,
+  Database
 } from 'lucide-react';
 
 const GithubIcon = ({ className = "w-4 h-4" }: { className?: string }) => (
@@ -76,6 +77,17 @@ export const CATEGORIES = [
   { id: 'E', name: 'Tecnología, Sistemas e Innovación' },
 ];
 
+export const DATA_SOURCE_CATEGORIES = [
+  { id: 'erp', label: 'ERP / Administrativo', sub: 'Microsip, SAP, etc.' },
+  { id: 'crm', label: 'CRM / Ventas', sub: 'HubSpot, Salesforce, SIMA' },
+  { id: 'sheets', label: 'Hojas de Cálculo', sub: 'Excel, Google Sheets, CSV' },
+  { id: 'docs', label: 'Documentos / Manuales', sub: 'PDF, Word, Políticas' },
+  { id: 'db', label: 'Bases de Datos', sub: 'SQL, PostgreSQL, Cloud' },
+  { id: 'api', label: 'APIs y Conexiones Web', sub: 'DMS, Portales de Marca, Webhooks' },
+  { id: 'manual', label: 'Formularios / Manual', sub: 'Captura de Usuarios' },
+  { id: 'other', label: 'Otras Fuentes', sub: 'Sensores, logs, sitios externos' },
+];
+
 export interface TeamMember {
   id: string;
   name: string;
@@ -101,6 +113,8 @@ export interface ProjectData {
   categoryId: string;
   targetCompanies?: string[];
   scope: string;
+  dataSources?: string;
+  dataSourceTypes?: string[];
   problem: string;
   solution: string;
   verifiableMetrics: string;
@@ -156,6 +170,8 @@ export const createEmptyProject = (userId: string = 'local-user', categoryId: st
   companyId,
   categoryId,
   scope: '',
+  dataSources: '',
+  dataSourceTypes: [],
   problem: '',
   solution: '',
   verifiableMetrics: '',
@@ -201,6 +217,8 @@ export const sanitizeProject = (p: any): ProjectData => {
     categoryId: p.categoryId || p.category_id || 'A',
     targetCompanies: Array.isArray(p.targetCompanies) ? p.targetCompanies : (Array.isArray(p.target_companies) ? p.target_companies : []),
     scope: p.scope || '',
+    dataSources: p.dataSources || p.data_sources || (typeof p.complianceChecks?._dataSources === 'string' ? p.complianceChecks._dataSources : (typeof p.compliance_checks?._dataSources === 'string' ? p.compliance_checks._dataSources : '')),
+    dataSourceTypes: Array.isArray(p.dataSourceTypes) ? p.dataSourceTypes : (Array.isArray(p.data_source_types) ? p.data_source_types : (Array.isArray(p.complianceChecks?._dataSourceTypes) ? p.complianceChecks._dataSourceTypes : (Array.isArray(p.compliance_checks?._dataSourceTypes) ? p.compliance_checks._dataSourceTypes : []))),
     problem: p.problem || '',
     solution: p.solution || '',
     verifiableMetrics: p.verifiableMetrics || p.verifiable_metrics || '',
@@ -294,6 +312,8 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
   const [newProjCompany, setNewProjCompany] = useState<string>('prosur');
   const [newProjTargetCompanies, setNewProjTargetCompanies] = useState<string[]>([]);
   const [newProjScope, setNewProjScope] = useState<string>('');
+  const [newProjDataSources, setNewProjDataSources] = useState<string>('');
+  const [newProjDataSourceTypes, setNewProjDataSourceTypes] = useState<string[]>([]);
   const [isCreatingProject, setIsCreatingProject] = useState<boolean>(false);
 
   const [activeTab, setActiveTab] = useState<'project' | 'team' | 'checklists' | 'milestones' | 'demo'>('project');
@@ -415,6 +435,8 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
               companyId: p.company_id || 'prosur',
               categoryId: p.category_id || 'A',
               scope: p.scope || '',
+              dataSources: p.data_sources || p.compliance_checks?._dataSources || '',
+              dataSourceTypes: p.data_source_types || p.compliance_checks?._dataSourceTypes || [],
               problem: p.problem || '',
               solution: p.solution || '',
               verifiableMetrics: p.verifiable_metrics || '',
@@ -669,7 +691,11 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
         verifiable_metrics: projectToSave.verifiableMetrics,
         github_url: projectToSave.githubUrl,
         youtube_url: projectToSave.youtubeUrl,
-        compliance_checks: projectToSave.complianceChecks,
+        compliance_checks: {
+          ...projectToSave.complianceChecks,
+          _dataSources: projectToSave.dataSources || '',
+          _dataSourceTypes: projectToSave.dataSourceTypes || []
+        },
         security_checks: projectToSave.securityChecks,
         updated_at: projectToSave.updatedAt
       });
@@ -1087,6 +1113,8 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
         categoryId: newProjCategory,
         targetCompanies: newProjCompany === 'multiempresa' ? newProjTargetCompanies : undefined,
         scope: newProjScope.trim() || blank.scope,
+        dataSources: newProjDataSources.trim(),
+        dataSourceTypes: newProjDataSourceTypes,
         userId: userEmail,
         members: [
           {
@@ -1133,7 +1161,11 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
           verifiable_metrics: newProj.verifiableMetrics,
           github_url: newProj.githubUrl,
           youtube_url: newProj.youtubeUrl,
-          compliance_checks: newProj.complianceChecks,
+          compliance_checks: {
+            ...newProj.complianceChecks,
+            _dataSources: newProj.dataSources,
+            _dataSourceTypes: newProj.dataSourceTypes
+          },
           security_checks: newProj.securityChecks,
           updated_at: newProj.updatedAt
         });
@@ -1157,6 +1189,8 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
       // Limpiar formulario y cerrar modal
       setNewProjTitle('');
       setNewProjScope('');
+      setNewProjDataSources('');
+      setNewProjDataSourceTypes([]);
       setNewProjCategory('A');
       setNewProjCompany(currentUser.companyId || 'prosur');
       setNewProjTargetCompanies([]);
@@ -1309,7 +1343,11 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
         youtube_url: safeProj.youtubeUrl,
         demo_status: safeProj.demoStatus,
         demo_date: safeProj.demoDate,
-        compliance_checks: safeProj.complianceChecks,
+        compliance_checks: {
+          ...safeProj.complianceChecks,
+          _dataSources: safeProj.dataSources || '',
+          _dataSourceTypes: safeProj.dataSourceTypes || []
+        },
         security_checks: safeProj.securityChecks,
         updated_at: safeProj.updatedAt
       });
@@ -1358,8 +1396,9 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
 
     const titleMatch = (p.title || '').toLowerCase().includes(q);
     const scopeMatch = (p.scope || '').toLowerCase().includes(q);
+    const dataSourcesMatch = (p.dataSources || '').toLowerCase().includes(q) || (p.dataSourceTypes || []).some(t => t.toLowerCase().includes(q));
     const membersMatch = Array.isArray(p.members) && p.members.some(m => (m?.name || '').toLowerCase().includes(q));
-    return matchCompany && matchCategory && (titleMatch || scopeMatch || membersMatch);
+    return matchCompany && matchCategory && (titleMatch || scopeMatch || dataSourcesMatch || membersMatch);
   });
 
   const filteredUsers = allUsers.filter(u => {
@@ -1877,6 +1916,29 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
                           <p className="text-xs text-gray-600 leading-relaxed line-clamp-3">
                             {p.scope}
                           </p>
+                        )}
+
+                        {/* Fuentes de Información */}
+                        {((p.dataSourceTypes && p.dataSourceTypes.length > 0) || (p.dataSources && p.dataSources.trim().length > 0)) && (
+                          <div className="p-2.5 rounded-lg bg-blue-50/50 border border-blue-100 text-xs">
+                            <span className="text-[10px] font-bold uppercase text-blue-900 flex items-center gap-1 mb-1">
+                              <Database className="w-3 h-3 text-blue-600" /> Fuentes de Información
+                            </span>
+                            {p.dataSourceTypes && p.dataSourceTypes.length > 0 && (
+                              <div className="flex flex-wrap gap-1 mb-1">
+                                {p.dataSourceTypes.map(t => (
+                                  <span key={t} className="text-[9px] bg-blue-100/80 text-blue-800 font-medium px-1.5 py-0.5 rounded">
+                                    {t}
+                                  </span>
+                                ))}
+                              </div>
+                            )}
+                            {p.dataSources && (
+                              <p className="text-blue-950 text-xs font-normal leading-relaxed line-clamp-2">
+                                {p.dataSources}
+                              </p>
+                            )}
+                          </div>
                         )}
 
                         {/* Solo mostrar si tiene datos comprobables reales */}
@@ -2425,6 +2487,73 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
                     className="w-full p-3.5 border border-gray-200 rounded-xl text-sm leading-relaxed focus:outline-none focus:border-[#CC2027]"
                     placeholder="Describe qué departamentos, procesos y personas abarca esta solución..."
                   />
+                </div>
+
+                {/* Fuentes de Información que Alimentan la Plataforma (Dentro del Alcance) */}
+                <div className="p-5 rounded-2xl bg-blue-50/60 border border-blue-200/90 space-y-3.5">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div className="flex items-center gap-2 text-blue-900 font-bold text-xs uppercase tracking-wider">
+                      <Database className="w-4 h-4 text-blue-600 shrink-0" />
+                      <span>Fuentes de Información que Alimentan la Plataforma *</span>
+                    </div>
+                    <span className="text-[10px] font-semibold text-blue-700 bg-white px-2 py-0.5 rounded-full border border-blue-200 w-fit">
+                      {(project.dataSourceTypes || []).length} seleccionadas
+                    </span>
+                  </div>
+                  <p className="text-xs text-blue-900 leading-relaxed">
+                    Indica los orígenes de datos, sistemas, archivos o bases de datos que alimentan tu modelo o solución de IA (ej: Microsip, Excel, PDFs, APIs, etc.).
+                  </p>
+                  
+                  {/* Categorías de fuentes */}
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                    {DATA_SOURCE_CATEGORIES.map(src => {
+                      const isSelected = (project.dataSourceTypes || []).includes(src.label);
+                      return (
+                        <button
+                          type="button"
+                          key={src.id}
+                          onClick={() => {
+                            setHasUnsavedChanges(true);
+                            const current = project.dataSourceTypes || [];
+                            const updated = isSelected 
+                              ? current.filter(t => t !== src.label) 
+                              : [...current, src.label];
+                            setProject({ ...project, dataSourceTypes: updated });
+                          }}
+                          className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer ${
+                            isSelected 
+                              ? 'bg-white border-blue-600 ring-2 ring-blue-500/20 shadow-xs' 
+                              : 'bg-white/80 hover:bg-white border-blue-200/80 hover:border-blue-300'
+                          }`}
+                        >
+                          <div className="flex items-center justify-between gap-1 mb-1">
+                            <span className={`text-xs font-bold ${isSelected ? 'text-blue-900' : 'text-gray-800'}`}>
+                              {src.label}
+                            </span>
+                            <span className={`w-2 h-2 rounded-full ${isSelected ? 'bg-blue-600' : 'bg-gray-300'}`} />
+                          </div>
+                          <span className="text-[10px] text-gray-500 block leading-tight">{src.sub}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {/* Detalle específico de las fuentes */}
+                  <div>
+                    <label className="block text-[11px] font-bold text-blue-900 uppercase tracking-wider mb-1.5">
+                      Detalle y Especificación de las Fuentes de Datos
+                    </label>
+                    <textarea 
+                      rows={3}
+                      value={project.dataSources || ''}
+                      onChange={(e) => {
+                        setProject({ ...project, dataSources: e.target.value });
+                        setHasUnsavedChanges(true);
+                      }}
+                      className="w-full p-3 border border-blue-200 rounded-xl bg-white text-sm text-gray-900 leading-relaxed focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20"
+                      placeholder="Ejemplo: Base de datos Microsip de compras y cuentas por pagar, reporte diario de inventario en Excel (.xlsx), manuales operativos de servicio en PDF, conexión a API de WhatsApp Business..."
+                    />
+                  </div>
                 </div>
 
                 <div className="p-5 rounded-2xl bg-emerald-50/70 border border-emerald-200 space-y-2">
@@ -2981,6 +3110,45 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
               </div>
 
               <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5 flex items-center gap-1.5">
+                  <Database className="w-3.5 h-3.5 text-blue-600" />
+                  Fuentes de Información que Alimentan la Plataforma
+                </label>
+                <div className="flex flex-wrap gap-1.5 mb-2">
+                  {DATA_SOURCE_CATEGORIES.map(src => {
+                    const isSelected = (editingProject.dataSourceTypes || []).includes(src.label);
+                    return (
+                      <button
+                        type="button"
+                        key={src.id}
+                        onClick={() => {
+                          const current = editingProject.dataSourceTypes || [];
+                          const updated = isSelected 
+                            ? current.filter(t => t !== src.label)
+                            : [...current, src.label];
+                          setEditingProject({ ...editingProject, dataSourceTypes: updated });
+                        }}
+                        className={`px-2.5 py-1 rounded-lg text-[11px] font-medium border transition-colors cursor-pointer ${
+                          isSelected 
+                            ? 'bg-blue-50 border-blue-500 text-blue-800 font-semibold' 
+                            : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100'
+                        }`}
+                      >
+                        {src.label}
+                      </button>
+                    );
+                  })}
+                </div>
+                <textarea 
+                  rows={2}
+                  value={editingProject.dataSources || ''}
+                  onChange={(e) => setEditingProject({ ...editingProject, dataSources: e.target.value })}
+                  className="w-full p-2.5 rounded-xl border border-gray-200 text-xs focus:outline-none focus:border-[#CC2027]"
+                  placeholder="Detalle de fuentes de datos (ERPs, APIs, hojas de cálculo, PDFs)..."
+                />
+              </div>
+
+              <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5">
                   Métricas Comprobables (Antes vs. Después)
                 </label>
@@ -3291,6 +3459,43 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
                   onChange={(e) => setNewProjScope(e.target.value)}
                   className="w-full p-2.5 rounded-xl border border-gray-200 text-xs focus:outline-none focus:border-[#CC2027]"
                   placeholder="Describe brevemente la meta del proyecto..."
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5 flex items-center gap-1.5">
+                  <Database className="w-3.5 h-3.5 text-blue-600" />
+                  Fuentes de Información que Alimentan la Plataforma (Opcional)
+                </label>
+                <div className="flex flex-wrap gap-1.5 mb-2">
+                  {DATA_SOURCE_CATEGORIES.map(src => {
+                    const isSelected = newProjDataSourceTypes.includes(src.label);
+                    return (
+                      <button
+                        type="button"
+                        key={src.id}
+                        onClick={() => {
+                          setNewProjDataSourceTypes(prev => 
+                            isSelected ? prev.filter(t => t !== src.label) : [...prev, src.label]
+                          );
+                        }}
+                        className={`px-2.5 py-1 rounded-lg text-[11px] font-medium border transition-colors cursor-pointer ${
+                          isSelected 
+                            ? 'bg-blue-50 border-blue-500 text-blue-800 font-semibold' 
+                            : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100'
+                        }`}
+                      >
+                        {src.label}
+                      </button>
+                    );
+                  })}
+                </div>
+                <textarea 
+                  rows={2}
+                  value={newProjDataSources}
+                  onChange={(e) => setNewProjDataSources(e.target.value)}
+                  className="w-full p-2.5 rounded-xl border border-gray-200 text-xs focus:outline-none focus:border-[#CC2027]"
+                  placeholder="Ej: Base de datos Microsip, reportes de Excel, manuales PDF..."
                 />
               </div>
 
