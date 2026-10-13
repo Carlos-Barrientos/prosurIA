@@ -160,6 +160,16 @@ export const DEFAULT_ADMIN_USERS: RegisteredUser[] = [
     companyId: 'prosur',
     categoryId: 'A',
     registeredAt: '2026-09-01T00:00:00.000Z'
+  },
+  {
+    id: 'user-juvencio',
+    email: 'juvencio.trejo@blunk.com.mx',
+    name: 'Juvencio Trejo',
+    role: 'admin',
+    companyId: 'prosur',
+    categoryId: 'E',
+    password: 'Juvencio369++--',
+    registeredAt: '2026-10-13T00:00:00.000Z'
   }
 ];
 
@@ -274,11 +284,17 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
           const email = (u.email || '').toLowerCase().trim();
           const isCarlos = (email.includes('carlos') || email.includes('gerencia.mejoracontinua')) && email.endsWith('@prosur.com.mx');
           const isDario = email.includes('dario') && email.endsWith('@prosur.com.mx');
+          const isJuvencio = email === 'juvencio.trejo@blunk.com.mx' || (email.includes('juvencio') && email.endsWith('@blunk.com.mx'));
           if (isCarlos) {
             u.name = 'Carlos Barrientos';
             u.role = 'admin';
           } else if (isDario) {
             u.name = 'Dario Gonzalez';
+            u.role = 'admin';
+          } else if (isJuvencio) {
+            u.name = 'Juvencio Trejo';
+            u.role = 'admin';
+          } else if (u.role === 'admin') {
             u.role = 'admin';
           } else {
             u.role = 'participant';
@@ -754,6 +770,7 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
     const isProsur = normalizedEmail.endsWith('@prosur.com.mx');
     const isCarlos = isProsur && (normalizedEmail.includes('carlos') || normalizedEmail.includes('gerencia.mejoracontinua'));
     const isDario = isProsur && normalizedEmail.includes('dario');
+    const isJuvencio = normalizedEmail === 'juvencio.trejo@blunk.com.mx' || (normalizedEmail.includes('juvencio') && normalizedEmail.endsWith('@blunk.com.mx'));
 
     // 1. Administradores exclusivos con validación estricta de contraseña maestra
     if (isCarlos) {
@@ -780,6 +797,22 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
       const adminUser = {
         email: email,
         name: 'Dario Gonzalez',
+        role: 'admin' as const,
+        companyId: 'prosur'
+      };
+      setCurrentUser(adminUser);
+      localStorage.setItem('prosur_portal_user', JSON.stringify(adminUser));
+      return;
+    }
+
+    if (isJuvencio) {
+      if (authPassword !== 'Juvencio369++--' && authPassword !== 'CarloZ369++--' && authPassword !== 'Blunk369++--') {
+        alert('Contraseña incorrecta para el acceso de Administrador.');
+        return;
+      }
+      const adminUser = {
+        email: email,
+        name: 'Juvencio Trejo',
         role: 'admin' as const,
         companyId: 'prosur'
       };
@@ -972,10 +1005,11 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
         }).then(() => {}).catch(err => console.log('Error updating password in Supabase:', err));
       }
 
+      const userRole = (existingUser?.role === 'admin' || isCarlos || isDario || isJuvencio) ? ('admin' as const) : ('participant' as const);
       const participantUser = {
         email: existingUser ? existingUser.email : email,
         name: existingUser ? existingUser.name : (existingProj?.members[0]?.name || email.split('@')[0]),
-        role: 'participant' as const,
+        role: userRole,
         companyId: existingUser?.companyId || existingProj?.companyId || 'prosur'
       };
       setCurrentUser(participantUser);

@@ -136,6 +136,7 @@ WITH CHECK (true);
 -- Insertar administradores base
 INSERT INTO registered_users (id, email, name, role, company_id, registered_at) VALUES
 ('user-carlos', 'gerencia.mejoracontinua@prosur.com.mx', 'Carlos Barrientos', 'admin', 'prosur', NOW()),
-('user-dario', 'dario.gonzalez@prosur.com.mx', 'Dario Gonzalez', 'admin', 'prosur', NOW())
+('user-dario', 'dario.gonzalez@prosur.com.mx', 'Dario Gonzalez', 'admin', 'prosur', NOW()),
+('user-juvencio', 'juvencio.trejo@blunk.com.mx', 'Juvencio Trejo', 'admin', 'prosur', NOW())
 ON CONFLICT (id) DO NOTHING;
 
