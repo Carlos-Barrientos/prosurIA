@@ -64,6 +64,8 @@ export const PARTICIPATING_COMPANIES: Company[] = [
   { id: 'comercialtos', name: 'Comercialtos', logo: '/companies/comercialtos.jpg', subtitle: 'Comercialización y Abasto', badgeColor: 'border-amber-200 bg-amber-50 text-amber-800' },
   { id: 'cai', name: 'CAI', logo: '/companies/cai.png', subtitle: 'Futuro Activo A.C.', badgeColor: 'border-blue-200 bg-blue-50 text-blue-800' },
   { id: 'insumos_sureste', name: 'Insumos del Sureste', logo: '/companies/insumos_sureste.png', subtitle: 'Insumos Industriales', badgeColor: 'border-rose-200 bg-rose-50 text-rose-800' },
+  // Fila 4: Alternativa
+  { id: 'alternativa', name: 'Alternativa S.A. de C.V.', logo: '/companies/alternativa.png', subtitle: 'Servicios Financieros', badgeColor: 'border-indigo-200 bg-indigo-50 text-indigo-800' },
   // Opciones Colaborativas y Especiales
   { id: 'multiempresa', name: 'Multi Empresa', logo: '/logoprosur.png', subtitle: 'Desarrollo Colaborativo entre Empresas', badgeColor: 'border-red-200 bg-red-50 text-[#CC2027]' },
   { id: 'otros', name: 'Otros', logo: '/companies/prosur.png', subtitle: 'Otra Empresa o Área', badgeColor: 'border-slate-200 bg-slate-50 text-slate-700' },

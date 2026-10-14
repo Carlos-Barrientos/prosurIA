@@ -16,7 +16,7 @@ ALTER TABLE companies ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "Public can view companies" ON companies;
 CREATE POLICY "Public can view companies" ON companies FOR SELECT USING (true);
 
--- Insertar las 9 empresas convocadas iniciales
+-- Insertar las empresas convocadas iniciales
 INSERT INTO companies (id, name, subtitle, logo_url) VALUES
 ('prosur', 'Grupo Prosur', 'Corporativo', '/companies/prosur.png'),
 ('chesa', 'Chesa', 'Grupo Automotríz', '/companies/chesa.png'),
@@ -26,7 +26,8 @@ INSERT INTO companies (id, name, subtitle, logo_url) VALUES
 ('cafi', 'CAFI', 'Tu Casa Financiera', '/companies/cafi.png'),
 ('riovinyl', 'Rio Vinyl', 'Rio Vinyl de México', '/companies/riovinyl.png'),
 ('calzamoda', 'Calzamoda', 'Calzado y Retail', '/companies/calzamoda.png'),
-('insumos_sureste', 'Insumos del Sureste', 'Insumos Industriales', '/companies/insumos_sureste.png')
+('insumos_sureste', 'Insumos del Sureste', 'Insumos Industriales', '/companies/insumos_sureste.png'),
+('alternativa', 'Alternativa S.A. de C.V.', 'Servicios Financieros', '/companies/alternativa.png')
 ON CONFLICT (id) DO NOTHING;
 
 -- 2. Tabla de Proyectos
