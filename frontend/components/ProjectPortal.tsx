@@ -34,7 +34,9 @@ import {
   UserPlus,
   Save,
   X,
-  Database
+  Database,
+  Copy,
+  Check
 } from 'lucide-react';
 
 const GithubIcon = ({ className = "w-4 h-4" }: { className?: string }) => (
@@ -219,6 +221,26 @@ export const sanitizeProject = (p: any): ProjectData => {
   }
   const defaultEmpty = createEmptyProject(p.userId || p.user_id || 'local-user', p.categoryId || p.category_id || 'A', p.companyId || p.company_id || 'prosur');
   
+  const resolvedDataSources = (typeof p.dataSources === 'string' && p.dataSources.trim().length > 0)
+    ? p.dataSources
+    : (typeof p.data_sources === 'string' && p.data_sources.trim().length > 0)
+      ? p.data_sources
+      : (typeof p.complianceChecks?._dataSources === 'string' && p.complianceChecks._dataSources.trim().length > 0)
+        ? p.complianceChecks._dataSources
+        : (typeof p.compliance_checks?._dataSources === 'string' && p.compliance_checks._dataSources.trim().length > 0)
+          ? p.compliance_checks._dataSources
+          : '';
+
+  const resolvedDataSourceTypes = (Array.isArray(p.dataSourceTypes) && p.dataSourceTypes.length > 0)
+    ? p.dataSourceTypes
+    : (Array.isArray(p.data_source_types) && p.data_source_types.length > 0)
+      ? p.data_source_types
+      : (Array.isArray(p.complianceChecks?._dataSourceTypes) && p.complianceChecks._dataSourceTypes.length > 0)
+        ? p.complianceChecks._dataSourceTypes
+        : (Array.isArray(p.compliance_checks?._dataSourceTypes) && p.compliance_checks._dataSourceTypes.length > 0)
+          ? p.compliance_checks._dataSourceTypes
+          : [];
+
   return {
     ...defaultEmpty,
     ...p,
@@ -229,8 +251,8 @@ export const sanitizeProject = (p: any): ProjectData => {
     categoryId: p.categoryId || p.category_id || 'A',
     targetCompanies: Array.isArray(p.targetCompanies) ? p.targetCompanies : (Array.isArray(p.target_companies) ? p.target_companies : []),
     scope: p.scope || '',
-    dataSources: p.dataSources || p.data_sources || (typeof p.complianceChecks?._dataSources === 'string' ? p.complianceChecks._dataSources : (typeof p.compliance_checks?._dataSources === 'string' ? p.compliance_checks._dataSources : '')),
-    dataSourceTypes: Array.isArray(p.dataSourceTypes) ? p.dataSourceTypes : (Array.isArray(p.data_source_types) ? p.data_source_types : (Array.isArray(p.complianceChecks?._dataSourceTypes) ? p.complianceChecks._dataSourceTypes : (Array.isArray(p.compliance_checks?._dataSourceTypes) ? p.compliance_checks._dataSourceTypes : []))),
+    dataSources: resolvedDataSources,
+    dataSourceTypes: resolvedDataSourceTypes,
     problem: p.problem || '',
     solution: p.solution || '',
     verifiableMetrics: p.verifiableMetrics || p.verifiable_metrics || '',
@@ -259,7 +281,9 @@ export const sanitizeProject = (p: any): ProjectData => {
       functional_solution: Boolean(p.complianceChecks?.functional_solution ?? p.compliance_checks?.functional_solution),
       verifiable_metrics: Boolean(p.complianceChecks?.verifiable_metrics ?? p.compliance_checks?.verifiable_metrics),
       company_endorsed: Boolean(p.complianceChecks?.company_endorsed ?? p.compliance_checks?.company_endorsed),
-      repo_available: Boolean(p.complianceChecks?.repo_available ?? p.compliance_checks?.repo_available)
+      repo_available: Boolean(p.complianceChecks?.repo_available ?? p.compliance_checks?.repo_available),
+      _dataSources: resolvedDataSources,
+      _dataSourceTypes: resolvedDataSourceTypes
     },
     securityChecks: {
       no_hardcoded_keys: Boolean(p.securityChecks?.no_hardcoded_keys ?? p.security_checks?.no_hardcoded_keys),
@@ -333,6 +357,7 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
   const [newProjDataSources, setNewProjDataSources] = useState<string>('');
   const [newProjDataSourceTypes, setNewProjDataSourceTypes] = useState<string[]>([]);
   const [isCreatingProject, setIsCreatingProject] = useState<boolean>(false);
+  const [copiedEmail, setCopiedEmail] = useState<boolean>(false);
 
   const [activeTab, setActiveTab] = useState<'project' | 'team' | 'checklists' | 'milestones' | 'demo'>('project');
   const [project, setProject] = useState<ProjectData>(() => {
@@ -474,11 +499,58 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
         console.log('Supabase sync info:', err);
       }
 
-      // 4. Fusionar proyectos sin perder ninguno (Backend > Supabase > Local)
+      // 4. Fusionar proyectos sin perder ninguno dando prioridad a Supabase
       const projectMap = new Map<string, ProjectData>();
-      localDb.forEach(p => { if (p && p.id) projectMap.set(p.id, sanitizeProject(p)); });
-      supabaseProjects.forEach(p => { if (p && p.id) projectMap.set(p.id, sanitizeProject(p)); });
-      backendProjects.forEach(p => { if (p && p.id) projectMap.set(p.id, sanitizeProject(p)); });
+      const mergeProjectIntoMap = (incoming: ProjectData, isCloudAuthority = false) => {
+        if (!incoming || !incoming.id) return;
+        const cleanIncoming = sanitizeProject(incoming);
+        const existing = projectMap.get(cleanIncoming.id);
+        if (!existing) {
+          projectMap.set(cleanIncoming.id, cleanIncoming);
+          return;
+        }
+
+        const existingTime = new Date(existing.updatedAt || 0).getTime();
+        const incomingTime = new Date(cleanIncoming.updatedAt || 0).getTime();
+        const incomingIsNewer = incomingTime >= existingTime;
+
+        const base = incomingIsNewer ? existing : cleanIncoming;
+        const priority = incomingIsNewer ? cleanIncoming : existing;
+
+        const merged: ProjectData = {
+          ...base,
+          ...priority,
+          dataSources: (priority.dataSources && priority.dataSources.trim().length > 0)
+            ? priority.dataSources
+            : (base.dataSources || ''),
+          dataSourceTypes: (priority.dataSourceTypes && priority.dataSourceTypes.length > 0)
+            ? priority.dataSourceTypes
+            : (base.dataSourceTypes || []),
+          scope: (priority.scope && priority.scope.trim().length > 0)
+            ? priority.scope
+            : (base.scope || ''),
+          verifiableMetrics: (priority.verifiableMetrics && priority.verifiableMetrics.trim().length > 0)
+            ? priority.verifiableMetrics
+            : (base.verifiableMetrics || ''),
+          githubUrl: priority.githubUrl || base.githubUrl || '',
+          youtubeUrl: priority.youtubeUrl || base.youtubeUrl || ''
+        };
+
+        if (isCloudAuthority) {
+          if (cleanIncoming.dataSources && cleanIncoming.dataSources.trim().length > 0) {
+            merged.dataSources = cleanIncoming.dataSources;
+          }
+          if (cleanIncoming.dataSourceTypes && cleanIncoming.dataSourceTypes.length > 0) {
+            merged.dataSourceTypes = cleanIncoming.dataSourceTypes;
+          }
+        }
+
+        projectMap.set(cleanIncoming.id, sanitizeProject(merged));
+      };
+
+      localDb.forEach(p => mergeProjectIntoMap(p, false));
+      backendProjects.forEach(p => mergeProjectIntoMap(p, false));
+      supabaseProjects.forEach(p => mergeProjectIntoMap(p, true));
 
       const merged = Array.from(projectMap.values());
       setAllProjects(merged);
@@ -2614,9 +2686,14 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-2 flex items-center gap-2">
-                      <GithubIcon className="w-4 h-4" /> Repositorio en GitHub
-                    </label>
+                    <div className="flex items-center justify-between mb-2">
+                      <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 flex items-center gap-2">
+                        <GithubIcon className="w-4 h-4 text-gray-900" /> Repositorio en GitHub
+                      </label>
+                      <span className="text-[10px] text-gray-400 font-medium lowercase">
+                        (público o privado)
+                      </span>
+                    </div>
                     <input 
                       type="url" 
                       value={project.githubUrl}
@@ -2625,8 +2702,69 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
                         setHasUnsavedChanges(true);
                       }}
                       placeholder="https://github.com/usuario/proyecto"
-                      className="w-full p-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#CC2027]"
+                      className="w-full p-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#CC2027] bg-white font-mono text-xs"
                     />
+
+                    {/* Instrucciones para compartir repositorio privado con el comité */}
+                    <div className="mt-2.5 p-3.5 bg-slate-50 border border-slate-200 rounded-xl text-xs space-y-2">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="font-bold text-slate-900 flex items-center gap-1.5 text-[11px] uppercase tracking-wider">
+                          <Users className="w-3.5 h-3.5 text-[#CC2027]" />
+                          ¿Cómo compartir tu repositorio si es privado?
+                        </span>
+                        <span className="text-[10px] font-semibold text-slate-600 bg-white px-2 py-0.5 rounded border border-slate-200">
+                          Colaborador
+                        </span>
+                      </div>
+                      <p className="text-slate-600 text-[11px] leading-relaxed">
+                        Para que el comité evaluador y el jurado puedan auditar tu código sin necesidad de hacerlo público:
+                      </p>
+                      <div className="bg-white p-2.5 rounded-lg border border-slate-200 space-y-1.5 text-[11px] text-slate-700">
+                        <div className="flex items-start gap-1.5">
+                          <span className="font-black text-red-600">1.</span>
+                          <span>En tu repositorio en GitHub, entra a <strong>Settings</strong> &gt; <strong>Collaborators</strong> (o <em>Collaborators and teams</em>).</span>
+                        </div>
+                        <div className="flex items-start gap-1.5">
+                          <span className="font-black text-red-600">2.</span>
+                          <span>Haz clic en el botón <strong>"Add people"</strong>.</span>
+                        </div>
+                        <div className="flex items-start gap-1.5">
+                          <span className="font-black text-red-600">3.</span>
+                          <div className="w-full">
+                            <span>Escribe e invita al correo oficial de evaluación:</span>
+                            <div className="mt-1 flex items-center justify-between gap-2 bg-slate-50 border border-slate-300 rounded-md px-2.5 py-1.5 font-mono text-[11px] text-gray-900">
+                              <span className="font-bold select-all">gerencia.mejoracontinua@prosur.com.mx</span>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  navigator.clipboard.writeText('gerencia.mejoracontinua@prosur.com.mx');
+                                  setCopiedEmail(true);
+                                  setTimeout(() => setCopiedEmail(false), 2500);
+                                }}
+                                className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-gray-900 hover:bg-black text-white text-[10px] font-bold uppercase transition-all cursor-pointer shrink-0 active:scale-95 shadow-2xs"
+                                title="Copiar correo"
+                              >
+                                {copiedEmail ? (
+                                  <>
+                                    <Check className="w-3 h-3 text-emerald-400" />
+                                    <span>¡Copiado!</span>
+                                  </>
+                                ) : (
+                                  <>
+                                    <Copy className="w-3 h-3" />
+                                    <span>Copiar</span>
+                                  </>
+                                )}
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex items-start gap-1.5 pt-1 border-t border-slate-100 text-[10px] text-slate-500">
+                          <span className="font-black text-slate-400">4.</span>
+                          <span>Pega aquí arriba el enlace a tu repositorio y haz clic en <strong>Guardar Cambios</strong>.</span>
+                        </div>
+                      </div>
+                    </div>
                   </div>
 
                   <div>
@@ -2848,7 +2986,7 @@ export default function ProjectPortal({ onBack, initialCategory }: ProjectPortal
                     { key: 'functional_solution', label: 'Solución Funcional Comprobada', desc: 'No es una idea teórica; el modelo o software ya procesa datos en un entorno real o piloto.' },
                     { key: 'verifiable_metrics', label: 'Datos Comprobables (Antes vs. Después)', desc: 'Existe medición cuantificable de ahorro de tiempo, reducción de error o beneficio económico.' },
                     { key: 'company_endorsed', label: 'Validado por la Empresa Participante', desc: 'Cuenta con la aprobación y respaldo de los líderes del proceso en la empresa.' },
-                    { key: 'repo_available', label: 'Código y Documentación Lista', desc: 'Repositorio de GitHub o documentación técnica disponible para auditoría del jurado.' }
+                    { key: 'repo_available', label: 'Código y Documentación Lista', desc: 'Repositorio de GitHub (público o compartido a gerencia.mejoracontinua@prosur.com.mx) disponible para auditoría del jurado.' }
                   ].map(item => {
                     const isChecked = Boolean(project?.complianceChecks && project.complianceChecks[item.key]);
                     return (
